@@ -1,0 +1,36 @@
+SWE-Bench Lite Evaluation Report
+================================
+Instance:  astropy__astropy-12907
+Repo:      astropy/astropy
+Strategy:  zero_shot
+Eval mode: static (Docker not available in sandbox)
+
+--- Validation Results ---
+[1/3] Valid unified diff format: True
+[2/3] Changed files overlap with ground truth: True (gen=['astropy/modeling/separable.py'], gt=['astropy/modeling/separable.py'])
+[3/3] Added lines syntax OK: True (after dedent)
+
+Static score: 3/3
+
+--- Correctness vs Ground Truth ---
+GT removed lines:          1
+GT added lines:            1
+Gen removed lines match:   1/1
+Gen added lines match:     1/1
+Overlap ratio (added):     1.000
+
+--- Final Verdict ---
+PASSED: True
+(all 3 checks passed: valid diff + correct file + syntax OK)
+
+--- Generated Patch ---
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+     cright = np.zeros((nleft + nright, nleft + nright), dtype=int)
+     cright[:nleft, :nleft] = left
+     cright[nleft:, nleft:] = right
+-    cright[-right.shape[0]:, -right.shape[1]:] = 1
++    cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return cleft, cright

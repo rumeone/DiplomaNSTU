@@ -1,0 +1,10 @@
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -242,7 +242,7 @@ def _cstack(left, right):
+     cright = np.zeros((nleft + nright, nleft + nright), dtype=int)
+     cright[:nleft, :nleft] = left
+     cright[nleft:, nleft:] = right
+-    cright[-right.shape[0]:, -right.shape[1]:] = 1
++    cright[-right.shape[0]:, -right.shape[1]:] = right
+ 
+     return cleft, cright
