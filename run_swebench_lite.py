@@ -1,8 +1,8 @@
-"""SWE-Bench Lite benchmark runner.
+"""SWE-Bench benchmark runner.
 
-Runs 3 tasks from SWE-bench Lite, generates patches via LLM using two
-strategies (zero_shot, cot), evaluates them (Docker or static fallback),
-and saves all artefacts to outputs/swebench_lite_results/.
+Runs tasks from SWE-bench (Lite / Verified / Full), generates patches via LLM
+using two strategies (zero_shot, cot), evaluates them (Docker or static
+fallback), and saves all artefacts to outputs/swebench_lite_results/.
 
 Directory layout after run:
     outputs/swebench_lite_results/
@@ -14,9 +14,9 @@ Directory layout after run:
             summary.csv             <- aggregated per-strategy stats
 
 Usage:
-    python run_swebench_lite.py
-    python run_swebench_lite.py --tasks 5 --strategy zero_shot
-    python run_swebench_lite.py --force-static   # skip Docker eval
+    python run_swebench_lite.py                      # по умолчанию full SWE-Bench
+    python run_swebench_lite.py --tasks 5 --subset verified
+    python run_swebench_lite.py --force-static       # skip Docker eval
 """
 from __future__ import annotations
 
@@ -51,6 +51,12 @@ from swebench_lite_prompts import (
 DEFAULT_MAX_TASKS = 3
 DEFAULT_STRATEGIES = ["zero_shot", "cot"]
 OUTPUT_BASE = Path("outputs") / "swebench_lite_results"
+
+SUBSET_TO_DATASET = {
+    "lite": "princeton-nlp/SWE-bench_Lite",
+    "verified": "princeton-nlp/SWE-bench_Verified",
+    "full": "princeton-nlp/SWE-bench",
+}
 
 
 # ---------------------------------------------------------------------------
@@ -117,6 +123,8 @@ def run_single_task(
     strategy: str,
     base: Path,
     force_static: bool = False,
+    dataset_name: Optional[str] = None,
+    split: str = "test",
 ) -> dict:
     """Generate a patch for one task+strategy and evaluate it."""
     # 1. Build prompt and generate patch
@@ -138,6 +146,8 @@ def run_single_task(
         generated_patch=patch,
         ground_truth_patch=task.patch,
         force_static=force_static,
+        dataset_name=dataset_name,
+        split=split,
     )
 
     # 4. Save evaluation report
@@ -189,27 +199,28 @@ def _error_record(task: SWETask, strategy: str, error: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Run SWE-Bench Lite benchmark")
+    parser = argparse.ArgumentParser(description="Run SWE-Bench benchmark")
     parser.add_argument(
         "--tasks", type=int, default=DEFAULT_MAX_TASKS,
-        help=f"Number of SWE-Bench Lite tasks to run (default: {DEFAULT_MAX_TASKS})"
+        help=f"Number of SWE-Bench tasks to run (default: {DEFAULT_MAX_TASKS})",
     )
     parser.add_argument(
         "--strategies", nargs="+", default=DEFAULT_STRATEGIES,
-        help="Prompt strategies to use (default: zero_shot cot)"
+        help="Prompt strategies to use (default: zero_shot cot)",
     )
     parser.add_argument(
-        "--subset", default="lite",
+        "--subset",
+        default="full",
         choices=["lite", "verified", "full"],
-        help="SWE-bench subset (default: lite)"
+        help="SWE-bench subset: lite (300), verified (500), full (2294). Default: full.",
     )
     parser.add_argument(
         "--force-static", action="store_true",
-        help="Force static evaluation even if Docker is available"
+        help="Force static evaluation even if Docker is available",
     )
     parser.add_argument(
         "--output-dir", type=Path, default=OUTPUT_BASE,
-        help=f"Output directory (default: {OUTPUT_BASE})"
+        help=f"Output directory (default: {OUTPUT_BASE})",
     )
     return parser.parse_args()
 
@@ -219,11 +230,13 @@ def main() -> None:
     base = args.output_dir
     ensure_dirs(base)
 
+    dataset_name = SUBSET_TO_DATASET.get(args.subset, "princeton-nlp/SWE-bench")
+
     print(f"\n{'='*60}")
-    print(f"SWE-Bench Lite Benchmark")
+    print("SWE-Bench Benchmark")
     print(f"  Tasks:      {args.tasks}")
     print(f"  Strategies: {args.strategies}")
-    print(f"  Subset:     {args.subset}")
+    print(f"  Subset:     {args.subset} ({dataset_name})")
     print(f"  Output:     {base}")
     print(f"  Force static eval: {args.force_static}")
     print(f"{'='*60}\n")
@@ -242,7 +255,7 @@ def main() -> None:
     print(f"Loaded {len(tasks)} tasks.\n")
 
     client = LLMClient()
-    records: list[dict] = []
+    records: List[dict] = []
 
     for task in tqdm(tasks, desc="SWE Tasks"):
         print(f"\n--- Task: {task.instance_id} ({task.repo}) ---")
@@ -255,6 +268,8 @@ def main() -> None:
                     strategy=strategy,
                     base=base,
                     force_static=args.force_static,
+                    dataset_name=dataset_name,
+                    split="test",
                 )
             except Exception as exc:
                 record = _error_record(task, strategy, error=f"Pipeline error: {exc}")
@@ -292,7 +307,7 @@ def main() -> None:
     print("Results summary:")
     print(summary_df.to_string(index=False))
     print(f"{'='*60}")
-    print(f"\nSaved:")
+    print("\nSaved:")
     print(f"  {raw_csv}")
     print(f"  {raw_json}")
     print(f"  {summary_path}")

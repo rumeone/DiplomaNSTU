@@ -1,4 +1,4 @@
-"""SWE-Bench Lite patch evaluator.
+"""SWE-Bench patch evaluator.
 
 Two evaluation modes are supported:
 
@@ -14,7 +14,7 @@ Two evaluation modes are supported:
    Used as a fast sanity check when Docker is unavailable.
 
 The runner (`run_swebench_lite.py`) always attempts Docker first and falls back
-to the static evaluator, recording which mode was used in each result record.
+onto the static evaluator, recording which mode was used in each result record.
 """
 from __future__ import annotations
 
@@ -175,7 +175,7 @@ def swebench_package_available() -> bool:
 def docker_evaluate_patch(
     instance_id: str,
     generated_patch: str,
-    dataset_name: str = "princeton-nlp/SWE-bench_Lite",
+    dataset_name: str,
     split: str = "test",
     timeout: int = 300,
 ) -> SWEEvaluationResult:
@@ -274,15 +274,22 @@ def evaluate_swe_patch(
     generated_patch: str,
     ground_truth_patch: Optional[str] = None,
     force_static: bool = False,
+    dataset_name: Optional[str] = None,
+    split: str = "test",
 ) -> SWEEvaluationResult:
     """
     Evaluate a generated patch.
 
     Strategy:
-    1. If Docker + swebench package available AND not force_static → Docker eval.
+    1. If Docker + swebench package available AND not force_static AND dataset_name → Docker eval.
     2. Otherwise → static heuristic eval.
     """
-    if not force_static and docker_is_available() and swebench_package_available():
-        return docker_evaluate_patch(instance_id, generated_patch)
+    if (not force_static) and dataset_name and docker_is_available() and swebench_package_available():
+        return docker_evaluate_patch(
+            instance_id=instance_id,
+            generated_patch=generated_patch,
+            dataset_name=dataset_name,
+            split=split,
+        )
     else:
         return static_evaluate_patch(instance_id, generated_patch, ground_truth_patch)
