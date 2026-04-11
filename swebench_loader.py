@@ -12,7 +12,7 @@ class SWETask:
     """
     Одна задача из датасета SWE-bench.
 
-    Поля соответствуют схеме princeton-nlp/SWE-bench_Lite:
+    Поля соответствуют схеме SWE-bench/SWE-bench_Lite:
       - instance_id   — уникальный идентификатор задачи (repo__issueN)
       - repo          — полное имя репозитория на GitHub (например, django/django)
       - problem_statement — текст issue (описание бага/запроса)
@@ -68,11 +68,11 @@ class SWETask:
 
 _SWEBENCH_DATASETS = [
     # Lite — 300 отобранных задач (рекомендуется для диплома)
-    ("princeton-nlp/SWE-bench_Lite", "test"),
+    ("SWE-bench/SWE-bench_Lite", "test"),
     # Verified — 500 задач с верификацией от OpenAI
-    ("princeton-nlp/SWE-bench_Verified", "test"),
+    ("SWE-bench/SWE-bench_Verified", "test"),
     # Полный датасет — 2294 задачи
-    ("princeton-nlp/SWE-bench", "test"),
+    ("SWE-bench/SWE-bench", "test"),
 ]
 
 
@@ -98,11 +98,11 @@ def load_swebench_tasks(
     List[SWETask]
     """
     subset_map = {
-        "lite": "princeton-nlp/SWE-bench_Lite",
-        "verified": "princeton-nlp/SWE-bench_Verified",
-        "full": "princeton-nlp/SWE-bench",
+        "lite": "SWE-bench/SWE-bench_Lite",
+        "verified": "SWE-bench/SWE-bench_Verified",
+        "full": "SWE-bench/SWE-bench",
     }
-    dataset_name = subset_map.get(subset, "princeton-nlp/SWE-bench_Lite")
+    dataset_name = subset_map.get(subset, "SWE-bench/SWE-bench_Lite")
 
     ds = load_dataset(dataset_name, split=split)
 
@@ -136,7 +136,7 @@ def load_swebench_from_jsonl(
     Загрузка задач SWE-bench из локального JSONL-файла.
     Используется если нет доступа к Hugging Face или нужен оффлайн-режим.
 
-    Формат строки файла должен соответствовать схеме princeton-nlp/SWE-bench.
+    Формат строки файла должен соответствовать схеме SWE-bench/SWE-bench.
     """
     import json
 

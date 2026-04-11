@@ -53,9 +53,9 @@ DEFAULT_STRATEGIES = ["zero_shot", "cot"]
 OUTPUT_BASE = Path("outputs") / "swebench_lite_results"
 
 SUBSET_TO_DATASET = {
-    "lite": "princeton-nlp/SWE-bench_Lite",
-    "verified": "princeton-nlp/SWE-bench_Verified",
-    "full": "princeton-nlp/SWE-bench",
+    "lite": "SWE-bench/SWE-bench_Lite",
+    "verified": "SWE-bench/SWE-bench_Verified",
+    "full": "SWE-bench/SWE-bench",
 }
 
 
@@ -230,7 +230,7 @@ def main() -> None:
     base = args.output_dir
     ensure_dirs(base)
 
-    dataset_name = SUBSET_TO_DATASET.get(args.subset, "princeton-nlp/SWE-bench")
+    dataset_name = SUBSET_TO_DATASET.get(args.subset, "SWE-bench/SWE-bench")
 
     print(f"\n{'='*60}")
     print("SWE-Bench Benchmark")
