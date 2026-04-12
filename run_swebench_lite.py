@@ -36,7 +36,7 @@ from swebench_loader import SWETask, load_swebench_tasks
 from swebench_lite_evaluator import (
     SWEEvaluationResult,
     evaluate_swe_patch,
-    is_valid_unified_unified_diff,
+    is_valid_unified_diff,
 )
 from swebench_lite_prompts import (
     build_swe_cot_prompt,
