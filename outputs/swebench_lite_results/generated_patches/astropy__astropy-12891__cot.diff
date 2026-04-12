@@ -1,0 +1,22 @@
+--- astropy/units/quantity.py
++++ astropy/units/quantity.py
+@@ -1868,7 +1868,7 @@
+         # Check if the function is supported at all (e.g., np.mean is).
+         if function in UNSUPPORTED_FUNCTIONS:
+             raise TypeError(f"'{function.__name__}' is not supported by Quantity")
+-        if function in DISPATCHED_FUNCTIONS:
++        if function in DISPATCHED_FUNCTIONS and function not in (np.mean, np.std, np.var, np.sum, np.prod, np.any, np.all, np.min, np.max, np.argmin, np.argmax, np.ptp):
+             # These functions have a specific implementation that does not
+             # use __array_function__.
+             return DISPATCHED_FUNCTIONS[function](self, *args, **kwargs)
+@@ -1886,6 +1886,10 @@
+         # Check if the function is supported at all (e.g., np.mean is).
+         if function in UNSUPPORTED_FUNCTIONS:
+             raise TypeError(f"'{function.__name__}' is not supported by Quantity")
++        # For numpy reduction functions with 'where' support, we need to handle them specially.
++        if function in (np.mean, np.std, np.var, np.sum, np.prod, np.any, np.all, np.min, np.max, np.argmin, np.argmax, np.ptp):
++            # Pass through to numpy's implementation which handles 'where'.
++            return super().__array_function__(function, types, args, kwargs)
+         if function in DISPATCHED_FUNCTIONS:
+             # These functions have a specific implementation that does not
+             # use __array_function__.

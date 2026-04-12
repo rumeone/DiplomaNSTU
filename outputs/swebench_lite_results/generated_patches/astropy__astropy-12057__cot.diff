@@ -1,0 +1,12 @@
+--- astropy/nddata/nduncertainty.py
++++ astropy/nddata/nduncertainty.py
+@@ -350,6 +350,9 @@
+         """
+         # Check if the subclass supports correlation
+         if not self.supports_correlated:
++            # Convert correlation to array for uniform handling
++            if not isinstance(correlation, np.ndarray):
++                correlation = np.asarray(correlation)
+             if isinstance(correlation, np.ndarray) or correlation != 0:
+                 raise ValueError("{} does not support uncertainty propagation"
+                                  " with correlation."

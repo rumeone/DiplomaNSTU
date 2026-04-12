@@ -1,0 +1,37 @@
+--- astropy/nddata/ccddata.py
++++ astropy/nddata/ccddata.py
+@@ -272,7 +272,7 @@
+             self._uncertainty = value
+ 
+     def to_hdu(self, hdu_mask='MASK', hdu_uncertainty='UNCERT',
+-               hdu_flags=None, wcs_relax=True, key_uncertainty_type='UTYPE'):
++               hdu_flags=None, wcs_relax=True, key_uncertainty_type='UTYPE', as_image_hdu=False):
+         """Creates an HDUList object from a CCDData object.
+ 
+         Parameters
+@@ -298,6 +298,11 @@
+ 
+             .. versionadded:: 3.1
+ 
++        as_image_hdu : bool, optional
++            If ``True``, the primary data will be stored in an `ImageHDU`
++            instead of a `PrimaryHDU`. Default is ``False``.
++
++            .. versionadded:: 5.2
++
+         Raises
+         ------
+         ValueError
+@@ -346,7 +351,10 @@
+             # Note that until astropy/astropy#3967 is closed, the extend
+             # will fail if there are comment cards in the WCS header but
+             # not header.
+             wcs_header = self.wcs.to_header(relax=wcs_relax)
+             header.extend(wcs_header, useblanks=False, update=True)
+-        hdus = [fits.PrimaryHDU(self.data, header)]
++        if as_image_hdu:
++            hdus = [fits.ImageHDU(self.data, header)]
++        else:
++            hdus = [fits.PrimaryHDU(self.data, header)]
+ 
+         if hdu_mask and self.mask is not None:
