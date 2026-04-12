@@ -1,0 +1,60 @@
+--- a/astropy/modeling/models.py
++++ b/astropy/modeling/models.py
+@@ -1235,7 +1235,7 @@ class BlackBody(Fittable1DModel):
+         # If scale has units, then they must be convertible to either
+         # dimensionless_unscaled or the output units (surface brightness).
+         if scale is not None and scale.unit is not None:
+-            if scale.unit.is_equivalent(self._surface_brightness_unit):
++            if scale.unit.is_equivalent(self._surface_brightness_unit) and not scale.unit.is_equivalent(u.dimensionless_unscaled):
+                 # Scale is in surface brightness units, so we replace the
+                 # default surface brightness with the given one.
+                 surface_brightness = scale
+@@ -1243,7 +1243,7 @@ class BlackBody(Fittable1DModel):
+                 # Scale is dimensionless, so we multiply the default surface
+                 # brightness by it.
+                 surface_brightness = self._surface_brightness_unit * scale
+-            else:
++            elif not scale.unit.is_equivalent(u.dimensionless_unscaled):
+                 raise u.UnitsError(
+                     f"scale units '{scale.unit}' are not convertible to "
+                     f"'{self._surface_brightness_unit}' or dimensionless"
+@@ -1251,6 +1251,10 @@ class BlackBody(Fittable1DModel):
+         else:
+             # Scale is None or dimensionless without a unit
+             surface_brightness = self._surface_brightness_unit * scale
++        # Handle dimensionless_unscaled case explicitly
++        if scale is not None and scale.unit is not None and scale.unit.is_equivalent(u.dimensionless_unscaled):
++            # Scale is dimensionless, so we multiply the default surface brightness by it.
++            surface_brightness = self._surface_brightness_unit * scale
+ 
+         # Convert to the output wavelength or frequency units
+         if x.unit.is_equivalent(u.Hz, equivalencies=u.spectral()):
+@@ -1291,7 +1295,7 @@ class BlackBody(Fittable1DModel):
+         # If scale has units, then they must be convertible to either
+         # dimensionless_unscaled or the output units (surface brightness).
+         if self.scale is not None and self.scale.unit is not None:
+-            if self.scale.unit.is_equivalent(self._surface_brightness_unit):
++            if self.scale.unit.is_equivalent(self._surface_brightness_unit) and not self.scale.unit.is_equivalent(u.dimensionless_unscaled):
+                 # Scale is in surface brightness units, so we replace the
+                 # default surface brightness with the given one.
+                 surface_brightness = self.scale
+@@ -1299,7 +1299,7 @@ class BlackBody(Fittable1DModel):
+                 # Scale is dimensionless, so we multiply the default surface
+                 # brightness by it.
+                 surface_brightness = self._surface_brightness_unit * self.scale
+-            else:
++            elif not self.scale.unit.is_equivalent(u.dimensionless_unscaled):
+                 raise u.UnitsError(
+                     f"scale units '{self.scale.unit}' are not convertible to "
+                     f"'{self._surface_brightness_unit}' or dimensionless"
+@@ -1307,6 +1307,10 @@ class BlackBody(Fittable1DModel):
+         else:
+             # Scale is None or dimensionless without a unit
+             surface_brightness = self._surface_brightness_unit * self.scale
++        # Handle dimensionless_unscaled case explicitly
++        if self.scale is not None and self.scale.unit is not None and self.scale.unit.is_equivalent(u.dimensionless_unscaled):
++            # Scale is dimensionless, so we multiply the default surface brightness by it.
++            surface_brightness = self._surface_brightness_unit * self.scale
+ 
+         # Compute the bolometric flux
+         bolometric_flux = surface_brightness * np.pi * u.sr

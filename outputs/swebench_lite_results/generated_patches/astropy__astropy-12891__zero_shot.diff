@@ -1,0 +1,81 @@
+--- a/astropy/units/quantity.py
++++ b/astropy/units/quantity.py
+@@ -1807,6 +1807,8 @@ class Quantity(np.ndarray):
+         out = kwargs.pop('out', None)
+         # Avoid infinite recursion if we are called via __array_ufunc__
+         if out is not None and not isinstance(out, Quantity):
++            if isinstance(out, tuple) and any(isinstance(o, Quantity) for o in out):
++                out = tuple(o.view(Quantity) if isinstance(o, Quantity) else o for o in out)
+             return NotImplemented
+ 
+         # Ensure we don't loop by using view(np.ndarray) for inputs.
+@@ -1820,6 +1822,9 @@ class Quantity(np.ndarray):
+                 if isinstance(arg, Quantity):
+                     args[i] = arg.view(np.ndarray)
+ 
++        # Handle where argument specially to avoid Quantity conversion
++        where = kwargs.pop('where', None)
++
+         # Get unit of result, and ensure we work with the array view.
+         result_unit = self.unit
+         if ufunc in (multiply, true_divide, floor_divide, divide, power,
+@@ -1856,6 +1861,9 @@ class Quantity(np.ndarray):
+             # For two-argument ufuncs with a quantity as second argument,
+             # the unit should be that of the first argument.
+             result_unit = self.unit
++        
++        if where is not None:
++            kwargs['where'] = where
+ 
+         # Do the calculation with the plain array(s).
+         result = super().__array_ufunc__(ufunc, method, *args, **kwargs)
+@@ -1863,6 +1871,10 @@ class Quantity(np.ndarray):
+         if result is NotImplemented:
+             return NotImplemented
+ 
++        # Handle where with reduction functions that return scalar
++        if where is not None and method == 'reduce' and np.isscalar(result):
++            return result
++
+         if out is not None:
+             # If pre-allocated output was used, it is already a Quantity.
+             # But we need to ensure it has the right unit.
+@@ -1870,7 +1882,7 @@ class Quantity(np.ndarray):
+                 out = (out,)
+             for out_i in out:
+                 if isinstance(out_i, Quantity):
+-                    out_i._set_unit(result_unit)
++                    out_i._set_unit(result_unit, force=True)
+             return out[0] if len(out) == 1 else out
+ 
+         return self._new_view(result, result_unit)
+@@ -1880,6 +1892,8 @@ class Quantity(np.ndarray):
+         # For reduction operations like mean, sum, etc., we need to handle
+         # the where argument specially.
+         if method == 'reduce':
++            where = kwargs.get('where', None)
++            
+             # Check if this is a reduction that should preserve units
+             if ufunc in (np.add, np.multiply, np.logical_and, np.logical_or,
+                          np.bitwise_and, np.bitwise_or, np.bitwise_xor):
+@@ -1890,6 +1904,10 @@ class Quantity(np.ndarray):
+                     # For operations that don't preserve units, strip them
+                     args = tuple(arg.view(np.ndarray) if isinstance(arg, Quantity) 
+                                 else arg for arg in args)
++                
++                # Ensure where is passed through without conversion
++                if where is not None:
++                    kwargs['where'] = where
+                 
+                 result = super().__array_ufunc__(ufunc, method, *args, **kwargs)
+                 
+@@ -1900,6 +1918,10 @@ class Quantity(np.ndarray):
+                     return self._new_view(result, self.unit)
+                 else:
+                     return result
++            
++            # For other reductions, ensure where is passed through
++            if where is not None:
++                kwargs['where'] = where
+ 
+         return super().__array_ufunc__(ufunc, method, *args, **kwargs)

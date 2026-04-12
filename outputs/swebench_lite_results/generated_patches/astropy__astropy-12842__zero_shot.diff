@@ -1,0 +1,20 @@
+--- a/astropy/io/ascii/ecsv.py
++++ b/astropy/io/ascii/ecsv.py
+@@ -173,8 +173,15 @@ class EcsvHeader(DefaultHeader):
+         for col in self.cols:
+             col.dtype = header_cols[col.name]['datatype']
+             if col.dtype not in ECSV_DATATYPES:
+-                raise ValueError(f'datatype {col.dtype!r} of column {col.name!r} '
+-                                 f'is not in allowed values {ECSV_DATATYPES}')
++                # Issue #12503: Allow non-standard datatypes with a warning.
++                # This maintains backward compatibility for files written before
++                # strict checking was enforced.
++                import warnings
++                warnings.warn(
++                    f'datatype {col.dtype!r} of column {col.name!r} '
++                    f'is not in allowed values {ECSV_DATATYPES}. '
++                    f'Attempting to read anyway.',
++                    UserWarning)
+ 
+             # Subtype is written like "int64[2,null]" and we want to split this
+             # out to "int64" and [2, None].

@@ -1,0 +1,153 @@
+--- a/astropy/table/connect.py
++++ b/astropy/table/connect.py
+@@ -48,6 +48,7 @@ def read_table(filename, table_id=None, format=None, **kwargs):
+         kwargs['format'] = format
+ 
+     # Get the reader
++    mask = kwargs.pop('mask', True)
+     reader = get_reader(kwargs['format'])
+ 
+     # If the reader supports the unified interface, we can pass all kwargs
+@@ -55,7 +56,7 @@ def read_table(filename, table_id=None, format=None, **kwargs):
+         # Remove format from kwargs because it is not an argument of the reader
+         kwargs.pop('format')
+         try:
+-            result = reader(filename, table_id=table_id, **kwargs)
++            result = reader(filename, table_id=table_id, mask=mask, **kwargs)
+         except TypeError:
+             # Maybe the reader does not support table_id
+             result = reader(filename, **kwargs)
+@@ -63,7 +64,7 @@ def read_table(filename, table_id=None, format=None, **kwargs):
+     else:
+         # Otherwise, we need to use the old Table.read interface
+         t = Table.read(filename, table_id=table_id, format=kwargs['format'],
+-                       **kwargs)
++                       mask=mask, **kwargs)
+         result = t
+ 
+     return result
+--- a/astropy/io/ascii/connect.py
++++ b/astropy/io/ascii/connect.py
+@@ -16,7 +16,7 @@ def ascii_reader(filename, table_id=None, **kwargs):
+     # If table_id is specified, we need to read multiple tables
+     if table_id is not None:
+         raise ValueError('table_id is not supported for ASCII tables.')
+-    return ascii.read(filename, **kwargs)
++    return ascii.read(filename, mask=kwargs.get('mask', True), **kwargs)
+--- a/astropy/io/fits/connect.py
++++ b/astropy/io/fits/connect.py
+@@ -22,7 +22,7 @@ def fits_reader(filename, table_id=None, **kwargs):
+         raise ValueError('table_id is not supported for FITS tables.')
+     # Read the table
+     with fits.open(filename) as hdul:
+-        return Table(hdul[table_id].data)
++        return Table(hdul[table_id].data, mask=kwargs.get('mask', True))
+--- a/astropy/io/misc/connect.py
++++ b/astropy/io/misc/connect.py
+@@ -19,7 +19,7 @@ def pandas_reader(filename, table_id=None, **kwargs):
+     # If table_id is specified, we need to read multiple tables
+     if table_id is not None:
+         raise ValueError('table_id is not supported for Pandas tables.')
+-    return Table.read(filename, format='pandas', **kwargs)
++    return Table.read(filename, format='pandas', mask=kwargs.get('mask', True), **kwargs)
+--- a/astropy/table/__init__.py
++++ b/astropy/table/__init__.py
+@@ -126,6 +126,7 @@ def read(*args, **kwargs):
+         kwargs['format'] = format
+ 
+     # Get the reader
++    mask = kwargs.pop('mask', True)
+     reader = get_reader(kwargs['format'])
+ 
+     # If the reader supports the unified interface, we can pass all kwargs
+@@ -133,7 +134,7 @@ def read(*args, **kwargs):
+         # Remove format from kwargs because it is not an argument of the reader
+         kwargs.pop('format')
+         try:
+-            result = reader(*args, **kwargs)
++            result = reader(*args, mask=mask, **kwargs)
+         except TypeError:
+             # Maybe the reader does not support table_id
+             result = reader(*args, **kwargs)
+@@ -141,7 +142,7 @@ def read(*args, **kwargs):
+     else:
+         # Otherwise, we need to use the old Table.read interface
+         t = Table.read(*args, format=kwargs['format'],
+-                       **kwargs)
++                       mask=mask, **kwargs)
+         result = t
+ 
+     return result
+--- a/astropy/io/ascii/core.py
++++ b/astropy/io/ascii/core.py
+@@ -1556,6 +1556,7 @@ def read(table, guess=None, **kwargs):
+         guess = _guess
+     # Process kwargs: extract format-related kwargs
+     format_kwargs = _get_format_kwargs(kwargs)
++    mask = kwargs.get('mask', True)
+ 
+     # If a Reader object was passed, use it directly
+     if isinstance(table, BaseReader):
+@@ -1565,7 +1566,7 @@ def read(table, guess=None, **kwargs):
+         # Get the reader for the format
+         reader = _get_reader(format, format_kwargs)
+         # Read the table
+-        return reader.read(table, **kwargs)
++        return reader.read(table, mask=mask, **kwargs)
+ 
+     # Otherwise, treat table as input data
+     # Guess the format if needed
+@@ -1574,7 +1575,7 @@ def read(table, guess=None, **kwargs):
+     # Get the reader for the format
+     reader = _get_reader(format, format_kwargs)
+     # Read the table
+-    return reader.read(table, **kwargs)
++    return reader.read(table, mask=mask, **kwargs)
+--- a/astropy/table/table.py
++++ b/astropy/table/table.py
+@@ -308,6 +308,7 @@ class Table(QTable):
+         # Initialize the table with the data
+         super().__init__(data, **kwargs)
+ 
++        mask = kwargs.get('mask', True)
+         # If data is a MaskedArray, convert to MaskedColumn
+         if isinstance(data, np.ma.MaskedArray):
+             self._convert_masked_array_to_masked_column(mask)
+@@ -315,7 +316,7 @@ class Table(QTable):
+         # If any column is a MaskedColumn, ensure the table is masked
+         for col in self.columns.values():
+             if isinstance(col, MaskedColumn):
+                self._make_masked_table()
++                if not mask:
++                    self._unmask_table()
+                 break
+ 
+     def _convert_masked_array_to_masked_column(self, mask):
+@@ -327,6 +328,12 @@ class Table(QTable):
+         for col in self.columns.values():
+             col.mask = mask
+ 
++    def _unmask_table(self):
++        """Convert masked columns to regular columns."""
++        for colname in self.colnames:
++            col = self[colname]
++            if isinstance(col, MaskedColumn):
++                self[colname] = Column(col.data, unit=col.unit, description=col.description)
+--- a/astropy/table/column.py
++++ b/astropy/table/column.py
+@@ -1245,6 +1245,7 @@ class MaskedColumn(Column, BaseMaskedColumn):
+         # Initialize the column with the data
+         super().__init__(data, **kwargs)
+ 
++        mask = kwargs.get('mask', True)
+         # If data is a MaskedArray, set the mask
+         if isinstance(data, np.ma.MaskedArray):
+             self.mask = data.mask
+@@ -1252,7 +1253,7 @@ class MaskedColumn(Column, BaseMaskedColumn):
+         # If mask is provided, set it
+         if 'mask' in kwargs:
+             self.mask = kwargs['mask']
+-        else:
++        elif mask:
+             # Initialize mask to False if not provided
+             self.mask = np.zeros(len(self), dtype=bool)

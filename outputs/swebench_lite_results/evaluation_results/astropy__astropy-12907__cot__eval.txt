@@ -1,40 +1,58 @@
-SWE-Bench Lite Evaluation Report
-================================
-Instance:  astropy__astropy-12907
-Repo:      astropy/astropy
-Strategy:  cot
-Eval mode: static (Docker not available in sandbox)
+Instance: astropy__astropy-12907
+Strategy: cot
+Eval mode: docker
+Patch applied: None
+Passed: None
 
---- Validation Results ---
-[1/3] Valid unified diff format: True
-[2/3] Changed files overlap with ground truth: True (gen=['astropy/modeling/separable.py'], gt=['astropy/modeling/separable.py'])
-[3/3] Added lines syntax OK: True (after dedent)
+--- Test output ---
+Running 1 instances...
+astropy__astropy-12907: >>>>> Patch Apply Failed:
+patching file astropy/modeling/separable.py
+Hunk #1 succeeded at 17 with fuzz 3 (offset 16 lines).
+Hunk #2 FAILED at 56.
+Hunk #3 succeeded at 80 with fuzz 3 (offset 16 lines).
+patch unexpectedly ends in middle of line
+Hunk #4 FAILED at 73.
+2 out of 4 hunks FAILED -- saving rejects to file astropy/modeling/separable.py.rej
 
-Static score: 3/3
+Check (logs/run_evaluation/diploma_eval/diploma_llm/astropy__astropy-12907/run_instance.log) for more information.
+All instances run.
+Cleaning cached images...
+Removed 0 images.
+Total instances: 1
+Instances submitted: 1
+Instances completed: 0
+Instances incomplete: 0
+Instances resolved: 0
+Instances unresolved: 0
+Instances with empty patches: 0
+Instances with errors: 1
+Unstopped containers: 0
+Unremoved images: 0
+Report written to diploma_llm.diploma_eval.json
 
---- Correctness vs Ground Truth ---
-GT removed lines:          1
-GT added lines:            1
-Gen removed lines match:   0/1  (different variable naming in context, same logical fix)
-Gen added lines match:     0/1  (different variable naming in context, same logical fix)
-Overlap ratio (added):     0.000
+<frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
+2026-04-12 17:07:00,522 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-12 17:07:00,633 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench/7074ef12ea2a6f70a228943c1336553333c22786/README.md "HTTP/1.1 200 OK"
+2026-04-12 17:07:00,853 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/SWE-bench.py "HTTP/1.1 404 Not Found"
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-12 17:07:00,853 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-12 17:07:01,686 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench/SWE-bench/SWE-bench.py "HTTP/1.1 404 Not Found"
+2026-04-12 17:07:01,899 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/revision/7074ef12ea2a6f70a228943c1336553333c22786 "HTTP/1.1 200 OK"
+2026-04-12 17:07:02,112 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-04-12 17:07:02,835 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench "HTTP/1.1 200 OK"
+2026-04-12 17:07:03,056 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/tree/7074ef12ea2a6f70a228943c1336553333c22786/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-12 17:07:03,303 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/tree/7074ef12ea2a6f70a228943c1336553333c22786?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-04-12 17:07:03,519 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-04-12 17:07:03,993 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-12 17:07:04,104 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench/7074ef12ea2a6f70a228943c1336553333c22786/README.md "HTTP/1.1 200 OK"
+2026-04-12 17:07:04,323 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/SWE-bench.py "HTTP/1.1 404 Not Found"
+2026-04-12 17:07:04,521 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench/SWE-bench/SWE-bench.py "HTTP/1.1 404 Not Found"
+2026-04-12 17:07:05,340 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-04-12 17:07:06,283 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench "HTTP/1.1 200 OK"
+2026-04-12 17:07:06,533 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/dataset_infos.json "HTTP/1.1 404 Not Found"
 
-Note: Both zero_shot and cot generated the SAME key fix:
-  -result[-right.shape[0]:, -right.shape[1]:] = 1
-  +result[-right.shape[0]:, -right.shape[1]:] = right
-The fix is semantically identical to ground truth.
-
---- Final Verdict ---
-PASSED: True
-(valid diff + correct file + same semantic fix)
-
---- Generated Patch ---
---- a/astropy/modeling/separable.py
-+++ b/astropy/modeling/separable.py
-@@ -242,7 +242,7 @@ def _cstack(left, right):
-     result = np.zeros((left.shape[0] + right.shape[0],
-                        left.shape[1] + right.shape[1]))
-     result[:left.shape[0], :left.shape[1]] = left
--    result[-right.shape[0]:, -right.shape[1]:] = 1
-+    result[-right.shape[0]:, -right.shape[1]:] = right
-     return result
+Evaluation:   0%|          | 0/1 [00:00<?, ?it/s, error=0, ✓=0, ✖=0]
+Evaluation:   0%|          | 0/1 [01:16<?, ?it/s, ✓=0, ✖=0, error=1]
+Evaluation: 100%|██████████| 1/1 [01:16<00:00, 76.81s/it, ✓=0, ✖=0, error=1]
+Evaluation: 100%|██████████| 1/1 [01:16<00:00, 76.81s/it, ✓=0, ✖=0, error=1]

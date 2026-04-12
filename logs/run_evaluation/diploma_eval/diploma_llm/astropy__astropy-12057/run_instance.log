@@ -1,0 +1,358 @@
+2026-04-12 16:32:32,162 - INFO - Creating container for astropy__astropy-12057...
+2026-04-12 16:32:33,265 - INFO - Container for astropy__astropy-12057 created: fe2aeee8c0a9cedc34c46ee117bbb1201ba3d7827f01e17ee5468d11e71af0dd
+2026-04-12 16:32:33,453 - INFO - Container for astropy__astropy-12057 started: fe2aeee8c0a9cedc34c46ee117bbb1201ba3d7827f01e17ee5468d11e71af0dd
+2026-04-12 16:32:33,453 - INFO - Intermediate patch for astropy__astropy-12057 written to logs/run_evaluation/diploma_eval/diploma_llm/astropy__astropy-12057/patch.diff, now applying to container...
+2026-04-12 16:32:33,591 - INFO - Failed to apply patch to container: git apply --verbose
+2026-04-12 16:32:33,671 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-04-12 16:32:33,757 - INFO - >>>>> Applied Patch:
+patching file astropy/nddata/nduncertainty.py
+Hunk #1 succeeded at 1 with fuzz 3.
+Hunk #2 succeeded at 9 with fuzz 3.
+Hunk #3 succeeded at 108 with fuzz 3.
+Hunk #4 succeeded at 282 with fuzz 2 (offset 72 lines).
+Hunk #5 succeeded at 582 with fuzz 3 (offset 72 lines).
+Hunk #6 succeeded at 595 with fuzz 3 (offset 72 lines).
+patch unexpectedly ends in middle of line
+Hunk #7 succeeded at 610 with fuzz 3 (offset 72 lines).
+
+2026-04-12 16:32:34,110 - INFO - Git diff before:
+diff --git a/astropy/nddata/nduncertainty.py b/astropy/nddata/nduncertainty.py
+index 05ce66c559..591f12cfed 100644
+--- a/astropy/nddata/nduncertainty.py
++++ b/astropy/nddata/nduncertainty.py
+@@ -1,5 +1,6 @@
+ # Licensed under a 3-clause BSD style license - see LICENSE.rst
+ 
++import warnings
+ import numpy as np
+ from abc import ABCMeta, abstractmethod
+ from copy import deepcopy
+@@ -8,6 +9,7 @@ import weakref
+ 
+ # from astropy.utils.compat import ignored
+ from astropy import log
++from astropy.utils.exceptions import AstropyWarning
+ from astropy.units import Unit, Quantity, UnitConversionError
+ 
+ __all__ = ['MissingDataAssociationException',
+@@ -106,6 +108,10 @@ class NDUncertainty(metaclass=ABCMeta):
+         """
+         return None
+ 
++    _equivalent_classes = {}
++    """Dict mapping uncertainty classes to conversion methods via variance."""
++    _conversion_paths = {}
++
+     @property
+     def supports_correlated(self):
+         """`bool` : Supports uncertainty propagation with correlated \
+@@ -276,6 +282,90 @@ class NDUncertainty(metaclass=ABCMeta):
+         """
+         return self.__class__(self.array[item], unit=self.unit, copy=False)
+ 
++    @classmethod
++    def _register_equivalent(cls, other_cls, to_variance, from_variance):
++        """
++        Register conversion methods between two uncertainty classes.
++
++        Parameters
++        ----------
++        other_cls : class
++            The other uncertainty class to convert to/from.
++        to_variance : callable
++            Function that converts an instance of this class to variance.
++            Takes the instance and returns a VarianceUncertainty.
++        from_variance : callable
++            Function that converts variance to an instance of other_cls.
++            Takes a VarianceUncertainty and returns an instance of other_cls.
++        """
++        cls._equivalent_classes[other_cls] = (to_variance, from_variance)
++        other_cls._equivalent_classes[cls] = (from_variance, to_variance)
++
++    def represent_as(self, other_cls):
++        """
++        Convert the uncertainty to a different uncertainty class.
++
++        Parameters
++        ----------
++        other_cls : class
++            The uncertainty class to convert to.
++
++        Returns
++        -------
++        result : `NDUncertainty` instance
++            An instance of `other_cls` representing the same uncertainty.
++
++        Raises
++        ------
++        TypeError
++            If no conversion path is known between the classes.
++        """
++        if not isinstance(other_cls, type):
++            raise TypeError("other_cls must be a class")
++
++        if isinstance(self, other_cls):
++            return self.__class__(self.array, copy=True, unit=self.unit)
++
++        # Check if direct conversion is registered
++        if other_cls in self._equivalent_classes:
++            to_var, from_var = self._equivalent_classes[other_cls]
++            var = to_var(self)
++            return from_var(var)
++
++        # Build conversion graph lazily
++        if not self._conversion_paths:
++            self._build_conversion_graph()
++
++        # Find shortest path via variance
++        path = self._conversion_paths.get((self.__class__, other_cls))
++        if path is None:
++            raise TypeError(
++                f"No conversion path known from {self.__class__.__name__} "
++                f"to {other_cls.__name__}")
++
++        current = self
++        for step_cls in path:
++            to_var, from_var = current._equivalent_classes[step_cls]
++            var = to_var(current)
++            current = from_var(var)
++        return current
++
++    @classmethod
++    def _build_conversion_graph(cls):
++        """Build graph of conversion paths between all registered classes."""
++        from astropy.nddata.nduncertainty import (VarianceUncertainty,
++                                                  StdDevUncertainty,
++                                                  InverseVariance)
++        # Register core conversions
++        StdDevUncertainty._register_equivalent(
++            VarianceUncertainty,
++            lambda obj: VarianceUncertainty(obj.array**2, unit=obj.unit**2),
++            lambda obj: StdDevUncertainty(obj.array**0.5, unit=obj.unit**0.5))
++        VarianceUncertainty._register_equivalent(
++            InverseVariance,
++            lambda obj: InverseVariance(obj.array**-1, unit=obj.unit**-1),
++            lambda obj: VarianceUncertainty(obj.array**-1, unit=obj.unit**-1))
++
+     def propagate(self, operation, other_nddata, result_data, correlation):
+         """Calculate the resulting uncertainty given an operation on the data.
+ 
+@@ -492,6 +582,10 @@ class _VariancePropagationMixin:
+         if subtract:
+             correlation_sign = -1
+         else:
++
++    Conversion to variance: :math:`\\sigma^2 = \\mathrm{std}^2`
++    Conversion from variance: :math:`\\mathrm{std} = \\sqrt{\\sigma^2}`
++    where :math:`\\sigma^2` is the variance.
+             correlation_sign = 1
+ 
+         try:
+@@ -501,6 +595,10 @@ class _VariancePropagationMixin:
+ 
+         if other_uncert.array is not None:
+             # Formula: sigma**2 = dB
++    This is the central representation for conversions.
++    All other uncertainty types should define conversions to and from
++    variance.
++
+             if (other_uncert.unit is not None and
+                     result_unit_sq != to_variance(other_uncert.unit)):
+                 # If the other uncertainty has a unit and this unit differs
+@@ -512,6 +610,9 @@ class _VariancePropagationMixin:
+         else:
+             other = 0
+ 
++    Conversion to variance: :math:`\\sigma^2 = 1 / \\mathrm{invvar}`
++    Conversion from variance: :math:`\\mathrm{invvar} = 1 / \\sigma^2`
++
+         if self.array is not None:
+             # Formula: sigma**2 = dA
+ 
+diff --git a/pyproject.toml b/pyproject.toml
+index c6a073875a..e7812db7a3 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools",
++requires = ["setuptools==68.0.0",
+             "setuptools_scm>=6.2",
+             "wheel",
+             "cython==0.29.22",
+2026-04-12 16:32:34,110 - INFO - Eval script for astropy__astropy-12057 written to logs/run_evaluation/diploma_eval/diploma_llm/astropy__astropy-12057/eval.sh; copying to container...
+2026-04-12 16:33:16,907 - INFO - Test runtime: 42.71 seconds
+2026-04-12 16:33:16,908 - INFO - Test output for astropy__astropy-12057 written to logs/run_evaluation/diploma_eval/diploma_llm/astropy__astropy-12057/test_output.txt
+2026-04-12 16:33:16,988 - INFO - Git diff after:
+diff --git a/astropy/nddata/nduncertainty.py b/astropy/nddata/nduncertainty.py
+index 05ce66c559..591f12cfed 100644
+--- a/astropy/nddata/nduncertainty.py
++++ b/astropy/nddata/nduncertainty.py
+@@ -1,5 +1,6 @@
+ # Licensed under a 3-clause BSD style license - see LICENSE.rst
+ 
++import warnings
+ import numpy as np
+ from abc import ABCMeta, abstractmethod
+ from copy import deepcopy
+@@ -8,6 +9,7 @@ import weakref
+ 
+ # from astropy.utils.compat import ignored
+ from astropy import log
++from astropy.utils.exceptions import AstropyWarning
+ from astropy.units import Unit, Quantity, UnitConversionError
+ 
+ __all__ = ['MissingDataAssociationException',
+@@ -106,6 +108,10 @@ class NDUncertainty(metaclass=ABCMeta):
+         """
+         return None
+ 
++    _equivalent_classes = {}
++    """Dict mapping uncertainty classes to conversion methods via variance."""
++    _conversion_paths = {}
++
+     @property
+     def supports_correlated(self):
+         """`bool` : Supports uncertainty propagation with correlated \
+@@ -276,6 +282,90 @@ class NDUncertainty(metaclass=ABCMeta):
+         """
+         return self.__class__(self.array[item], unit=self.unit, copy=False)
+ 
++    @classmethod
++    def _register_equivalent(cls, other_cls, to_variance, from_variance):
++        """
++        Register conversion methods between two uncertainty classes.
++
++        Parameters
++        ----------
++        other_cls : class
++            The other uncertainty class to convert to/from.
++        to_variance : callable
++            Function that converts an instance of this class to variance.
++            Takes the instance and returns a VarianceUncertainty.
++        from_variance : callable
++            Function that converts variance to an instance of other_cls.
++            Takes a VarianceUncertainty and returns an instance of other_cls.
++        """
++        cls._equivalent_classes[other_cls] = (to_variance, from_variance)
++        other_cls._equivalent_classes[cls] = (from_variance, to_variance)
++
++    def represent_as(self, other_cls):
++        """
++        Convert the uncertainty to a different uncertainty class.
++
++        Parameters
++        ----------
++        other_cls : class
++            The uncertainty class to convert to.
++
++        Returns
++        -------
++        result : `NDUncertainty` instance
++            An instance of `other_cls` representing the same uncertainty.
++
++        Raises
++        ------
++        TypeError
++            If no conversion path is known between the classes.
++        """
++        if not isinstance(other_cls, type):
++            raise TypeError("other_cls must be a class")
++
++        if isinstance(self, other_cls):
++            return self.__class__(self.array, copy=True, unit=self.unit)
++
++        # Check if direct conversion is registered
++        if other_cls in self._equivalent_classes:
++            to_var, from_var = self._equivalent_classes[other_cls]
++            var = to_var(self)
++            return from_var(var)
++
++        # Build conversion graph lazily
++        if not self._conversion_paths:
++            self._build_conversion_graph()
++
++        # Find shortest path via variance
++        path = self._conversion_paths.get((self.__class__, other_cls))
++        if path is None:
++            raise TypeError(
++                f"No conversion path known from {self.__class__.__name__} "
++                f"to {other_cls.__name__}")
++
++        current = self
++        for step_cls in path:
++            to_var, from_var = current._equivalent_classes[step_cls]
++            var = to_var(current)
++            current = from_var(var)
++        return current
++
++    @classmethod
++    def _build_conversion_graph(cls):
++        """Build graph of conversion paths between all registered classes."""
++        from astropy.nddata.nduncertainty import (VarianceUncertainty,
++                                                  StdDevUncertainty,
++                                                  InverseVariance)
++        # Register core conversions
++        StdDevUncertainty._register_equivalent(
++            VarianceUncertainty,
++            lambda obj: VarianceUncertainty(obj.array**2, unit=obj.unit**2),
++            lambda obj: StdDevUncertainty(obj.array**0.5, unit=obj.unit**0.5))
++        VarianceUncertainty._register_equivalent(
++            InverseVariance,
++            lambda obj: InverseVariance(obj.array**-1, unit=obj.unit**-1),
++            lambda obj: VarianceUncertainty(obj.array**-1, unit=obj.unit**-1))
++
+     def propagate(self, operation, other_nddata, result_data, correlation):
+         """Calculate the resulting uncertainty given an operation on the data.
+ 
+@@ -492,6 +582,10 @@ class _VariancePropagationMixin:
+         if subtract:
+             correlation_sign = -1
+         else:
++
++    Conversion to variance: :math:`\\sigma^2 = \\mathrm{std}^2`
++    Conversion from variance: :math:`\\mathrm{std} = \\sqrt{\\sigma^2}`
++    where :math:`\\sigma^2` is the variance.
+             correlation_sign = 1
+ 
+         try:
+@@ -501,6 +595,10 @@ class _VariancePropagationMixin:
+ 
+         if other_uncert.array is not None:
+             # Formula: sigma**2 = dB
++    This is the central representation for conversions.
++    All other uncertainty types should define conversions to and from
++    variance.
++
+             if (other_uncert.unit is not None and
+                     result_unit_sq != to_variance(other_uncert.unit)):
+                 # If the other uncertainty has a unit and this unit differs
+@@ -512,6 +610,9 @@ class _VariancePropagationMixin:
+         else:
+             other = 0
+ 
++    Conversion to variance: :math:`\\sigma^2 = 1 / \\mathrm{invvar}`
++    Conversion from variance: :math:`\\mathrm{invvar} = 1 / \\sigma^2`
++
+         if self.array is not None:
+             # Formula: sigma**2 = dA
+ 
+diff --git a/pyproject.toml b/pyproject.toml
+index c6a073875a..e7812db7a3 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -1,5 +1,5 @@
+ [build-system]
+-requires = ["setuptools",
++requires = ["setuptools==68.0.0",
+             "setuptools_scm>=6.2",
+             "wheel",
+             "cython==0.29.22",
+2026-04-12 16:33:16,988 - INFO - Grading answer for astropy__astropy-12057...
+2026-04-12 16:33:16,990 - INFO - report: {'astropy__astropy-12057': {'patch_is_None': False, 'patch_exists': True, 'patch_successfully_applied': True, 'resolved': False, 'tests_status': {'FAIL_TO_PASS': {'success': [], 'failure': ['astropy/nddata/tests/test_nduncertainty.py::test_self_conversion_via_variance_supported[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_self_conversion_via_variance_supported[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_self_conversion_via_variance_supported[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_conversion_to_from_variance_supported[StdDevUncertainty-<lambda>]', 'astropy/nddata/tests/test_nduncertainty.py::test_conversion_to_from_variance_supported[VarianceUncertainty-<lambda>]', 'astropy/nddata/tests/test_nduncertainty.py::test_conversion_to_from_variance_supported[InverseVariance-<lambda>]', 'astropy/nddata/tests/test_nduncertainty.py::test_self_conversion_via_variance_not_supported[FakeUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_self_conversion_via_variance_not_supported[UnknownUncertainty]']}, 'PASS_TO_PASS': {'success': [], 'failure': ['astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_list[FakeUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_list[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_list[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_list[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_list[UnknownUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_ndarray[FakeUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_ndarray[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_ndarray[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_ndarray[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_ndarray[UnknownUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_quantity[FakeUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_quantity[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_quantity[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_quantity[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_quantity[UnknownUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_fake[FakeUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_fake[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_fake[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_fake[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_fake[UnknownUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_somethingElse[FakeUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_somethingElse[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_somethingElse[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_somethingElse[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_somethingElse[UnknownUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_init_fake_with_StdDevUncertainty', 'astropy/nddata/tests/test_nduncertainty.py::test_uncertainty_type', 'astropy/nddata/tests/test_nduncertainty.py::test_uncertainty_correlated', 'astropy/nddata/tests/test_nduncertainty.py::test_for_leak_with_uncertainty', 'astropy/nddata/tests/test_nduncertainty.py::test_for_stolen_uncertainty', 'astropy/nddata/tests/test_nduncertainty.py::test_stddevuncertainty_pickle', 'astropy/nddata/tests/test_nduncertainty.py::test_quantity[FakeUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_quantity[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_quantity[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_quantity[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_quantity[UnknownUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_setting_uncertainty_unit_results_in_unit_object[VarianceUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_setting_uncertainty_unit_results_in_unit_object[StdDevUncertainty]', 'astropy/nddata/tests/test_nduncertainty.py::test_setting_uncertainty_unit_results_in_unit_object[InverseVariance]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[VarianceUncertainty-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[VarianceUncertainty-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[VarianceUncertainty-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[StdDevUncertainty-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[StdDevUncertainty-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[StdDevUncertainty-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[InverseVariance-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[InverseVariance-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_changing_unit_to_value_inconsistent_with_parent_fails[InverseVariance-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[VarianceUncertainty-expected_unit0-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[VarianceUncertainty-expected_unit0-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[VarianceUncertainty-expected_unit0-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[StdDevUncertainty-expected_unit1-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[StdDevUncertainty-expected_unit1-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[StdDevUncertainty-expected_unit1-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[InverseVariance-expected_unit2-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[InverseVariance-expected_unit2-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_to_parent_gives_correct_unit[InverseVariance-expected_unit2-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[VarianceUncertainty-expected_unit0-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[VarianceUncertainty-expected_unit0-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[VarianceUncertainty-expected_unit0-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[StdDevUncertainty-expected_unit1-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[StdDevUncertainty-expected_unit1-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[StdDevUncertainty-expected_unit1-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[InverseVariance-expected_unit2-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[InverseVariance-expected_unit2-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_unit_to_parent_with_unit[InverseVariance-expected_unit2-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[VarianceUncertainty-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[VarianceUncertainty-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[VarianceUncertainty-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[StdDevUncertainty-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[StdDevUncertainty-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[StdDevUncertainty-CCDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[InverseVariance-NDData]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[InverseVariance-NDDataArray]', 'astropy/nddata/tests/test_nduncertainty.py::test_assigning_uncertainty_with_bad_unit_to_parent_fails[InverseVariance-CCDData]']}, 'FAIL_TO_FAIL': {'success': [], 'failure': []}, 'PASS_TO_FAIL': {'success': [], 'failure': []}}}}
+Result for astropy__astropy-12057: resolved: False
+2026-04-12 16:33:16,990 - INFO - Attempting to stop container sweb.eval.astropy__astropy-12057.diploma_eval...
+2026-04-12 16:33:32,223 - INFO - Attempting to remove container sweb.eval.astropy__astropy-12057.diploma_eval...
+2026-04-12 16:33:32,264 - INFO - Container sweb.eval.astropy__astropy-12057.diploma_eval removed.
+2026-04-12 16:33:32,264 - INFO - Attempting to remove image swebench/sweb.eval.x86_64.astropy_1776_astropy-12057:latest...
+2026-04-12 16:33:33,979 - INFO - Image swebench/sweb.eval.x86_64.astropy_1776_astropy-12057:latest removed.

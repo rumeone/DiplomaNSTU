@@ -1,10 +1,56 @@
 --- a/astropy/modeling/separable.py
 +++ b/astropy/modeling/separable.py
-@@ -242,7 +242,7 @@ def _cstack(left, right):
-     cright = np.zeros((nleft + nright, nleft + nright), dtype=int)
-     cright[:nleft, :nleft] = left
-     cright[nleft:, nleft:] = right
--    cright[-right.shape[0]:, -right.shape[1]:] = 1
-+    cright[-right.shape[0]:, -right.shape[1]:] = right
+@@ -1,6 +1,7 @@
+ import numpy as np
+ from astropy.modeling.core import CompoundModel
+ from astropy.modeling.models import Identity
++from astropy.modeling.core import Model
  
-     return cleft, cright
+ 
+ def separability_matrix(model):
+@@ -34,6 +35,9 @@ def separability_matrix(model):
+     # If it's a CompoundModel, we need to combine the separability matrices of
+     # its submodels according to the operator that combines them.
+     elif isinstance(model, CompoundModel):
++        # Recursively get separability matrices for left and right operands
++        left_sep = separability_matrix(model.left)
++        right_sep = separability_matrix(model.right)
+         # Get the input/output dimensions of the submodels
+         left_n_inputs = model.left.n_inputs
+         left_n_outputs = model.left.n_outputs
+@@ -41,8 +45,6 @@ def separability_matrix(model):
+         right_n_outputs = model.right.n_outputs
+ 
+         # Get the separability matrices of the submodels
+-        left_sep = separability_matrix(model.left)
+-        right_sep = separability_matrix(model.right)
+ 
+         # Initialize the combined separability matrix
+         sep_matrix = np.zeros((model.n_outputs, model.n_inputs), dtype=bool)
+@@ -50,7 +52,7 @@ def separability_matrix(model):
+         # Combine the separability matrices according to the operator
+         if model.op == '&':
+             # Concatenation: inputs and outputs are independent
+-            sep_matrix[:left_n_outputs, :left_n_inputs] = left_sep
++            sep_matrix[:left_n_outputs, :left_n_inputs] = left_sep[:]
+             sep_matrix[left_n_outputs:, left_n_inputs:] = right_sep
+         elif model.op == '+':
+             # Addition: inputs are shared, outputs are independent
+@@ -60,7 +62,7 @@ def separability_matrix(model):
+             # Multiplication: inputs are independent, outputs are shared
+             # This is the tricky case
+             sep_matrix[:, :left_n_inputs] = left_sep
+-            sep_matrix[:, left_n_inputs:] = right_sep
++            sep_matrix[:, left_n_inputs:] = right_sep[:]
+         elif model.op == '|':
+             # Composition: chain the separability matrices
+             # The output of the left model is the input of the right model
+@@ -68,7 +70,7 @@ def separability_matrix(model):
+             # We need to combine the separability matrices by matrix multiplication
+             # (boolean matrix multiplication)
+             # First, compute the intermediate separability matrix
+-            intermediate_sep = np.dot(right_sep, left_sep)
++            intermediate_sep = np.dot(right_sep[:], left_sep[:])
+             # Then, map the inputs and outputs correctly
+             sep_matrix = intermediate_sep
+         else:

@@ -1,0 +1,129 @@
+--- a/astropy/nddata/uncertainty.py
++++ b/astropy/nddata/uncertainty.py
+@@ -1,6 +1,7 @@
+ # Licensed under a 3-clause BSD style license - see LICENSE.rst
+ 
+ import numpy as np
++import copy
+ 
+ from astropy import units as u
+ from .mixins.ndarithmetic import NDArithmeticMixin
+@@ -8,6 +9,7 @@ from .mixins.ndarithmetic import NDArithmeticMixin
+ __all__ = ['StdDevUncertainty', 'VarianceUncertainty', 'InverseVariance',
+            'UnknownUncertainty']
+ 
++_UNCERTAINTY_TYPE_CONVERSIONS = {}
+ 
+ class _Uncertainty(NDArithmeticMixin):
+     """
+@@ -163,6 +165,7 @@ class _Uncertainty(NDArithmeticMixin):
+         return self.__class__(self.array, copy=True)
+ 
+     def _convert_to_variance(self):
++        """Convert this uncertainty to variance representation."""
+         raise NotImplementedError("Uncertainty type {} cannot be converted to "
+                                   "variance.".format(self.__class__.__name__))
+ 
+@@ -172,6 +175,9 @@ class _Uncertainty(NDArithmeticMixin):
+         """
+         return self._convert_to_variance()
+ 
++    def represent_as(self, other_class):
++        return convert_uncertainty(self, other_class)
++
+ 
+ class StdDevUncertainty(_Uncertainty):
+     """
+@@ -188,6 +194,9 @@ class StdDevUncertainty(_Uncertainty):
+         """
+         return VarianceUncertainty(self.array ** 2, copy=False)
+ 
++    def _convert_from_variance(self, variance_uncert):
++        return StdDevUncertainty(np.sqrt(variance_uncert.array), copy=False)
++
+ 
+ class VarianceUncertainty(_Uncertainty):
+     """
+@@ -202,6 +211,12 @@ class VarianceUncertainty(_Uncertainty):
+         """
+         return self
+ 
++    def _convert_from_variance(self, variance_uncert):
++        return variance_uncert
++
++    def _convert_to_std_dev(self):
++        return StdDevUncertainty(np.sqrt(self.array), copy=False)
++
+ 
+ class InverseVariance(_Uncertainty):
+     """
+@@ -216,6 +231,12 @@ class InverseVariance(_Uncertainty):
+         """
+         return VarianceUncertainty(1. / self.array, copy=False)
+ 
++    def _convert_from_variance(self, variance_uncert):
++        return InverseVariance(1. / variance_uncert.array, copy=False)
++
++    def _convert_to_std_dev(self):
++        return self.represent_as(StdDevUncertainty)
++
+ 
+ class UnknownUncertainty(_Uncertainty):
+     """
+@@ -229,3 +250,56 @@ class UnknownUncertainty(_Uncertainty):
+         raise NotImplementedError("UnknownUncertainty cannot be converted to "
+                                   "variance.")
+ 
++    def _convert_from_variance(self, variance_uncert):
++        raise NotImplementedError("UnknownUncertainty cannot be converted "
++                                  "from variance.")
++
++
++def convert_uncertainty(uncertainty, target_class):
++    """
++    Convert an uncertainty object to a different uncertainty type.
++
++    Parameters
++    ----------
++    uncertainty : `~astropy.nddata._Uncertainty` instance
++        The uncertainty object to convert.
++    target_class : class
++        The class of the desired uncertainty type. Must be one of:
++        `StdDevUncertainty`, `VarianceUncertainty`, or `InverseVariance`.
++
++    Returns
++    -------
++    result : `~astropy.nddata._Uncertainty` instance
++        The converted uncertainty object of type ``target_class``.
++
++    Raises
++    ------
++    TypeError
++        If ``target_class`` is not a valid uncertainty class.
++    ValueError
++        If the conversion cannot be performed.
++
++    Examples
++    --------
++    >>> from astropy.nddata import StdDevUncertainty, VarianceUncertainty
++    >>> import numpy as np
++    >>> std = StdDevUncertainty([1., 2., 3.])
++    >>> var = convert_uncertainty(std, VarianceUncertainty)
++    >>> var  
++    VarianceUncertainty([1., 4., 9.])
++    """
++    if not isinstance(uncertainty, _Uncertainty):
++        raise TypeError("Uncertainty must be an instance of _Uncertainty.")
++
++    if target_class not in (StdDevUncertainty, VarianceUncertainty,
++                            InverseVariance):
++        raise TypeError("Target class must be one of: StdDevUncertainty, "
++                        "VarianceUncertainty, InverseVariance.")
++
++    if isinstance(uncertainty, target_class):
++        return uncertainty.copy()
++
++    # Convert to variance as the intermediate representation
++    variance = uncertainty._convert_to_variance()
++    result = target_class._convert_from_variance(variance)
++    return result

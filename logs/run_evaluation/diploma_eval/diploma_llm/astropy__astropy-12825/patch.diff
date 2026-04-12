@@ -1,0 +1,37 @@
+--- a/astropy/table/groups.py
++++ b/astropy/table/groups.py
+@@ -348,16 +348,22 @@ class TableGroups:
+         # Process columns
+         for col in self._table.columns.values():
+             if hasattr(col, 'groups'):
+-                # If column is a Column or mixin that has groups then use its
+-                # group aggregation method.  This might fail for instance if
+-                # the column is a SkyCoord (which doesn't have "groups").
+-                try:
+-                    new_col = col.groups.aggregate(func)
+-                except AttributeError:
+-                    # Column does not support aggregation, so keep column as is
+-                    # but only first row of each group.
+-                    new_col = col.take(self._groups.indices[:-1])
+-                    warnings.warn('Cannot aggregate column {}.  Instead using '
+-                                  'first row of each group.'.format(col.info.name))
++                # If column is a Column or mixin that has groups then use its
++                # group aggregation method.
++                new_col = col.groups.aggregate(func)
++            else:
++                # Column does not have a groups attribute. This happens for
++                # mixin columns that don't support grouping (e.g. SkyCoord).
++                # In this case we keep the column as is but only the first
++                # row of each group.
++                new_col = col.take(self._groups.indices[:-1])
++                # Only warn if the column actually has more than one row per group
++                group_sizes = np.diff(self._groups.indices)
++                if np.any(group_sizes > 1):
++                    warnings.warn(
++                        f'Cannot aggregate column {col.info.name}. '
++                        'Instead using first row of each group.',
++                        AstropyUserWarning
++                    )
+             out_table[col.info.name] = new_col
+ 
+         return out_table

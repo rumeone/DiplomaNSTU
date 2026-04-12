@@ -1,0 +1,30 @@
+--- a/astropy/table/connect.py
++++ b/astropy/table/connect.py
+@@ -39,6 +39,7 @@ def read_table(filename, **kwargs):
+     # Get all kwargs that are allowed for the table reader, and strip them from
+     # the kwargs dict so they don't get passed to the file reader.
+     table_read_kwargs = {}
++    mask = kwargs.pop('mask', None)
+     for key in list(kwargs.keys()):
+         if key in _valid_table_read_kwargs:
+             table_read_kwargs[key] = kwargs.pop(key)
+@@ -46,6 +47,9 @@ def read_table(filename, **kwargs):
+     # Read the table
+     with get_readable_fileobj(filename, **kwargs) as fileobj:
+         tbl = registry.read(fileobj, **table_read_kwargs)
++    
++    if mask is not None:
++        tbl.mask = mask
+ 
+     return tbl
+ 
+--- a/astropy/io/registry.py
++++ b/astropy/io/registry.py
+@@ -615,6 +615,7 @@ def _get_reader_table_kwargs(reader, format):
+         'names',
+         'include_names',
+         'exclude_names',
++        'mask',
+     ]
+ 
+     # Get the signature from the reader

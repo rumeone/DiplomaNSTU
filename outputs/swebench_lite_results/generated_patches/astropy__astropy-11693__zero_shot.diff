@@ -1,0 +1,28 @@
+--- a/astropy/wcs/wcsapi/fitswcs.py
++++ b/astropy/wcs/wcsapi/fitswcs.py
+@@ -323,7 +323,11 @@ class FITSWCSAPIMixin(WCSAPIMixin):
+ 
+     def world_to_pixel_values(self, *world_arrays):
+         # Convert to pixel coordinates using the WCS transformation
+-        pixel = self.all_world2pix(*world_arrays, 0)
++        try:
++            pixel = self.all_world2pix(*world_arrays, 0)
++        except NoConvergence as e:
++            warnings.warn(str(e), RuntimeWarning)
++            pixel = e.best_solution
+         return pixel[0] if self.pixel_n_dim == 1 else tuple(pixel)
+ 
+     @property
+@@ -336,7 +340,11 @@ class FITSWCSAPIMixin(WCSAPIMixin):
+ 
+     def pixel_to_world_values(self, *pixel_arrays):
+         # Convert to world coordinates using the WCS transformation
+-        world = self.all_pix2world(*pixel_arrays, 0)
++        try:
++            world = self.all_pix2world(*pixel_arrays, 0)
++        except NoConvergence as e:
++            warnings.warn(str(e), RuntimeWarning)
++            world = e.best_solution
+         return world[0] if self.world_n_dim == 1 else tuple(world)
+ 
+     @property

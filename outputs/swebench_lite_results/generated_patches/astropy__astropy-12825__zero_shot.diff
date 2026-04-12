@@ -1,0 +1,21 @@
+--- a/astropy/table/groups.py
++++ b/astropy/table/groups.py
+@@ -348,16 +348,17 @@ class TableGroups:
+             # If column is a mixin then use its own aggregate method
+             if hasattr(col, 'groups'):
+                 new_col = col.groups.aggregate(func)
+             else:
+                 # Use the numpy aggregate function
+                 new_col = col.groups.aggregate(func)
+         except AttributeError:
+-            # If the column doesn't have a groups attribute then we need to
+-            # aggregate manually
++            # If the column doesn't have a groups attribute (e.g., SkyCoord)
++            # then we need to aggregate manually by applying func to each
++            # group individually.
+             new_col = _aggregate_column(col, self._groups, func)
+ 
+         # If the column is a mixin column then we need to ensure that the
+         # aggregated column has the same class and attributes
+         if hasattr(col.info, 'new_from_copy'):
+             new_col = col.info.new_from_copy(new_col)

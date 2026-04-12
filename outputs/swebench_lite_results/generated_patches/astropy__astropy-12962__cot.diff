@@ -1,0 +1,53 @@
+python
+--- a/astropy/nddata/ccddata.py
++++ b/astropy/nddata/ccddata.py
+@@ -706,7 +706,7 @@ class CCDData(NDDataBase):
+         return hdulist
+ 
+     def to_hdu(self, hdu_mask='MASK', hdu_uncertainty='UNCERT',
+-               key_uncertainty_type='UTYPE'):
++               key_uncertainty_type='UTYPE', as_image_hdu=False):
+         """
+         Creates an HDUList object from a CCDData object.
+ 
+@@ -722,6 +722,13 @@ class CCDData(NDDataBase):
+             The header keyword for the uncertainty type. Default is ``UTYPE``.
+             This is only used if an uncertainty is present.
+ 
++        as_image_hdu : bool, optional
++            If ``True``, the primary HDU will be an `~astropy.io.fits.ImageHDU`
++            instead of a `~astropy.io.fits.PrimaryHDU`. This is useful when
++            the HDU is intended to be an extension in an existing FITS file.
++            If ``False`` (default), the primary HDU will be a
++            `~astropy.io.fits.PrimaryHDU`.
++
+         Returns
+         -------
+         hdulist : `~astropy.io.fits.HDUList`
+@@ -734,6 +741,7 @@ class CCDData(CCDData):
+         >>> from astropy.nddata import CCDData
+         >>> import numpy as np
+         >>> ccd = CCDData(np.ones((3, 3)), unit='adu')
++        >>> hdul = ccd.to_hdu()
+         >>> hdul = ccd.to_hdu()
+         >>> hdul[0].header['BUNIT']
+         'adu'
+@@ -742,6 +750,7 @@ class CCDData(CCDData):
+         import astropy.io.fits as fits
+         from astropy.io.fits.header import Header
+ 
++        # Create the primary HDU (either PrimaryHDU or ImageHDU)
+         header = Header(self.header)
+         if self.unit is not u.dimensionless_unscaled:
+             header['BUNIT'] = self.unit.to_string()
+@@ -750,7 +759,10 @@ class CCDData(CCDData):
+         # Add WCS keywords to header if WCS is present
+         if self.wcs is not None:
+             header.update(self.wcs.to_header(relax=True))
+-        hdu = fits.PrimaryHDU(self.data, header=header)
++        if as_image_hdu:
++            hdu = fits.ImageHDU(self.data, header=header)
++        else:
++            hdu = fits.PrimaryHDU(self.data, header=header)
+ 
+         hdus = [hdu]
