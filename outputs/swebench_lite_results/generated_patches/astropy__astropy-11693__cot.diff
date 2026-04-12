@@ -1,0 +1,24 @@
+--- a/astropy/wcs/wcsapi/fitswcs.py
++++ b/astropy/wcs/wcsapi/fitswcs.py
+@@ -321,11 +321,17 @@ class FITSWCSAPIMixin(BaseLowLevelWCS, HighLevelWCSMixin):
+         return matrix
+ 
+     def pixel_to_world_values(self, *pixel_arrays):
+-        world = self.all_pix2world(*pixel_arrays, 0)
++        try:
++            world = self.all_pix2world(*pixel_arrays, 0)
++        except self.wcs.NoConvergence as e:
++            world = e.best_solution
++            warnings.warn(str(e), RuntimeWarning)
+         return world[0] if self.world_n_dim == 1 else tuple(world)
+ 
+     def world_to_pixel_values(self, *world_arrays):
+-        pixel = self.all_world2pix(*world_arrays, 0)
++        try:
++            pixel = self.all_world2pix(*world_arrays, 0)
++        except self.wcs.NoConvergence as e:
++            pixel = e.best_solution
++            warnings.warn(str(e), RuntimeWarning)
+         return pixel[0] if self.pixel_n_dim == 1 else tuple(pixel)
+ 
+     @property

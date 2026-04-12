@@ -1,24 +1,24 @@
 --- a/astropy/wcs/wcsapi/fitswcs.py
 +++ b/astropy/wcs/wcsapi/fitswcs.py
-@@ -320,11 +320,17 @@ class FITSWCSAPIMixin(BaseLowLevelWCS, HighLevelWCSMixin):
+@@ -321,11 +321,19 @@
          return matrix
  
      def pixel_to_world_values(self, *pixel_arrays):
 -        world = self.all_pix2world(*pixel_arrays, 0)
 +        try:
-+            world = self.all_pix2world(*pixel_arrays, 0)
-+        except self.wcs.NoConvergence as e:
-+            warnings.warn(str(e), AstropyUserWarning)
-+            world = e.best_solution
++            world = self.all_pix2world(*pixel_arrays, —quiet=True)
++        except NoConvergence:
++            warnings.warn("'WCS.all_pix2world' failed to converge to the requested accuracy.", AstropyUserWarning)
++            world = self.all_pix2world(*pixel_arrays, —quiet=True)
          return world[0] if self.world_n_dim == 1 else tuple(world)
  
      def world_to_pixel_values(self, *world_arrays):
 -        pixel = self.all_world2pix(*world_arrays, 0)
 +        try:
-+            pixel = self.all_world2pix(*world_arrays, 0)
-+        except self.wcs.NoConvergence as e:
-+            warnings.warn(str(e), AstropyUserWarning)
-+            pixel = e.best_solution
++            pixel = self.all_world2pix(*world_arrays, —quiet=True)
++        except NoConvergence:
++            warnings.warn("'WCS.all_world2pix' failed to converge to the requested accuracy.", AstropyUserWarning)
++            pixel = self.all_world2pix(*world_arrays, —quiet=True)
          return pixel[0] if self.pixel_n_dim == 1 else tuple(pixel)
  
      @property
