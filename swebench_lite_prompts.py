@@ -14,19 +14,35 @@ SWEBENCH_SYSTEM_RULES = dedent("""\
 You are an expert software engineer specializing in bug fixing.
 You will be given:
   1. A description of a bug in a Python repository.
-  2. The EXACT source code of the file(s) that need to be changed.
+  2. The EXACT source code of the file(s) that need to be changed, WITH LINE NUMBERS.
 
 Your task is to produce a minimal unified diff (git diff format) that fixes the issue.
 
-Strict output rules:
-1. Output ONLY the unified diff. Do not include any explanation or commentary.
+CRITICAL RULES:
+1. Output ONLY the unified diff. Do not include ANY explanation or commentary.
 2. The diff MUST start with `diff --git a/path/to/file b/path/to/file`.
 3. Line numbers in @@ hunks MUST match the provided source code exactly.
-4. Include 3 lines of context around each change (standard unified diff).
-5. Make the smallest possible change to fix the issue.
-6. Do not change unrelated code, formatting, or imports.
-7. Do not remove or alter existing tests.
-8. Do not use markdown fences (```diff ... ```).
+4. Count line numbers from the numbered source code provided to you.
+5. Include 3 lines of context around each change (standard unified diff).
+6. Make the smallest possible change to fix the issue.
+7. Do not change unrelated code, formatting, or imports.
+8. Do not remove or alter existing tests.
+9. Do not use markdown fences (```diff ... ```).
+10. Do NOT use Unicode dashes - use regular ASCII dashes (--) only.
+11. Double-check that context lines match the source code EXACTLY (including spaces).
+
+UNIFIED DIFF FORMAT:
+```
+diff --git a/path/to/file.py b/path/to/file.py
+--- a/path/to/file.py
++++ b/path/to/file.py
+@@ -10,5 +10,5 @@ context line
+ context line before
+-old line to remove
++new line to add
+ context line after
+ context line
+```
 """)
 
 
@@ -38,7 +54,14 @@ Fix the bug described below by producing a unified diff patch.
 
 {task_prompt}
 {files_section}
-Return ONLY the unified diff patch. Do not include explanations.
+
+CRITICAL INSTRUCTIONS:
+1. Use the EXACT line numbers from the numbered source code above.
+2. Your @@ -start,count +start,count @@ headers MUST match these line numbers.
+3. Context lines must match the source code EXACTLY (copy-paste them).
+4. Output ONLY the unified diff, no explanations.
+
+Return ONLY the unified diff patch that fixes the issue.
 """)
 
 
@@ -50,12 +73,17 @@ Fix the bug described below by producing a unified diff patch.
 
 {task_prompt}
 {files_section}
-Think step by step:
-1. Identify the root cause of the bug.
-2. Find the exact lines in the provided source code that need to change.
-3. Write the minimal fix using the EXACT line numbers from the source code above.
 
-IMPORTANT: Return ONLY the final unified diff patch. Do not include your reasoning.
+Think step by step (do NOT output your reasoning):
+1. Identify the root cause of the bug.
+2. Locate the EXACT lines in the numbered source code above that need to change.
+3. Note the line numbers from the source (e.g., "lines 127-145").
+4. Write the minimal fix using those EXACT line numbers in the @@ hunk header.
+5. Ensure context lines match the source code EXACTLY (copy-paste them).
+6. Use regular ASCII dashes (--) not Unicode dashes.
+
+CRITICAL: Return ONLY the final unified diff patch. Do not include your reasoning.
+The diff MUST start with `diff --git a/path b/path` and have correct line numbers.
 """)
 
 
@@ -79,14 +107,46 @@ def _format_file_contents(file_contents: dict[str, str] | None) -> str:
     """Format a dict of {filepath: content} into a readable section for the prompt."""
     if not file_contents:
         return ""
-    lines = ["\nSource code of the file(s) to modify:\n"]
+    lines = ["\n" + "="*80,
+             "SOURCE CODE TO MODIFY (with line numbers):",
+             "="*80 + "\n"]
     for filepath, content in file_contents.items():
-        lines.append(f"=== {filepath} ===")
+        lines.append(f"FILE: {filepath}")
+        lines.append("-" * 80)
         # Add line numbers so the model can reference them precisely
         numbered = "\n".join(
             f"{i+1:4d} | {line}"
             for i, line in enumerate(content.splitlines())
         )
         lines.append(numbered)
+        lines.append("-" * 80)
         lines.append("")
     return "\n".join(lines)
+
+
+def build_fallback_patch_prompt(task_prompt: str, file_contents: dict[str, str] | None = None) -> str:
+    """
+    Fallback prompt: ask for changes without line numbers.
+    Used when standard diff generation fails.
+    """
+    files_section = _format_file_contents(file_contents)
+    return dedent(f"""\
+Fix the bug described below.
+
+{task_prompt}
+{files_section}
+
+IMPORTANT: 
+1. Show ONLY the lines that need to change.
+2. For each change, write:
+   REMOVE: <exact line to remove>
+   ADD: <new line to add>
+   AT: <brief description of location>
+
+Example:
+REMOVE:     old_value = self.scale
+ADD:        old_value = self.scale.value if hasattr(self.scale, 'value') else self.scale
+AT: Around line 127, in the evaluate method
+
+Do NOT try to generate line numbers or hunk headers. Just show what to change.
+""")

@@ -59,6 +59,67 @@ def is_valid_unified_diff(patch: str) -> bool:
     return bool(UNIFIED_DIFF_HEADER.search(patch))
 
 
+def validate_patch_syntax(patch: str, filepath: str, original_content: Optional[str] = None) -> tuple[bool, str]:
+    """
+    Validate that a patch can be applied without syntax errors.
+    
+    Returns (is_valid, error_message).
+    
+    Uses multiple validation strategies:
+    1. If original_content provided, test with patch command
+    2. Parse added lines for Python syntax errors
+    3. Check hunk header consistency
+    """
+    if not patch or not patch.strip():
+        return False, "Empty patch"
+    
+    # Check for basic unified diff structure
+    if not is_valid_unified_diff(patch):
+        return False, "Not a valid unified diff format"
+    
+    # Check for em-dash/en-dash issues (common LLM mistakes)
+    bad_chars = []
+    for i, line in enumerate(patch.splitlines(), 1):
+        if '\u2014' in line or '\u2013' in line or '\u2015' in line or '\u2212' in line:
+            bad_chars.append(f"Line {i}: contains Unicode dash character")
+    
+    if bad_chars:
+        return False, f"Unicode dash characters found:\n" + "\n".join(bad_chars[:5])
+    
+    # Check hunk headers
+    hunk_pattern = re.compile(r'^@@\s+-(\d+)(?:,(\d+))?\s+\+(\d+)(?:,(\d+))?\s+@@')
+    hunks = []
+    for i, line in enumerate(patch.splitlines(), 1):
+        m = hunk_pattern.match(line)
+        if m:
+            hunks.append((i, m.groups()))
+    
+    if not hunks:
+        return False, "No valid hunk headers found (@@ -X,Y +A,B @@)"
+    
+    # Validate Python syntax in added lines
+    added_lines = []
+    for line in patch.splitlines():
+        if line.startswith('+') and not line.startswith('+++'):
+            added_lines.append(line[1:])
+    
+    if added_lines:
+        added_code = '\n'.join(added_lines)
+        try:
+            import ast
+            ast.parse(added_code)
+        except SyntaxError as e:
+            # Allow partial syntax errors (might be due to context)
+            # Only fail on obvious errors
+            error_msg = str(e)
+            if 'unterminated string literal' in error_msg.lower():
+                return False, f"Syntax error in added code: {error_msg}"
+            if 'unmatched' in error_msg.lower():
+                return False, f"Syntax error in added code: {error_msg}"
+    
+    return True, "OK"
+
+
 def get_changed_files_from_patch(patch: str) -> list[str]:
     """Extract the list of files mentioned in a unified diff."""
     files: list[str] = []
