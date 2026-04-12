@@ -30,6 +30,7 @@ from tqdm import tqdm
 
 from aggregation import compute_summary, save_records_to_csv, save_records_to_json
 from config import MODEL_CONFIG
+from github_file_fetcher import fetch_task_file_contents
 from llm_client import LLMClient
 from swebench_loader import SWETask, load_swebench_tasks
 from swebench_lite_evaluator import (
@@ -64,7 +65,6 @@ SUBSET_TO_DATASET = {
 # ---------------------------------------------------------------------------
 
 def safe_filename(value: str) -> str:
-    """Convert instance_id or similar string to a safe filename component."""
     return re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("_") or "task"
 
 
@@ -74,18 +74,17 @@ def ensure_dirs(base: Path) -> None:
     (base / "reports").mkdir(parents=True, exist_ok=True)
 
 
-def build_prompt(strategy: str, task: SWETask) -> str:
-    """Select and build the prompt for a given strategy."""
+def build_prompt(strategy: str, task: SWETask, file_contents: dict[str, str]) -> str:
+    """Build prompt with real file contents for correct hunk line numbers."""
     if strategy == "zero_shot":
-        return build_swe_zero_shot_prompt(task.prompt)
+        return build_swe_zero_shot_prompt(task.prompt, file_contents)
     elif strategy == "cot":
-        return build_swe_cot_prompt(task.prompt)
+        return build_swe_cot_prompt(task.prompt, file_contents)
     else:
         raise ValueError(f"Unknown strategy: {strategy}")
 
 
 def save_patch(base: Path, instance_id: str, strategy: str, patch: str) -> Path:
-    """Write generated patch to generated_patches/ and return the path."""
     fname = safe_filename(instance_id)
     path = base / "generated_patches" / f"{fname}__{strategy}.diff"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -94,7 +93,6 @@ def save_patch(base: Path, instance_id: str, strategy: str, patch: str) -> Path:
 
 
 def save_eval_report(base: Path, instance_id: str, strategy: str, result: SWEEvaluationResult) -> Path:
-    """Write evaluation report to evaluation_results/ and return the path."""
     fname = safe_filename(instance_id)
     path = base / "evaluation_results" / f"{fname}__{strategy}__eval.txt"
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -127,20 +125,29 @@ def run_single_task(
     split: str = "test",
 ) -> dict:
     """Generate a patch for one task+strategy and evaluate it."""
-    # 1. Build prompt and generate patch
-    prompt = build_prompt(strategy, task)
+
+    # 1. Fetch real file contents at base_commit from GitHub
+    file_contents = fetch_task_file_contents(
+        repo=task.repo,
+        base_commit=task.base_commit,
+        patch=task.patch,
+    )
+
+    # 2. Build prompt with actual source code
+    prompt = build_prompt(strategy, task, file_contents)
+
+    # 3. Generate patch via LLM
     try:
         raw_output = client.generate_code(prompt)
     except Exception as exc:
         return _error_record(task, strategy, error=f"LLM generation failed: {exc}")
 
-    # Strip potential markdown fences (model might wrap in ```diff ... ```)
     patch = _strip_diff_fences(raw_output)
 
-    # 2. Save generated patch to dedicated folder
+    # 4. Save generated patch
     patch_path = save_patch(base, task.instance_id, strategy, patch)
 
-    # 3. Evaluate patch
+    # 5. Evaluate patch
     eval_result = evaluate_swe_patch(
         instance_id=task.instance_id,
         generated_patch=patch,
@@ -150,7 +157,7 @@ def run_single_task(
         split=split,
     )
 
-    # 4. Save evaluation report
+    # 6. Save evaluation report
     eval_report_path = save_eval_report(base, task.instance_id, strategy, eval_result)
 
     return {
@@ -166,11 +173,11 @@ def run_single_task(
         "error": eval_result.error,
         "generated_patch": patch,
         "ground_truth_patch": task.patch,
+        "files_fetched": list(file_contents.keys()),
     }
 
 
 def _strip_diff_fences(text: str) -> str:
-    """Remove markdown code fences around diffs if the model added them."""
     text = text.strip()
     text = re.sub(r'^```(?:diff|patch)?\s*', '', text, flags=re.IGNORECASE)
     text = re.sub(r'\s*```$', '', text)
@@ -191,6 +198,7 @@ def _error_record(task: SWETask, strategy: str, error: str) -> dict:
         "error": error,
         "generated_patch": "",
         "ground_truth_patch": task.patch,
+        "files_fetched": [],
     }
 
 
@@ -241,7 +249,6 @@ def main() -> None:
     print(f"  Force static eval: {args.force_static}")
     print(f"{'='*60}\n")
 
-    # Load tasks
     print("Loading SWE-Bench tasks...")
     try:
         tasks = load_swebench_tasks(
@@ -276,16 +283,14 @@ def main() -> None:
 
             records.append(record)
             status = "PASS" if record["passed"] else ("FAIL" if record["passed"] is False else "N/A")
-            print(f"[{status}] eval_mode={record['eval_mode']} valid_diff={record['patch_valid']}")
+            fetched = record.get("files_fetched", [])
+            print(f"[{status}] eval_mode={record['eval_mode']} valid_diff={record['patch_valid']} files={fetched}")
 
-    # Save results
     raw_csv = base / "reports" / "raw_results.csv"
     raw_json = base / "reports" / "raw_results.json"
     save_records_to_csv(records, raw_csv)
     save_records_to_json(records, raw_json)
 
-    # Summary (reuse existing aggregation — `passed` column is compatible)
-    # Map field names to match compute_summary expectations
     summary_records = [
         {
             "task_id": r["task_id"],
@@ -302,7 +307,6 @@ def main() -> None:
     summary_path = base / "reports" / "summary.csv"
     summary_df.to_csv(summary_path, index=False, encoding="utf-8")
 
-    # Print summary table
     print(f"\n{'='*60}")
     print("Results summary:")
     print(summary_df.to_string(index=False))
