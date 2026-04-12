@@ -36,7 +36,7 @@ from swebench_loader import SWETask, load_swebench_tasks
 from swebench_lite_evaluator import (
     SWEEvaluationResult,
     evaluate_swe_patch,
-    is_valid_unified_diff,
+    is_valid_unified_unified_diff,
 )
 from swebench_lite_prompts import (
     build_swe_cot_prompt,
@@ -143,6 +143,7 @@ def run_single_task(
         return _error_record(task, strategy, error=f"LLM generation failed: {exc}")
 
     patch = _strip_diff_fences(raw_output)
+    patch = _normalize_patch_headers(patch, list(file_contents.keys()))
 
     # 4. Save generated patch
     patch_path = save_patch(base, task.instance_id, strategy, patch)
@@ -182,6 +183,41 @@ def _strip_diff_fences(text: str) -> str:
     text = re.sub(r'^```(?:diff|patch)?\s*', '', text, flags=re.IGNORECASE)
     text = re.sub(r'\s*```$', '', text)
     return text.strip()
+
+
+def _normalize_patch_headers(patch: str, filepaths: list[str]) -> str:
+    """Ensure git-style headers: diff --git + a/ b/ prefixes for each file.
+
+    This is a conservative post-processing step that fixes common issues
+    in LLM-generated patches:
+      - Missing `diff --git a/path b/path` lines
+      - Headers like `--- astropy/file.py` instead of `--- a/astropy/file.py`
+    """
+    if not patch.strip() or not filepaths:
+        return patch
+
+    for path in filepaths:
+        esc = re.escape(path)
+        # Fix --- / +++ headers without a/ b/
+        patch = re.sub(rf'(?m)^---\s+{esc}\s*$', f'--- a/{path}', patch)
+        patch = re.sub(rf'(?m)^\+\+\+\s+{esc}\s*$', f'+++ b/{path}', patch)
+
+        # If there is already a diff --git for this path, do nothing more
+        diff_header = f'diff --git a/{path} b/{path}'
+        if diff_header in patch:
+            continue
+
+        # Insert diff --git before the first --- a/path header
+        pattern = rf'(?m)^(---\s+a/{esc}\s*$)'
+
+        def _insert_diff(match: re.Match) -> str:
+            return f'{diff_header}\n' + match.group(1)
+
+        new_patch, count = re.subn(pattern, _insert_diff, patch, count=1)
+        if count > 0:
+            patch = new_patch
+
+    return patch
 
 
 def _error_record(task: SWETask, strategy: str, error: str) -> dict:
