@@ -1,20 +1,26 @@
---- a/astropy/io/ascii/ecsv.py
-+++ b/astropy/io/ascii/ecsv.py
-@@ -173,8 +173,15 @@ class EcsvHeader(core.BaseHeader):
-         for col in self.cols:
+--- astropy/io/ascii/ecsv.py
++++ astropy/io/ascii/ecsv.py
+@@ -129,6 +129,7 @@
+         if not match:
+             raise core.InconsistentTableError(no_header_msg)
+         # ecsv_version could be constructed here, but it is not currently used.
++        ecsv_version = (int(match.group('major')), int(match.group('minor')))
+ 
+         try:
+             header = meta.get_header_from_yaml(lines)
+@@ -173,9 +174,13 @@
+                     setattr(col, attr, header_cols[col.name][attr])
+ 
              col.dtype = header_cols[col.name]['datatype']
-             if col.dtype not in ECSV_DATATYPES:
+-            if col.dtype not in ECSV_DATATYPES:
 -                raise ValueError(f'datatype {col.dtype!r} of column {col.name!r} '
 -                                 f'is not in allowed values {ECSV_DATATYPES}')
-+                # For ECSV < 1.0, be lenient and allow any datatype.
-+                # For >= 1.0, issue a warning but continue.
-+                if self.ecsv_version >= (1, 0):
-+                    warnings.warn(
-+                        f'datatype {col.dtype!r} of column {col.name!r} '
-+                        f'is not in allowed values {ECSV_DATATYPES}',
-+                        UserWarning)
-+                # For ECSV < 1.0, no warning, just accept the dtype.
-+                # In both cases, we proceed without raising an exception.
++            # For ECSV < 1.0, be lenient about allowed datatypes
++            if ecsv_version >= (1, 0) and col.dtype not in ECSV_DATATYPES:
++                raise ValueError(
++                    f'datatype {col.dtype!r} of column {col.name!r} '
++                    f'is not in allowed values {ECSV_DATATYPES}'
++                )
  
              # Subtype is written like "int64[2,null]" and we want to split this
              # out to "int64" and [2, None].

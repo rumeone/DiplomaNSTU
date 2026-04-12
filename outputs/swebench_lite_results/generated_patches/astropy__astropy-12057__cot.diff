@@ -1,151 +1,159 @@
 --- a/astropy/nddata/nduncertainty.py
 +++ b/astropy/nddata/nduncertainty.py
-@@ -1,5 +1,6 @@
- # Licensed under a 3-clause BSD style license - see LICENSE.rst
- import copy
-+import warnings
- 
- import numpy as np
- 
-@@ -8,6 +9,7 @@
- from astropy.units import UnitConversionError
- from astropy.utils import isiterable
- from astropy.utils.misc import dtype_bytes_or_chars
-+from astropy.utils.exceptions import AstropyWarning
- 
- __all__ = ['NDUncertainty', 'StdDevUncertainty', 'VarianceUncertainty',
-            'InverseVariance']
-@@ -106,6 +108,10 @@ class NDUncertainty(object):
-     uncertainty_type = None
-     """`str` : Short description of the type of uncertainty."""
- 
-+    _equivalent_classes = {}
-+    """Dict mapping uncertainty classes to conversion methods via variance."""
-+    _conversion_paths = {}
-+
-     def __init__(self, array, copy=False, unit=None):
-         if isinstance(array, NDUncertainty):
-             # Extract the array from the uncertainty object
-@@ -204,6 +210,90 @@ class NDUncertainty(object):
+@@ -376,6 +376,8 @@
+         if isinstance(other_uncert, NDUncertainty):
+             if self.uncertainty_type == other_uncert.uncertainty_type:
+                 return other_uncert
++            elif self.uncertainty_type == 'unknown' or other_uncert.uncertainty_type == 'unknown':
++                raise IncompatibleUncertaintiesException("Uncertainties of unknown type cannot be propagated.")
+             else:
+                 return self.__class__(other_uncert)
+         else:
+@@ -430,6 +432,8 @@
          """
-         return self._array
+         return None
  
-+    @classmethod
-+    def _register_equivalent(cls, other_cls, to_variance, from_variance):
-+        """
-+        Register conversion methods between two uncertainty classes.
++    supports_correlated = False
 +
-+        Parameters
-+        ----------
-+        other_cls : class
-+            The other uncertainty class to convert to/from.
-+        to_variance : callable
-+            Function that converts an instance of this class to variance.
-+            Takes the instance and returns a VarianceUncertainty.
-+        from_variance : callable
-+            Function that converts variance to an instance of other_cls.
-+            Takes a VarianceUncertainty and returns an instance of other_cls.
-+        """
-+        cls._equivalent_classes[other_cls] = (to_variance, from_variance)
-+        other_cls._equivalent_classes[cls] = (from_variance, to_variance)
+     def _convert_uncertainty(self, other_uncert):
+         """Raise an Exception because unknown uncertainty types cannot
+         implement propagation.
+@@ -437,6 +441,10 @@
+         msg = "Uncertainties of unknown type cannot be propagated."
+         raise IncompatibleUncertaintiesException(msg)
+ 
++    def _data_unit_to_uncertainty_unit(self, value):
++        """No way to convert if uncertainty is unknown."""
++        return None
 +
-+    def represent_as(self, other_cls):
-+        """
-+        Convert the uncertainty to a different uncertainty class.
-+
-+        Parameters
-+        ----------
-+        other_cls : class
-+            The uncertainty class to convert to.
-+
-+        Returns
-+        -------
-+        result : `NDUncertainty` instance
-+            An instance of `other_cls` representing the same uncertainty.
-+
-+        Raises
-+        ------
-+        TypeError
-+            If no conversion path is known between the classes.
-+        """
-+        if not isinstance(other_cls, type):
-+            raise TypeError("other_cls must be a class")
-+
-+        if isinstance(self, other_cls):
-+            return self.__class__(self.array, copy=True, unit=self.unit)
-+
-+        # Check if direct conversion is registered
-+        if other_cls in self._equivalent_classes:
-+            to_var, from_var = self._equivalent_classes[other_cls]
-+            var = to_var(self)
-+            return from_var(var)
-+
-+        # Build conversion graph lazily
-+        if not self._conversion_paths:
-+            self._build_conversion_graph()
-+
-+        # Find shortest path via variance
-+        path = self._conversion_paths.get((self.__class__, other_cls))
-+        if path is None:
-+            raise TypeError(
-+                f"No conversion path known from {self.__class__.__name__} "
-+                f"to {other_cls.__name__}")
-+
-+        current = self
-+        for step_cls in path:
-+            to_var, from_var = current._equivalent_classes[step_cls]
-+            var = to_var(current)
-+            current = from_var(var)
-+        return current
-+
-+    @classmethod
-+    def _build_conversion_graph(cls):
-+        """Build graph of conversion paths between all registered classes."""
-+        from astropy.nddata.nduncertainty import (VarianceUncertainty,
-+                                                  StdDevUncertainty,
-+                                                  InverseVariance)
-+        # Register core conversions
-+        StdDevUncertainty._register_equivalent(
-+            VarianceUncertainty,
-+            lambda obj: VarianceUncertainty(obj.array**2, unit=obj.unit**2),
-+            lambda obj: StdDevUncertainty(obj.array**0.5, unit=obj.unit**0.5))
-+        VarianceUncertainty._register_equivalent(
-+            InverseVariance,
-+            lambda obj: InverseVariance(obj.array**-1, unit=obj.unit**-1),
-+            lambda obj: VarianceUncertainty(obj.array**-1, unit=obj.unit**-1))
-+
-     def propagate(self, operation, other_nddata, result_data, correlation):
+     def _propagate_add(self, other_uncert, result_data, correlation):
+         """Not possible for unknown uncertainty types.
          """
-         Calculate the resulting uncertainty given an operation on the data.
-@@ -420,6 +510,10 @@ class StdDevUncertainty(_VariancePropagationMixin, NDUncertainty):
-     """
-     Standard deviation uncertainty assuming first order Gaussian error
-     propagation.
-+
-+    Conversion to variance: :math:`\\sigma^2 = \\mathrm{std}^2`
-+    Conversion from variance: :math:`\\mathrm{std} = \\sqrt{\\sigma^2}`
-+    where :math:`\\sigma^2` is the variance.
-     """
-     uncertainty_type = 'std'
+@@ -450,6 +458,10 @@
  
-@@ -429,6 +523,10 @@ class VarianceUncertainty(_VariancePropagationMixin, NDUncertainty):
-     """
-     Variance uncertainty assuming first order Gaussian error propagation.
- 
-+    This is the central representation for conversions.
-+    All other uncertainty types should define conversions to and from
-+    variance.
+     def _propagate_divide(self, other_uncert, result_data, correlation):
+         return None
 +
-     For uncertainty propagation, the uncertainty is assumed to be the variance
-     of the data.
-     """
-@@ -440,6 +538,9 @@ class InverseVariance(_VariancePropagationMixin, NDUncertainty):
-     """
-     Inverse variance uncertainty assuming first order Gaussian error propagation.
++    def represent_as(self, other_class):
++        """Cannot represent unknown uncertainty as another type."""
++        raise IncompatibleUncertaintiesException("Uncertainties of unknown type cannot be converted.")
  
-+    Conversion to variance: :math:`\\sigma^2 = 1 / \\mathrm{invvar}`
-+    Conversion from variance: :math:`\\mathrm{invvar} = 1 / \\sigma^2`
+ 
+ class _VariancePropagationMixin:
+@@ -500,6 +512,8 @@
+         except AttributeError:
+             result_unit_sq = None
+ 
++    # ... (truncated, but we need to add the represent_as method to the other classes)
 +
-     For uncertainty propagation, the uncertainty is assumed to be the inverse
-     variance of the data.
-     """
+ 
+ class StdDevUncertainty(NDUncertainty, _VariancePropagationMixin):
+     """Standard deviation uncertainty assuming first order Gaussian error
+@@ -531,6 +545,9 @@
+         """
+         return value
+ 
++    def represent_as(self, other_class):
++        return _convert_uncertainty(self, other_class)
++
+     def _propagate_add(self, other_uncert, result_data, correlation):
+         return self._propagate_add_sub(other_uncert, result_data, correlation,
+                                        subtract=False,
+@@ -580,6 +597,9 @@
+         """
+         return value ** 2
+ 
++    def represent_as(self, other_class):
++        return _convert_uncertainty(self, other_class)
++
+     def _propagate_add(self, other_uncert, result_data, correlation):
+         return self._propagate_add_sub(other_uncert, result_data, correlation,
+                                        subtract=False,
+@@ -629,6 +649,9 @@
+         """
+         return value ** -2
+ 
++    def represent_as(self, other_class):
++        return _convert_uncertainty(self, other_class)
++
+     def _propagate_add(self, other_uncert, result_data, correlation):
+         return self._propagate_add_sub(other_uncert, result_data, correlation,
+                                        subtract=False,
+@@ -647,3 +670,38 @@
+     def _propagate_divide(self, other_uncert, result_data, correlation):
+         return self._propagate_mul_div(other_uncert, result_data, correlation,
+                                        divide=True, to_variance=self._to_variance, from_variance=self._from_variance)
++
++
++def _convert_uncertainty(obj, new_class):
++    """Convert an uncertainty object to a different uncertainty class.
++
++    Parameters
++    ----------
++    obj : `NDUncertainty` instance
++        The uncertainty object to convert.
++    new_class : `NDUncertainty` class
++        The target uncertainty class.
++
++    Returns
++    -------
++    new_obj : `NDUncertainty` instance
++        The converted uncertainty object.
++
++    Raises
++    ------
++    IncompatibleUncertaintiesException
++        If the conversion is not possible.
++    """
++    if not issubclass(new_class, NDUncertainty):
++        raise TypeError("new_class must be an NDUncertainty subclass")
++
++    if type(obj) == new_class:
++        return new_class(obj.array, unit=obj.unit, copy=False)
++
++    # Convert through variance
++    if isinstance(obj, StdDevUncertainty):
++        var = VarianceUncertainty(obj.array ** 2, unit=obj.unit ** 2 if obj.unit is not None else None)
++    elif isinstance(obj, InverseVariance):
++        var = VarianceUncertainty(1.0 / obj.array, unit=1.0 / obj.unit if obj.unit is not None else None)
++    else:
++        var = obj  # already VarianceUncertainty
+@@ -647,3 +704,38 @@
+     def _propagate_divide(self, other_uncert, result_data, correlation):
+         return self._propagate_mul_div(other_uncert, result_data, correlation,
+                                        divide=True, to_variance=self._to_variance, from_variance=self._from_variance)
++
++
++def _convert_uncertainty(obj, new_class):
++    """Convert an uncertainty object to a different uncertainty class.
++
++    Parameters
++    ----------
++    obj : `NDUncertainty` instance
++        The uncertainty object to convert.
++    new_class : `NDUncertainty` class
++        The target uncertainty class.
++
++    Returns
++    -------
++    new_obj : `NDUncertainty` instance
++        The converted uncertainty object.
++
++    Raises
++    ------
++    IncompatibleUncertaintiesException
++        If the conversion is not possible.
++    """
++    if not issubclass(new_class, NDUncertainty):
++        raise TypeError("new_class must be an NDUncertainty subclass")
++
++    if type(obj) == new_class:
++        return new_class(obj.array, unit=obj.unit, copy=False)
++
++    # Convert through variance
++    if isinstance(obj, StdDevUncertainty):
++        var = VarianceUncertainty(obj.array ** 2, unit=obj.unit ** 2 if obj.unit is not None else None)
++    elif isinstance(obj, InverseVariance):
++        var = VarianceUncertainty(1.0 / obj.array, unit=1.0 / obj.unit if obj.unit is not None else None)
++    else:
++        var = obj  # already VarianceUncertainty

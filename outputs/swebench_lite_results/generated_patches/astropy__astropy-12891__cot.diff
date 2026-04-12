@@ -1,64 +1,22 @@
---- a/astropy/units/quantity.py
-+++ b/astropy/units/quantity.py
-@@ -1785,7 +1785,7 @@ class Quantity(np.ndarray):
-         # We need to override these methods to ensure they use the corresponding
-         # numpy functions, so that we can control the use of the keepdims and
-         # where keywords.
--        _reduce_functions = set(getattr(np, name) for name in
-+        _reduce_functions = {getattr(np, name) for name in
-                                 ('min', 'max', 'sum', 'prod', 'mean',
-                                  'std', 'var', 'any', 'all', 'median',
-                                  'average', 'ptp'))
-@@ -1793,7 +1793,7 @@ class Quantity(np.ndarray):
-         # We also need to include the nan* variants if they exist.
-         for name in ('nanmin', 'nanmax', 'nansum', 'nanprod', 'nanmean',
-                      'nanstd', 'nanvar', 'nanmedian'):
--            func = getattr(np, name, None)
-+            func = getattr(np, name, None)  # noqa: B009
-             if func is not None:
-                 _reduce_functions.add(func)
- 
-@@ -1801,7 +1801,7 @@ class Quantity(np.ndarray):
-         # We need to override these methods to ensure they use the corresponding
-         # numpy functions, so that we can control the use of the keepdims and
-         # where keywords.
--        _reduce_functions = set(getattr(np, name) for name in
-+        _reduce_functions = {getattr(np, name) for name in
-                                 ('min', 'max', 'sum', 'prod', 'mean',
-                                  'std', 'var', 'any', 'all', 'median',
-                                  'average', 'ptp'))
-@@ -1809,7 +1809,7 @@ class Quantity(np.ndarray):
-         # We also need to include the nan* variants if they exist.
-         for name in ('nanmin', 'nanmax', 'nansum', 'nanprod', 'nanmean',
-                      'nanstd', 'nanvar', 'nanmedian'):
--            func = getattr(np, name, None)
-+            func = getattr(np, name, None)  # noqa: B009
-             if func is not None:
-                 _reduce_functions.add(func)
- 
-@@ -1846,6 +1846,7 @@ class Quantity(np.ndarray):
-             # For numpy >= 1.17, we need to pass through keepdims and where.
-             # For earlier numpy versions, these keywords are ignored.
-             keepdims = kwargs.pop('keepdims', False)
-+            where = kwargs.pop('where', True)
-             # We first try the method on the array without the unit.
-             # If that works, we can wrap the result in a quantity.
-             # If not, we fall back to the implementation of the parent class.
-@@ -1853,7 +1854,7 @@ class Quantity(np.ndarray):
-                 # Get the result from the numpy function.
-                 result = super().__array_ufunc__(function, '__call__',
-                                                  self.view(np.ndarray),
--                                                 keepdims=keepdims, **kwargs)
-+                                                 keepdims=keepdims, where=where, **kwargs)
-                 # If the result is an array, we need to wrap it in a quantity.
-                 if isinstance(result, np.ndarray):
-                     return self._new_view(result)
-@@ -1861,7 +1862,7 @@ class Quantity(np.ndarray):
-                     return result
-             except (TypeError, AttributeError):
-                 # Fall back to the parent class implementation.
--                return super().__array_ufunc__(function, '__call__', self, **kwargs)
-+                return super().__array_ufunc__(function, '__call__', self, keepdims=keepdims, where=where, **kwargs)
- 
-         # If we get here, we are not dealing with a reduction function.
-         # We fall back to the parent class implementation.
+--- astropy/units/quantity.py
++++ astropy/units/quantity.py
+@@ -1868,7 +1868,7 @@
+         # Check if the function is supported at all (e.g., np.mean is).
+         if function in UNSUPPORTED_FUNCTIONS:
+             raise TypeError(f"'{function.__name__}' is not supported by Quantity")
+-        if function in DISPATCHED_FUNCTIONS:
++        if function in DISPATCHED_FUNCTIONS and function not in (np.mean, np.std, np.var, np.sum, np.prod, np.any, np.all, np.min, np.max, np.argmin, np.argmax, np.ptp):
+             # These functions have a specific implementation that does not
+             # use __array_function__.
+             return DISPATCHED_FUNCTIONS[function](self, *args, **kwargs)
+@@ -1886,6 +1886,10 @@
+         # Check if the function is supported at all (e.g., np.mean is).
+         if function in UNSUPPORTED_FUNCTIONS:
+             raise TypeError(f"'{function.__name__}' is not supported by Quantity")
++        # For numpy reduction functions with 'where' support, we need to handle them specially.
++        if function in (np.mean, np.std, np.var, np.sum, np.prod, np.any, np.all, np.min, np.max, np.argmin, np.argmax, np.ptp):
++            # Pass through to numpy's implementation which handles 'where'.
++            return super().__array_function__(function, types, args, kwargs)
+         if function in DISPATCHED_FUNCTIONS:
+             # These functions have a specific implementation that does not
+             # use __array_function__.

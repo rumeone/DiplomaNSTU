@@ -1,0 +1,14 @@
+--- a/astropy/time/core.py
++++ b/astropy/time/core.py
+@@ -396,6 +396,12 @@ class TimeBase(ShapedLikeNDArray):
+         if in_subfmt is None:
+             in_subfmt = '*'
+         if out_subfmt is None:
+             out_subfmt = '*'
++        
++        # Validate precision on input
++        if not isinstance(precision, int) or precision < 0 or precision > 9:
++            raise ValueError('precision must be an int between 0 and 9')
+ 
+         # Coerce val into an array
+         val = _make_array(val, copy)

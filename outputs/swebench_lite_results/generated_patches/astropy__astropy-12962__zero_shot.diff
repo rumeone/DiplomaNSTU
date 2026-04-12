@@ -1,48 +1,37 @@
-python
---- a/astropy/nddata/ccddata.py
-+++ b/astropy/nddata/ccddata.py
-@@ -706,7 +706,7 @@ class CCDData(NDDataBase):
-         return hdus
- 
-     @classmethod
--    def read(cls, filename, hdu=0, unit=None, hdu_uncertainty='UNCERT',
-+    def read(cls, filename, hdu=0, unit=None, hdu_uncertainty='UNCERT',
-              hdu_mask='MASK', hdu_flags=None, key_uncertainty_type='UTYPE',
-              **kwd):
-         """
-@@ -1018,7 +1018,7 @@ class CCDData(NDDataBase):
-         return cls(data, meta=header, unit=unit, mask=mask, uncertainty=uncertainty)
+--- astropy/nddata/ccddata.py
++++ astropy/nddata/ccddata.py
+@@ -272,7 +272,7 @@
+             self._uncertainty = value
  
      def to_hdu(self, hdu_mask='MASK', hdu_uncertainty='UNCERT',
--               key_uncertainty_type='UTYPE', wcs_relax=True):
-+               key_uncertainty_type='UTYPE', wcs_relax=True, as_image_hdu=False):
-         """
-         Creates an HDUList object from a CCDData object.
+-               hdu_flags=None, wcs_relax=True, key_uncertainty_type='UTYPE'):
++               hdu_flags=None, wcs_relax=True, key_uncertainty_type='UTYPE', as_image_hdu=False):
+         """Creates an HDUList object from a CCDData object.
  
-@@ -1038,6 +1038,14 @@ class CCDData(NDDataBase):
-             If ``True`` (the default), the warnings about non-standard WCS
-             key values will be suppressed.
+         Parameters
+@@ -298,6 +298,11 @@
+ 
+             .. versionadded:: 3.1
  
 +        as_image_hdu : bool, optional
 +            If ``True``, the primary data will be stored in an `ImageHDU`
-+            instead of a `PrimaryHDU`. In this case, the returned `HDUList`
-+            will contain only the `ImageHDU` (and any mask or uncertainty
-+            extensions), without a leading empty `PrimaryHDU`.
-+            Default is ``False``.
-+            .. versionadded:: 5.1
++            instead of a `PrimaryHDU`. Default is ``False``.
 +
-         Returns
-         -------
-         hdulist : `~astropy.io.fits.HDUList`
-@@ -1064,7 +1072,10 @@ class CCDData(NDDataBase):
-         # Add the WCS to the header. The header is modified in place.
-         _generate_wcs_and_update_header(header, self.wcs, relax=wcs_relax)
- 
--        hdus.append(fits.PrimaryHDU(self.data, header=header))
++            .. versionadded:: 5.2
++
+         Raises
+         ------
+         ValueError
+@@ -346,7 +351,10 @@
+             # Note that until astropy/astropy#3967 is closed, the extend
+             # will fail if there are comment cards in the WCS header but
+             # not header.
+             wcs_header = self.wcs.to_header(relax=wcs_relax)
+             header.extend(wcs_header, useblanks=False, update=True)
+-        hdus = [fits.PrimaryHDU(self.data, header)]
 +        if as_image_hdu:
-+            hdus.append(fits.ImageHDU(self.data, header=header))
++            hdus = [fits.ImageHDU(self.data, header)]
 +        else:
-+            hdus.append(fits.PrimaryHDU(self.data, header=header))
++            hdus = [fits.PrimaryHDU(self.data, header)]
  
-         if self.mask is not None:
-             # TODO: Should we have some way to expose the mask as something
+         if hdu_mask and self.mask is not None:

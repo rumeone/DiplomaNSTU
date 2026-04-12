@@ -1,129 +1,124 @@
---- a/astropy/nddata/uncertainty.py
-+++ b/astropy/nddata/uncertainty.py
-@@ -1,6 +1,7 @@
- # Licensed under a 3-clause BSD style license - see LICENSE.rst
+--- a/astropy/nddata/nduncertainty.py
++++ b/astropy/nddata/nduncertainty.py
+@@ -16,7 +16,8 @@ from astropy.units import Unit, Quantity, UnitConversionError
+ __all__ = ['MissingDataAssociationException',
+            'IncompatibleUncertaintiesException', 'NDUncertainty',
+            'StdDevUncertainty', 'UnknownUncertainty',
+-           'VarianceUncertainty', 'InverseVariance']
++           'VarianceUncertainty', 'InverseVariance',
++           'reclassify_uncertainty']
  
- import numpy as np
-+import copy
  
- from astropy import units as u
- from .mixins.ndarithmetic import NDArithmeticMixin
-@@ -8,6 +9,7 @@ from .mixins.ndarithmetic import NDArithmeticMixin
- __all__ = ['StdDevUncertainty', 'VarianceUncertainty', 'InverseVariance',
-            'UnknownUncertainty']
+ class IncompatibleUncertaintiesException(Exception):
+@@ -350,6 +351,56 @@ class NDUncertainty(metaclass=ABCMeta):
  
-+_UNCERTAINTY_TYPE_CONVERSIONS = {}
- 
- class _Uncertainty(NDArithmeticMixin):
-     """
-@@ -163,6 +165,7 @@ class _Uncertainty(NDArithmeticMixin):
-         return self.__class__(self.array, copy=True)
- 
-     def _convert_to_variance(self):
-+        """Convert this uncertainty to variance representation."""
-         raise NotImplementedError("Uncertainty type {} cannot be converted to "
-                                   "variance.".format(self.__class__.__name__))
- 
-@@ -172,6 +175,9 @@ class _Uncertainty(NDArithmeticMixin):
-         """
-         return self._convert_to_variance()
+         return self.__class__(result, copy=False)
  
 +    def represent_as(self, other_class):
-+        return convert_uncertainty(self, other_class)
++        """
++        Convert the uncertainty to a different uncertainty class.
 +
++        Parameters
++        ----------
++        other_class : `NDUncertainty` subclass
++            The uncertainty class to convert to.
++
++        Returns
++        -------
++        result : `NDUncertainty` instance
++            The uncertainty converted to the requested class.
++
++        Raises
++        ------
++        TypeError
++            If ``other_class`` is not a subclass of `NDUncertainty`.
++        ValueError
++            If the conversion is not possible.
++
++        Notes
++        -----
++        This method converts the uncertainty to variance as an intermediate
++        step, then converts from variance to the target class.
++        """
++        if not issubclass(other_class, NDUncertainty):
++            raise TypeError("other_class must be an NDUncertainty subclass")
++
++        # If already the requested class, return a copy
++        if isinstance(self, other_class):
++            return other_class(self.array, unit=self.unit, copy=True)
++
++        # Convert to variance first
++        if isinstance(self, VarianceUncertainty):
++            var = self
++        elif isinstance(self, StdDevUncertainty):
++            var = VarianceUncertainty(self.array ** 2, unit=self.unit ** 2)
++        elif isinstance(self, InverseVariance):
++            var = VarianceUncertainty(self.array ** -1, unit=self.unit ** -1)
++        else:
++            raise ValueError(f"Cannot convert {self.__class__.__name__} to variance")
++
++        # Convert from variance to target class
++        if other_class is VarianceUncertainty:
++            return var
++        elif other_class is StdDevUncertainty:
++            return StdDevUncertainty(np.sqrt(var.array), unit=var.unit ** 0.5)
++        elif other_class is InverseVariance:
++            return InverseVariance(var.array ** -1, unit=var.unit ** -1)
++        else:
++            raise ValueError(f"Cannot convert variance to {other_class.__name__}")
++
+     def _convert_uncertainty(self, other_uncert):
+         """Checks if the uncertainties are compatible for propagation.
  
- class StdDevUncertainty(_Uncertainty):
-     """
-@@ -188,6 +194,9 @@ class StdDevUncertainty(_Uncertainty):
+@@ -378,7 +429,11 @@ class NDUncertainty(metaclass=ABCMeta):
+             if self.uncertainty_type == other_uncert.uncertainty_type:
+                 return other_uncert
+             else:
+-                return self.__class__(other_uncert)
++                try:
++                    return other_uncert.represent_as(self.__class__)
++                except (ValueError, TypeError):
++                    raise IncompatibleUncertaintiesException(
++                        f"Cannot convert {other_uncert.__class__.__name__} to {self.__class__.__name__}")
+         else:
+             raise IncompatibleUncertaintiesException
+ 
+@@ -1058,3 +1113,37 @@ class InverseVariance(_VariancePropagationMixin, NDUncertainty):
          """
-         return VarianceUncertainty(self.array ** 2, copy=False)
- 
-+    def _convert_from_variance(self, variance_uncert):
-+        return StdDevUncertainty(np.sqrt(variance_uncert.array), copy=False)
-+
- 
- class VarianceUncertainty(_Uncertainty):
-     """
-@@ -202,6 +211,12 @@ class VarianceUncertainty(_Uncertainty):
-         """
-         return self
- 
-+    def _convert_from_variance(self, variance_uncert):
-+        return variance_uncert
-+
-+    def _convert_to_std_dev(self):
-+        return StdDevUncertainty(np.sqrt(self.array), copy=False)
-+
- 
- class InverseVariance(_Uncertainty):
-     """
-@@ -216,6 +231,12 @@ class InverseVariance(_Uncertainty):
-         """
-         return VarianceUncertainty(1. / self.array, copy=False)
- 
-+    def _convert_from_variance(self, variance_uncert):
-+        return InverseVariance(1. / variance_uncert.array, copy=False)
-+
-+    def _convert_to_std_dev(self):
-+        return self.represent_as(StdDevUncertainty)
-+
- 
- class UnknownUncertainty(_Uncertainty):
-     """
-@@ -229,3 +250,56 @@ class UnknownUncertainty(_Uncertainty):
-         raise NotImplementedError("UnknownUncertainty cannot be converted to "
-                                   "variance.")
- 
-+    def _convert_from_variance(self, variance_uncert):
-+        raise NotImplementedError("UnknownUncertainty cannot be converted "
-+                                  "from variance.")
+         # Inverse variance has units of 1/data_unit**2
+         return value ** -2 if value is not None else None
 +
 +
-+def convert_uncertainty(uncertainty, target_class):
++def reclassify_uncertainty(uncertainty, new_class):
 +    """
-+    Convert an uncertainty object to a different uncertainty type.
++    Convert an uncertainty to a different uncertainty class.
 +
 +    Parameters
 +    ----------
-+    uncertainty : `~astropy.nddata._Uncertainty` instance
-+        The uncertainty object to convert.
-+    target_class : class
-+        The class of the desired uncertainty type. Must be one of:
-+        `StdDevUncertainty`, `VarianceUncertainty`, or `InverseVariance`.
++    uncertainty : `NDUncertainty` instance
++        The uncertainty to convert.
++    new_class : `NDUncertainty` subclass
++        The uncertainty class to convert to.
 +
 +    Returns
 +    -------
-+    result : `~astropy.nddata._Uncertainty` instance
-+        The converted uncertainty object of type ``target_class``.
++    result : `NDUncertainty` instance
++        The uncertainty converted to the requested class.
 +
 +    Raises
 +    ------
 +    TypeError
-+        If ``target_class`` is not a valid uncertainty class.
++        If ``uncertainty`` is not an `NDUncertainty` instance or if
++        ``new_class`` is not a subclass of `NDUncertainty`.
 +    ValueError
-+        If the conversion cannot be performed.
++        If the conversion is not possible.
 +
-+    Examples
++    See Also
 +    --------
-+    >>> from astropy.nddata import StdDevUncertainty, VarianceUncertainty
-+    >>> import numpy as np
-+    >>> std = StdDevUncertainty([1., 2., 3.])
-+    >>> var = convert_uncertainty(std, VarianceUncertainty)
-+    >>> var  
-+    VarianceUncertainty([1., 4., 9.])
++    NDUncertainty.represent_as : Instance method version of this function.
 +    """
-+    if not isinstance(uncertainty, _Uncertainty):
-+        raise TypeError("Uncertainty must be an instance of _Uncertainty.")
-+
-+    if target_class not in (StdDevUncertainty, VarianceUncertainty,
-+                            InverseVariance):
-+        raise TypeError("Target class must be one of: StdDevUncertainty, "
-+                        "VarianceUncertainty, InverseVariance.")
-+
-+    if isinstance(uncertainty, target_class):
-+        return uncertainty.copy()
-+
-+    # Convert to variance as the intermediate representation
-+    variance = uncertainty._convert_to_variance()
-+    result = target_class._convert_from_variance(variance)
-+    return result
++    if not isinstance(uncertainty, NDUncertainty):
++        raise TypeError("uncertainty must be an NDUncertainty instance")
++    if not issubclass(new_class, NDUncertainty):
++        raise TypeError("new_class must be an NDUncertainty subclass")
++    return uncertainty.represent_as(new_class)

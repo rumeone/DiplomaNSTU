@@ -10,12 +10,12 @@
     "incomplete_ids": [],
     "empty_patch_ids": [],
     "submitted_ids": [
-        "astropy__astropy-12962"
+        "astropy__astropy-13075"
     ],
     "resolved_ids": [],
     "unresolved_ids": [],
     "error_ids": [
-        "astropy__astropy-12962"
+        "astropy__astropy-13075"
     ],
     "schema_version": 2
 }

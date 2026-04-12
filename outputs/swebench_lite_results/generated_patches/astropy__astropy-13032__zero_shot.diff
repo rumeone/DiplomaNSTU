@@ -1,0 +1,65 @@
+--- a/astropy/modeling/bounding_box.py
++++ b/astropy/modeling/bounding_box.py
+@@ -549,7 +549,7 @@ class ModelBoundingBox(_BoundingDomain):
+         # Validate the intervals
+         self._intervals = self._validate_intervals(intervals, self._ignored)
+         # Validate the ignored inputs
+-        self._ignored = self._validate_ignored(ignored)
++        self._ignored = self._validate_ignored(ignored) if ignored is not None else []
+ 
+     @property
+     def intervals(self):
+@@ -577,7 +577,7 @@ class ModelBoundingBox(_BoundingDomain):
+         # Validate the intervals
+         self._intervals = self._validate_intervals(intervals, self._ignored)
+         # Validate the ignored inputs
+-        self._ignored = self._validate_ignored(ignored)
++        self._ignored = self._validate_ignored(ignored) if ignored is not None else []
+ 
+     def _validate_intervals(self, intervals, ignored):
+         """
+@@ -597,7 +597,7 @@ class ModelBoundingBox(_BoundingDomain):
+         # Validate the intervals
+         validated_intervals = {}
+         for key, interval in intervals.items():
+-            index = self._get_index(key)
++            index = get_index(self._model, key)
+             if index in ignored:
+                 validated_intervals[index] = _ignored_interval
+             else:
+@@ -615,7 +615,7 @@ class ModelBoundingBox(_BoundingDomain):
+         # Validate the intervals
+         validated_intervals = {}
+         for key, interval in intervals.items():
+-            index = self._get_index(key)
++            index = get_index(self._model, key)
+             if index in ignored:
+                 validated_intervals[index] = _ignored_interval
+             else:
+@@ -626,7 +626,7 @@ class ModelBoundingBox(_BoundingDomain):
+         # Fill in any missing intervals
+         for index in range(len(self._model.inputs)):
+             if index not in validated_intervals:
+-                if index in ignored:
++                if index in self._ignored:
+                     validated_intervals[index] = _ignored_interval
+                 else:
+                     validated_intervals[index] = None
+@@ -642,7 +642,7 @@ class ModelBoundingBox(_BoundingDomain):
+         # Validate the intervals
+         validated_intervals = {}
+         for key, interval in intervals.items():
+-            index = self._get_index(key)
++            index = get_index(self._model, key)
+             if index in ignored:
+                 validated_intervals[index] = _ignored_interval
+             else:
+@@ -653,7 +653,7 @@ class ModelBoundingBox(_BoundingDomain):
+         # Fill in any missing intervals
+         for index in range(len(self._model.inputs)):
+             if index not in validated_intervals:
+-                if index in ignored:
++                if index in self._ignored:
+                     validated_intervals[index] = _ignored_interval
+                 else:
+                     validated_intervals[index] = None

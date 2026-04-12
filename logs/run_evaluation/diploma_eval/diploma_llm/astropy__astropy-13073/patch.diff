@@ -1,0 +1,11 @@
+--- astropy/io/ascii/docs.py
++++ astropy/io/ascii/docs.py
+@@ -39,6 +39,8 @@
+     converters : dict
+         Dictionary of converters. Keys in the dictionary are columns names,
+         values are converter functions. In addition to single column names
++        you can use wildcards via `fnmatch` to select multiple columns.
++        For example, to read columns containing only "True" and "False" as bool:
+         you can use wildcards via `fnmatch` to select multiple columns.
+     data_Splitter : `~astropy.io.ascii.BaseSplitter`
+         Splitter class to split data columns

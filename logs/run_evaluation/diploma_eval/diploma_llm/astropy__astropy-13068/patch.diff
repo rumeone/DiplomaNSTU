@@ -1,0 +1,15 @@
+--- astropy/time/core.py
++++ astropy/time/core.py
+@@ -396,6 +396,9 @@
+         if precision is None:
+             precision = 3
+         if in_subfmt is None:
+             in_subfmt = '*'
+         if out_subfmt is None:
+             out_subfmt = '*'
+ 
++        if not isinstance(precision, int) or precision < 0 or precision > 9:
++            raise ValueError('precision must be an int between 0 and 9')
++
+         # Coerce val into an array
+         val = _make_array(val, copy)

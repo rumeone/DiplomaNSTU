@@ -5,51 +5,39 @@ Patch applied: None
 Passed: None
 
 --- Test output ---
-Running 1 instances...
-astropy__astropy-12880: >>>>> Patch Apply Failed:
-patching file astropy/io/ascii/ecsv.py
-patch unexpectedly ends in middle of line
-Hunk #1 FAILED at 173.
-1 out of 1 hunk FAILED -- saving rejects to file astropy/io/ascii/ecsv.py.rej
-
-Check (logs/run_evaluation/diploma_eval/diploma_llm/astropy__astropy-12880/run_instance.log) for more information.
-All instances run.
+1 instances already run, skipping...
+No instances to run.
 Cleaning cached images...
 Removed 0 images.
 Total instances: 1
 Instances submitted: 1
-Instances completed: 0
+Instances completed: 1
 Instances incomplete: 0
 Instances resolved: 0
-Instances unresolved: 0
+Instances unresolved: 1
 Instances with empty patches: 0
-Instances with errors: 1
+Instances with errors: 0
 Unstopped containers: 0
 Unremoved images: 0
 Report written to diploma_llm.diploma_eval.json
 
 <frozen runpy>:128: RuntimeWarning: 'swebench.harness.run_evaluation' found in sys.modules after import of package 'swebench.harness', but prior to execution of 'swebench.harness.run_evaluation'; this may result in unpredictable behaviour
-2026-04-12 16:53:40,951 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
-2026-04-12 16:53:41,054 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench/7074ef12ea2a6f70a228943c1336553333c22786/README.md "HTTP/1.1 200 OK"
-2026-04-12 16:53:41,256 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/SWE-bench.py "HTTP/1.1 404 Not Found"
-2026-04-12 16:53:42,072 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench/SWE-bench/SWE-bench.py "HTTP/1.1 404 Not Found"
-2026-04-12 16:53:42,272 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/revision/7074ef12ea2a6f70a228943c1336553333c22786 "HTTP/1.1 200 OK"
-2026-04-12 16:53:42,470 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:43,149 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
 Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-2026-04-12 16:53:42,471 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
-2026-04-12 16:53:43,162 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench "HTTP/1.1 200 OK"
-2026-04-12 16:53:43,368 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/tree/7074ef12ea2a6f70a228943c1336553333c22786/data?recursive=true&expand=false "HTTP/1.1 200 OK"
-2026-04-12 16:53:43,595 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/tree/7074ef12ea2a6f70a228943c1336553333c22786?recursive=false&expand=false "HTTP/1.1 200 OK"
-2026-04-12 16:53:43,797 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/dataset_infos.json "HTTP/1.1 404 Not Found"
-2026-04-12 16:53:44,245 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
-2026-04-12 16:53:44,347 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench/7074ef12ea2a6f70a228943c1336553333c22786/README.md "HTTP/1.1 200 OK"
-2026-04-12 16:53:44,554 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/SWE-bench.py "HTTP/1.1 404 Not Found"
-2026-04-12 16:53:44,743 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench/SWE-bench/SWE-bench.py "HTTP/1.1 404 Not Found"
-2026-04-12 16:53:44,950 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/.huggingface.yaml "HTTP/1.1 404 Not Found"
-2026-04-12 16:53:45,169 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench "HTTP/1.1 200 OK"
-2026-04-12 16:53:45,369 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/dataset_infos.json "HTTP/1.1 404 Not Found"
-
-Evaluation:   0%|          | 0/1 [00:00<?, ?it/s, error=0, ✓=0, ✖=0]
-Evaluation:   0%|          | 0/1 [01:30<?, ?it/s, ✓=0, ✖=0, error=1]
-Evaluation: 100%|██████████| 1/1 [01:30<00:00, 90.37s/it, ✓=0, ✖=0, error=1]
-Evaluation: 100%|██████████| 1/1 [01:30<00:00, 90.37s/it, ✓=0, ✖=0, error=1]
+2026-04-12 19:09:43,149 - huggingface_hub.utils._http - WARNING - Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+2026-04-12 19:09:43,257 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench/7074ef12ea2a6f70a228943c1336553333c22786/README.md "HTTP/1.1 200 OK"
+2026-04-12 19:09:43,468 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/SWE-bench.py "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:44,310 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench/SWE-bench/SWE-bench.py "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:44,553 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/revision/7074ef12ea2a6f70a228943c1336553333c22786 "HTTP/1.1 200 OK"
+2026-04-12 19:09:44,762 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:45,468 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench "HTTP/1.1 200 OK"
+2026-04-12 19:09:45,688 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/tree/7074ef12ea2a6f70a228943c1336553333c22786/data?recursive=true&expand=false "HTTP/1.1 200 OK"
+2026-04-12 19:09:45,907 - httpx - INFO - HTTP Request: GET https://huggingface.co/api/datasets/SWE-bench/SWE-bench/tree/7074ef12ea2a6f70a228943c1336553333c22786?recursive=false&expand=false "HTTP/1.1 200 OK"
+2026-04-12 19:09:46,121 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/dataset_infos.json "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:46,542 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/main/README.md "HTTP/1.1 307 Temporary Redirect"
+2026-04-12 19:09:46,652 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/api/resolve-cache/datasets/SWE-bench/SWE-bench/7074ef12ea2a6f70a228943c1336553333c22786/README.md "HTTP/1.1 200 OK"
+2026-04-12 19:09:46,894 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/SWE-bench.py "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:47,103 - httpx - INFO - HTTP Request: HEAD https://s3.amazonaws.com/datasets.huggingface.co/datasets/datasets/SWE-bench/SWE-bench/SWE-bench/SWE-bench.py "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:47,347 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/.huggingface.yaml "HTTP/1.1 404 Not Found"
+2026-04-12 19:09:47,572 - httpx - INFO - HTTP Request: GET https://datasets-server.huggingface.co/info?dataset=SWE-bench/SWE-bench "HTTP/1.1 200 OK"
+2026-04-12 19:09:47,786 - httpx - INFO - HTTP Request: HEAD https://huggingface.co/datasets/SWE-bench/SWE-bench/resolve/7074ef12ea2a6f70a228943c1336553333c22786/dataset_infos.json "HTTP/1.1 404 Not Found"

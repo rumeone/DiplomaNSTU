@@ -1,40 +1,10 @@
---- a/astropy/modeling/separable.py
-+++ b/astropy/modeling/separable.py
-@@ -1,5 +1,5 @@
- # Licensed under a 3-clause BSD style license - see LICENSE.rst
--import numpy as np
-+import numpy as np 
+--- astropy/modeling/separable.py
++++ astropy/modeling/separable.py
+@@ -242,7 +242,7 @@
+         cright = _coord_matrix(right, 'right', noutp)
+     else:
+         cright = np.zeros((noutp, right.shape[1]))
+-        cright[-right.shape[0]:, -right.shape[1]:] = 1
++        cright[-right.shape[0]:, -right.shape[1]:] = right
  
- from astropy.modeling.core import CompoundModel
- 
-@@ -56,7 +56,7 @@ def separability_matrix(model):
-     # If the model is a CompoundModel, we need to combine the separability
-     # matrices of its submodels.
-     if isinstance(model, CompoundModel):
--        if model.op in ('&', '|'):
-+        if model.op == '&':
-             # For '&' (concatenation), the separability matrix is a block
-             # diagonal matrix of the separability matrices of the submodels.
-             left_matrix = separability_matrix(model.left)
-@@ -64,6 +64,8 @@ def separability_matrix(model):
-             n_inputs = model.n_inputs
-             n_outputs = model.n_outputs
-             matrix = np.zeros((n_outputs, n_inputs), dtype=bool)
-+            # Determine the split point between left and right submodels
-+            split = model.left.n_outputs
-             # Place left matrix in upper left block
-             left_n_outputs = left_matrix.shape[0]
-             left_n_inputs = left_matrix.shape[1]
-@@ -71,12 +73,12 @@ def separability_matrix(model):
-             # Place right matrix in lower right block
-             right_n_outputs = right_matrix.shape[0]
-             right_n_inputs = right_matrix.shape[1]
--            matrix[left_n_outputs:, left_n_inputs:] = right_matrix
-+            matrix[split:split+right_n_outputs, split:split+right_n_inputs] = right_matrix
-             return matrix
-         elif model.op == '|':
-             # For '|' (composition), the separability matrix is the matrix
-             # product of the separability matrices of the submodels.
-             left_matrix = separability_matrix(model.left)
-             right_matrix = separability_matrix(model.right)
-             return np.dot(left_matrix, right_matrix)
+     return np.hstack([cleft, cright])

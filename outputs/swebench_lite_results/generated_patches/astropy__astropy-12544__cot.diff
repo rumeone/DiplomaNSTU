@@ -1,30 +1,40 @@
---- a/astropy/table/connect.py
-+++ b/astropy/table/connect.py
-@@ -39,6 +39,7 @@ def read_table(filename, **kwargs):
-     # Get all kwargs that are allowed for the table reader, and strip them from
-     # the kwargs dict so they don't get passed to the file reader.
-     table_read_kwargs = {}
-+    mask = kwargs.pop('mask', None)
-     for key in list(kwargs.keys()):
-         if key in _valid_table_read_kwargs:
-             table_read_kwargs[key] = kwargs.pop(key)
-@@ -46,6 +47,9 @@ def read_table(filename, **kwargs):
-     # Read the table
-     with get_readable_fileobj(filename, **kwargs) as fileobj:
-         tbl = registry.read(fileobj, **table_read_kwargs)
-+    
-+    if mask is not None:
-+        tbl.mask = mask
+--- astropy/io/fits/connect.py
++++ astropy/io/fits/connect.py
+@@ -114,7 +114,7 @@ def _decode_mixins(tbl):
  
-     return tbl
  
---- a/astropy/io/registry.py
-+++ b/astropy/io/registry.py
-@@ -615,6 +615,7 @@ def _get_reader_table_kwargs(reader, format):
-         'names',
-         'include_names',
-         'exclude_names',
-+        'mask',
-     ]
+ def read_table_fits(input, hdu=None, astropy_native=False, memmap=False,
+-                    character_as_bytes=True, unit_parse_strict='warn'):
++                    character_as_bytes=True, unit_parse_strict='warn', mask=True):
+     """
+     Read a Table object from an FITS file
  
-     # Get the signature from the reader
+@@ -157,6 +157,10 @@ def read_table_fits(input, hdu=None, astropy_native=False, memmap=False,
+         Default is "warn", which will emit a ``UnitsWarning`` and create a
+         :class:`~astropy.units.core.UnrecognizedUnit`.
+         Values are the ones allowed by the ``parse_strict`` argument of
+         :class:`~astropy.units.core.Unit`: ``raise``, ``warn`` and ``silent``.
++    mask : bool, optional
++        Whether to create masked columns for null/NaN values. If `False`,
++        null/NaN values will be left as-is in regular columns without masking.
++        Default is `True`.
+ 
+     """
+ 
+@@ -220,6 +224,7 @@ def read_table_fits(input, hdu=None, astropy_native=False, memmap=False,
+                 hdulist, hdu=hdu,
+                 astropy_native=astropy_native,
+                 unit_parse_strict=unit_parse_strict,
++                mask=mask,
+             )
+         finally:
+             hdulist.close()
+@@ -253,7 +258,7 @@ def read_table_fits(input, hdu=None, astropy_native=False, memmap=False,
+         elif issubclass(coltype, np.character):
+             mask = col.array == b''
+ 
+-        if masked or np.any(mask):
++        if mask and (masked or np.any(mask)):
+             column = MaskedColumn(data=data[col.name], name=col.name,
+                                   mask=mask, copy=False)
+         else:

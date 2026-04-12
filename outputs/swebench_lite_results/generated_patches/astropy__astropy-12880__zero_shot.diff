@@ -1,27 +1,23 @@
-python
 --- a/astropy/io/ascii/ecsv.py
 +++ b/astropy/io/ascii/ecsv.py
-@@ -173,9 +173,20 @@
+@@ -172,9 +172,18 @@ class EcsvHeader(basic.BasicHeader):
+                     setattr(col, attr, header_cols[col.name][attr])
+ 
              col.dtype = header_cols[col.name]['datatype']
++            # For ECSV < 1.0, be liberal in what we accept for datatype
++            # For ECSV >= 1.0, enforce allowed datatypes strictly
++            major = int(match.group('major'))
++            minor = int(match.group('minor'))
++            bugfix = match.group('bugfix')
++            bugfix = int(bugfix) if bugfix else 0
++            ecsv_version = (major, minor, bugfix)
              if col.dtype not in ECSV_DATATYPES:
-                 # Check if this is a valid numpy dtype string (e.g. 'object')
--                if col.dtype not in ALLOWED_DTYPES:
--                    raise ValueError(f'datatype {col.dtype!r} of column {col.name!r} '
--                                     f'is not in allowed values {ECSV_DATATYPES}')
-+                # For ECSV < 1.0 we are more lenient and allow any dtype that
-+                # numpy can handle, issuing a warning instead of raising an error.
-+                # For ECSV >= 1.0 we raise an error for non-compliant dtypes.
-+                if self.ecsv_version is None:
-+                    # This should not happen, but be safe
-+                    warnings.warn(
-+                        f'ECSV version not found, assuming version 0.9. '
-+                        f'Allowing non-standard datatype {col.dtype!r} for column {col.name!r}.',
-+                        AstropyWarning)
-+                elif self.ecsv_version >= (1, 0):
-+                    raise ValueError(
-+                        f'datatype {col.dtype!r} of column {col.name!r} '
-+                        f'is not in allowed values {ECSV_DATATYPES}')
-+                # For ECSV < 1.0 we fall through and allow the dtype
+-                raise ValueError(f'datatype {col.dtype!r} of column {col.name!r} '
+-                                 f'is not in allowed values {ECSV_DATATYPES}')
++                if ecsv_version >= (1, 0, 0):
++                    raise ValueError(f'datatype {col.dtype!r} of column {col.name!r} '
++                                     f'is not in allowed values {ECSV_DATATYPES}')
++                # For older versions, just issue a warning and continue
  
              # Subtype is written like "int64[2,null]" and we want to split this
              # out to "int64" and [2, None].
