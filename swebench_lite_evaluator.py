@@ -86,13 +86,11 @@ def static_evaluate_patch(
     score = 0
     max_score = 3
 
-    # Check 1: valid diff format
     valid_diff = is_valid_unified_diff(generated_patch)
     report_lines.append(f"[1/3] Valid unified diff format: {valid_diff}")
     if valid_diff:
         score += 1
 
-    # Check 2: file overlap with ground truth
     if ground_truth_patch:
         gen_files = set(get_changed_files_from_patch(generated_patch))
         gt_files = set(get_changed_files_from_patch(ground_truth_patch))
@@ -108,7 +106,6 @@ def static_evaluate_patch(
         report_lines.append("[2/3] Ground-truth patch not available — skipping file overlap check.")
         max_score -= 1
 
-    # Check 3: syntax of added lines
     added_lines = [
         line[1:] for line in generated_patch.splitlines()
         if line.startswith("+") and not line.startswith("+++")
@@ -131,8 +128,6 @@ def static_evaluate_patch(
         score += 1
 
     report_lines.append(f"\nStatic score: {score}/{max_score}")
-
-    # Heuristic pass: valid diff + at least touches right files
     passed = valid_diff and (score >= 2)
 
     return SWEEvaluationResult(
@@ -149,7 +144,6 @@ def static_evaluate_patch(
 # ---------------------------------------------------------------------------
 
 def docker_is_available() -> bool:
-    """Check if Docker daemon is running and accessible."""
     if not shutil.which("docker"):
         return False
     try:
@@ -163,13 +157,83 @@ def docker_is_available() -> bool:
 
 
 def swebench_package_available() -> bool:
-    """Check if the swebench package is installed."""
     try:
         import importlib
         importlib.import_module("swebench")
         return True
     except ImportError:
         return False
+
+
+def _parse_harness_result(tmp_path: Path, instance_id: str) -> tuple[Optional[bool], Optional[bool]]:
+    """
+    Parse the harness output JSON written to tmp_path.
+
+    The official harness writes two possible file formats:
+
+    Format A — run_id based path (new harness versions):
+        <tmp_path>/diploma_llm.diploma_eval.json
+    Format B — nested results dir:
+        <tmp_path>/**/results.json  or  <tmp_path>/**/*.json
+
+    Returns (passed, patch_applied).
+    """
+    passed: Optional[bool] = None
+    patch_applied: Optional[bool] = None
+
+    # Collect ALL json files written anywhere under tmp_path
+    json_files = list(tmp_path.rglob("*.json"))
+
+    for rf in json_files:
+        try:
+            data = json.loads(rf.read_text(encoding="utf-8"))
+        except Exception:
+            continue
+
+        if not isinstance(data, dict):
+            continue
+
+        # Format A: {"diploma_llm": {"instance_id": {resolved: bool, ...}}}
+        # or flat:  {"resolved": ["id1", ...], "unresolved": [...], ...}
+
+        # Try flat list format (most common in swebench >= 2.x)
+        if "resolved" in data and isinstance(data["resolved"], list):
+            patch_applied = True  # reached test stage means patch applied
+            passed = instance_id in data["resolved"]
+            return passed, patch_applied
+
+        # Try flat dict format {resolved: {id: bool}}
+        if "resolved" in data and isinstance(data["resolved"], dict):
+            if instance_id in data["resolved"]:
+                passed = bool(data["resolved"][instance_id])
+            if "applied" in data and isinstance(data["applied"], dict):
+                if instance_id in data["applied"]:
+                    patch_applied = bool(data["applied"][instance_id])
+            if passed is not None:
+                return passed, patch_applied
+
+        # Try nested model key format
+        for model_key, model_data in data.items():
+            if not isinstance(model_data, dict):
+                continue
+            if instance_id in model_data:
+                entry = model_data[instance_id]
+                if isinstance(entry, dict):
+                    if "resolved" in entry:
+                        passed = bool(entry["resolved"])
+                    if "patch_applied" in entry:
+                        patch_applied = bool(entry["patch_applied"])
+                elif isinstance(entry, bool):
+                    passed = entry
+                if passed is not None:
+                    return passed, patch_applied
+
+    return passed, patch_applied
+
+
+def _patch_apply_failed(output: str) -> bool:
+    """Detect patch-apply failure from harness stdout."""
+    return "Patch Apply Failed" in output or "FAILED" in output
 
 
 def docker_evaluate_patch(
@@ -182,16 +246,15 @@ def docker_evaluate_patch(
     """
     Run the official SWE-bench evaluation harness via subprocess.
 
-    Writes the prediction to a temp JSONL, then calls:
-        python -m swebench.harness.run_evaluation ...
-
-    Requires: Docker running + `pip install swebench`.
+    Key fixes vs old version:
+    - subprocess runs with cwd=tmp_path so harness writes diploma_llm.diploma_eval.json
+      into tmp_path (not the project root).
+    - Result JSON is parsed from tmp_path (all *.json files searched recursively).
+    - patch_applied is inferred from harness stdout if JSON parsing misses it.
     """
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
         predictions_path = tmp_path / "predictions.jsonl"
-        output_dir = tmp_path / "results"
-        output_dir.mkdir()
 
         prediction = {
             "instance_id": instance_id,
@@ -215,7 +278,12 @@ def docker_evaluate_patch(
 
         try:
             result = subprocess.run(
-                cmd, capture_output=True, text=True, timeout=timeout
+                cmd,
+                capture_output=True,
+                text=True,
+                timeout=timeout,
+                # FIX: run from tmp_path so harness writes JSON here, not cwd
+                cwd=str(tmp_path),
             )
             raw_output = result.stdout + "\n" + result.stderr
         except subprocess.TimeoutExpired:
@@ -237,24 +305,28 @@ def docker_evaluate_patch(
                 error=str(exc),
             )
 
-        # Parse results JSON if present
-        results_files = list(output_dir.rglob("*.json"))
-        passed = None
-        patch_applied = None
+        # FIX: parse result JSON from tmp_path (harness writes there because cwd=tmp_path)
+        passed, patch_applied = _parse_harness_result(tmp_path, instance_id)
 
-        for rf in results_files:
-            try:
-                data = json.loads(rf.read_text(encoding="utf-8"))
-                # Official harness output format
-                if isinstance(data, dict):
-                    resolved = data.get("resolved", {})
-                    if instance_id in resolved:
-                        passed = bool(resolved[instance_id])
-                    applied = data.get("applied", {})
-                    if instance_id in applied:
-                        patch_applied = bool(applied[instance_id])
-            except Exception:
-                pass
+        # Infer patch_applied from stdout if JSON parsing missed it
+        if patch_applied is None:
+            if _patch_apply_failed(raw_output):
+                patch_applied = False
+            elif "Instances completed" in raw_output and "Instances with errors: 0" in raw_output:
+                patch_applied = True
+
+        # Infer passed from stdout counters if JSON parsing missed it
+        if passed is None:
+            import re as _re
+            m = _re.search(r'Instances resolved:\s*(\d+)', raw_output)
+            if m and int(m.group(1)) > 0:
+                passed = True
+            elif "Instances unresolved" in raw_output:
+                unresolved_m = _re.search(r'Instances unresolved:\s*(\d+)', raw_output)
+                completed_m = _re.search(r'Instances completed:\s*(\d+)', raw_output)
+                if unresolved_m and completed_m:
+                    if int(completed_m.group(1)) > 0:
+                        passed = False
 
         return SWEEvaluationResult(
             instance_id=instance_id,
