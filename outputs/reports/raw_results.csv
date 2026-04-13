@@ -3,12 +3,15 @@ HumanEval/0,has_close_elements,zero_shot,0,"from typing import List
 
 
 def has_close_elements(numbers: List[float], threshold: float) -> bool:
-    """""" Check if in given list of numbers, are any two numbers closer to each other than
-    given threshold.
-    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
-    False
-    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
-    True
+    """"""
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
     """"""
     # Sort the list to compare adjacent elements
     sorted_numbers = sorted(numbers)
@@ -18,70 +21,1050 @@ def has_close_elements(numbers: List[float], threshold: float) -> bool:
         if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:
             return True
     
-    return False",raw_generations/HumanEval_0/zero_shot_sample0.py,,,True,,0,,4.29,0,outputs\reports\static_analysis\pylint\HumanEval_0__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__zero_shot__sample0__final_bandit.stderr.txt,,not_executed,,,
+    return False",raw_generations/HumanEval_0/zero_shot_sample0.py,,,True,,0,,4.29,0,outputs\reports\static_analysis\pylint\HumanEval_0__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
 HumanEval/0,has_close_elements,constraint_guided,0,"from typing import List
 
 
 def has_close_elements(numbers: List[float], threshold: float) -> bool:
-    """"""Check if in given list of numbers, are any two numbers closer to each other than
-    given threshold.""""""
+    """"""
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """"""
     # Sort the list to compare adjacent elements
     sorted_numbers = sorted(numbers)
     
-    # Check each adjacent pair in the sorted list
+    # Check consecutive pairs for distance less than threshold
     for i in range(len(sorted_numbers) - 1):
         if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:
             return True
     
-    return False",raw_generations/HumanEval_0/constraint_guided_sample0.py,,,True,,0,,4.29,0,outputs\reports\static_analysis\pylint\HumanEval_0__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__constraint_guided__sample0__final_bandit.stderr.txt,,not_executed,,,
+    return False",raw_generations/HumanEval_0/constraint_guided_sample0.py,,,True,,0,,4.29,0,outputs\reports\static_analysis\pylint\HumanEval_0__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
 HumanEval/0,has_close_elements,structured_cot,0,"from typing import List
 
 
 def has_close_elements(numbers: List[float], threshold: float) -> bool:
-    """""" Check if in given list of numbers, are any two numbers closer to each other than
-    given threshold.
-    >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
-    False
-    >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
-    True
     """"""
-    n = len(numbers)
-    # Compare each pair of numbers
-    for i in range(n):
-        for j in range(i + 1, n):
-            if abs(numbers[i] - numbers[j]) < threshold:
-                return True
-    return False",raw_generations/HumanEval_0/structured_cot_sample0.py,,,True,,0,,7.5,0,outputs\reports\static_analysis\pylint\HumanEval_0__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__structured_cot__sample0__final_bandit.stderr.txt,,not_executed,,,
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """"""
+    # Sort the list to compare adjacent elements
+    sorted_numbers = sorted(numbers)
+    
+    # Check consecutive pairs
+    for i in range(len(sorted_numbers) - 1):
+        if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:
+            return True
+    
+    return False",raw_generations/HumanEval_0/structured_cot_sample0.py,,,True,,0,,4.29,0,outputs\reports\static_analysis\pylint\HumanEval_0__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
 HumanEval/0,has_close_elements,self_refine,0,"from typing import List
 
 
 def has_close_elements(numbers: List[float], threshold: float) -> bool:
-    """"""Check if in given list of numbers, are any two numbers closer to each other than
-    given threshold.""""""
+    """"""
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """"""
     # Handle edge cases: empty list or single element
     if len(numbers) < 2:
         return False
-    
-    # Sort the list to compare adjacent elements
+
+    # Sort the list to compare only adjacent elements
     sorted_numbers = sorted(numbers)
-    
-    # Compare each adjacent pair in the sorted list
+
+    # Check each adjacent pair
     for i in range(len(sorted_numbers) - 1):
         if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:
             return True
-    
+
     return False",raw_generations/HumanEval_0/self_refine_sample0.py,"from typing import List
 
 
 def has_close_elements(numbers: List[float], threshold: float) -> bool:
-    """"""Check if in given list of numbers, are any two numbers closer to each other than
-    given threshold.""""""
-    # Sort the list to compare adjacent elements
+    """"""
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """"""
+    # Sort the list to compare only adjacent elements
     sorted_numbers = sorted(numbers)
     
-    # Compare each adjacent pair in the sorted list
+    # Check each adjacent pair
     for i in range(len(sorted_numbers) - 1):
         if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:
             return True
     
-    return False",raw_generations/HumanEval_0/self_refine_sample0_initial.py,True,,0,,4.44,0,outputs\reports\static_analysis\pylint\HumanEval_0__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__final_bandit.stderr.txt,,not_executed,outputs\reports\static_analysis\pylint\HumanEval_0__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__initial_bandit.stderr.txt
+    return False",raw_generations/HumanEval_0/self_refine_sample0_initial.py,True,,0,,7.78,0,outputs\reports\static_analysis\pylint\HumanEval_0__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_0__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_0__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/1,separate_paren_groups,zero_shot,0,"from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """"""
+    Input to this function is a string possibly containing multiple groups of nested parentheses.
+    Your goal is to separate those groups into separate strings and return the list of those.
+    Ignore anything other than ""("" and "")"" in the input string.
+
+    Examples:
+        >>> seperate_paren_groups('(()())')
+        ['(()())']
+        >>> separate_paren_groups('()(())')
+        ['()', '(())']
+        >>> separate_paren_groups(')( [) (( ))] (({})( ))')
+        ['()', '(())', '(()())']
+    """"""
+    result = []
+    current_group = []
+    balance = 0
+    
+    for char in paren_string:
+        if char == '(':
+            current_group.append(char)
+            balance += 1
+        elif char == ')':
+            current_group.append(char)
+            balance -= 1
+            
+            # When balance reaches 0, we have a complete group
+            if balance == 0 and current_group:
+                result.append(''.join(current_group))
+                current_group = []
+    
+    return result",raw_generations/HumanEval_1/zero_shot_sample0.py,,,True,,0,,6.88,0,outputs\reports\static_analysis\pylint\HumanEval_1__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_1__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_1__zero_shot__sample0__final_bandit.stderr.txt,False,assertion_failed: ,,,
+HumanEval/1,separate_paren_groups,constraint_guided,0,"from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """"""
+    Input to this function is a string possibly containing multiple groups of nested parentheses.
+    Your goal is to separate those groups into separate strings and return the list of those.
+    Ignore anything other than ""("" and "")"" in the input string.
+    """"""
+    result = []
+    current_group = []
+    balance = 0
+    
+    for char in paren_string:
+        if char == '(':
+            balance += 1
+            current_group.append(char)
+        elif char == ')':
+            balance -= 1
+            current_group.append(char)
+            
+            # When balance reaches 0, we have a complete group
+            if balance == 0 and current_group:
+                result.append(''.join(current_group))
+                current_group = []
+    
+    return result",raw_generations/HumanEval_1/constraint_guided_sample0.py,,,True,,0,,6.88,0,outputs\reports\static_analysis\pylint\HumanEval_1__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_1__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_1__constraint_guided__sample0__final_bandit.stderr.txt,False,assertion_failed: ,,,
+HumanEval/1,separate_paren_groups,structured_cot,0,"from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """"""
+    Input to this function is a string possibly containing multiple groups of nested parentheses.
+    Your goal is to separate those groups into separate strings and return the list of those.
+    Ignore anything other than ""("" and "")"" in the input string.
+
+    Examples:
+        >>> seperate_paren_groups('(()())')
+        ['(()())']
+        >>> separate_paren_groups('()(())')
+        ['()', '(())']
+        >>> separate_paren_groups(')( [) (( ))] (({})( ))')
+        ['()', '(())', '(()())']
+    """"""
+    result = []
+    current_group = []
+    balance = 0
+    
+    for char in paren_string:
+        if char == '(':
+            balance += 1
+            current_group.append(char)
+        elif char == ')':
+            balance -= 1
+            current_group.append(char)
+            
+            # When balance reaches 0, we have a complete group
+            if balance == 0:
+                result.append(''.join(current_group))
+                current_group = []
+    
+    return result",raw_generations/HumanEval_1/structured_cot_sample0.py,,,True,,0,,6.88,0,outputs\reports\static_analysis\pylint\HumanEval_1__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_1__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_1__structured_cot__sample0__final_bandit.stderr.txt,False,assertion_failed: ,,,
+HumanEval/1,separate_paren_groups,self_refine,0,"from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """"""
+    Input to this function is a string possibly containing multiple groups of nested parentheses.
+    Your goal is to separate those groups into separate strings and return the list of those.
+    Ignore anything other than ""("" and "")"" in the input string.
+    """"""
+    result = []
+    current_group = []
+    balance = 0
+
+    for char in paren_string:
+        if char == '(':
+            balance += 1
+            current_group.append(char)
+        elif char == ')':
+            balance -= 1
+            current_group.append(char)
+            # Check for invalid nesting (more closing than opening)
+            if balance < 0:
+                # Reset to handle malformed input gracefully
+                current_group = []
+                balance = 0
+                continue
+            # When balance reaches 0, we have a complete group
+            if balance == 0 and current_group:
+                result.append(''.join(current_group))
+                current_group = []
+        # Ignore all other characters as per specification
+
+    # Handle any remaining complete group (shouldn't happen with valid input)
+    if balance == 0 and current_group:
+        result.append(''.join(current_group))
+
+    return result",raw_generations/HumanEval_1/self_refine_sample0.py,"from typing import List
+
+
+def separate_paren_groups(paren_string: str) -> List[str]:
+    """"""
+    Input to this function is a string possibly containing multiple groups of nested parentheses.
+    Your goal is to separate those groups into separate strings and return the list of those.
+    Ignore anything other than ""("" and "")"" in the input string.
+    """"""
+    result = []
+    current_group = []
+    balance = 0
+    
+    for char in paren_string:
+        if char == '(':
+            balance += 1
+            current_group.append(char)
+        elif char == ')':
+            balance -= 1
+            current_group.append(char)
+            # When balance reaches 0, we have a complete group
+            if balance == 0:
+                result.append(''.join(current_group))
+                current_group = []
+        # Ignore all other characters as per specification
+    
+    return result",raw_generations/HumanEval_1/self_refine_sample0_initial.py,True,,0,,9.09,0,outputs\reports\static_analysis\pylint\HumanEval_1__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_1__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_1__self_refine__sample0__final_bandit.stderr.txt,False,assertion_failed: ,outputs\reports\static_analysis\pylint\HumanEval_1__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_1__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_1__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/2,truncate_number,zero_shot,0,"def truncate_number(number: float) -> float:
+    """"""
+    Given a positive floating point number, it can be decomposed into
+    and integer part (largest integer smaller than given number) and decimals
+    (leftover part always smaller than 1).
+    Return the decimal part of the number.
+    """"""
+    return number - int(number)",raw_generations/HumanEval_2/zero_shot_sample0.py,,,True,,0,,0.0,0,outputs\reports\static_analysis\pylint\HumanEval_2__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_2__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_2__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/2,truncate_number,constraint_guided,0,"def truncate_number(number: float) -> float:
+    """"""
+    Given a positive floating point number, return its decimal part.
+    """"""
+    # The decimal part is the number minus its integer part
+    return number - int(number)",raw_generations/HumanEval_2/constraint_guided_sample0.py,,,True,,0,,0.0,0,outputs\reports\static_analysis\pylint\HumanEval_2__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_2__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_2__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/2,truncate_number,structured_cot,0,"def truncate_number(number: float) -> float:
+    """"""
+    Given a positive floating point number, it can be decomposed into
+    and integer part (largest integer smaller than given number) and decimals
+    (leftover part always smaller than 1).
+    Return the decimal part of the number.
+    """"""
+    return number - int(number)",raw_generations/HumanEval_2/structured_cot_sample0.py,,,True,,0,,0.0,0,outputs\reports\static_analysis\pylint\HumanEval_2__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_2__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_2__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/2,truncate_number,self_refine,0,"def truncate_number(number: float) -> float:
+    # Use math.modf to get the fractional part directly
+    import math
+    fractional, _ = math.modf(number)
+    return fractional",raw_generations/HumanEval_2/self_refine_sample0.py,"def truncate_number(number: float) -> float:
+    return number - int(number)",raw_generations/HumanEval_2/self_refine_sample0_initial.py,True,,0,,0.0,0,outputs\reports\static_analysis\pylint\HumanEval_2__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_2__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_2__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_2__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_2__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_2__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/3,below_zero,zero_shot,0,"from typing import List
+
+
+def below_zero(operations: List[int]) -> bool:
+    """"""
+    You're given a list of deposit and withdrawal operations on a bank account that starts with
+    zero balance. Your task is to detect if at any point the balance of account falls below zero, and
+    at that point function should return True. Otherwise it should return False.
+
+    Examples:
+        >>> below_zero([1, 2, 3])
+        False
+        >>> below_zero([1, 2, -4, 5])
+        True
+    """"""
+    balance = 0
+    for operation in operations:
+        balance += operation
+        if balance < 0:
+            return True
+    return False",raw_generations/HumanEval_3/zero_shot_sample0.py,,,True,,0,,6.25,0,outputs\reports\static_analysis\pylint\HumanEval_3__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_3__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_3__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/3,below_zero,constraint_guided,0,"from typing import List
+
+
+def below_zero(operations: List[int]) -> bool:
+    """"""
+    You're given a list of deposit and withdrawal operations on a bank account that starts with
+    zero balance. Your task is to detect if at any point the balance of account falls below zero, and
+    at that point function should return True. Otherwise it should return False.
+
+    Examples:
+        >>> below_zero([1, 2, 3])
+        False
+        >>> below_zero([1, 2, -4, 5])
+        True
+    """"""
+    balance = 0
+    for operation in operations:
+        balance += operation
+        if balance < 0:
+            return True
+    return False",raw_generations/HumanEval_3/constraint_guided_sample0.py,,,True,,0,,6.25,0,outputs\reports\static_analysis\pylint\HumanEval_3__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_3__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_3__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/3,below_zero,structured_cot,0,"from typing import List
+
+
+def below_zero(operations: List[int]) -> bool:
+    """"""
+    You're given a list of deposit and withdrawal operations on a bank account that starts with
+    zero balance. Your task is to detect if at any point the balance of account falls below zero, and
+    at that point function should return True. Otherwise it should return False.
+
+    Examples:
+        >>> below_zero([1, 2, 3])
+        False
+        >>> below_zero([1, 2, -4, 5])
+        True
+    """"""
+    balance = 0
+    for op in operations:
+        balance += op
+        if balance < 0:
+            return True
+    return False",raw_generations/HumanEval_3/structured_cot_sample0.py,,,True,,0,,6.25,0,outputs\reports\static_analysis\pylint\HumanEval_3__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_3__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_3__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/3,below_zero,self_refine,0,"from typing import List
+
+
+def below_zero(operations: List[int]) -> bool:
+    """"""
+    You're given a list of deposit and withdrawal operations on a bank account that starts with
+    zero balance. Your task is to detect if at any point the balance of account falls below zero, and
+    at that point function should return True. Otherwise it should return False.
+
+    Examples:
+        >>> below_zero([1, 2, 3])
+        False
+        >>> below_zero([1, 2, -4, 5])
+        True
+    """"""
+    balance = 0
+    for operation in operations:
+        balance += operation
+        if balance < 0:
+            return True
+    return False",raw_generations/HumanEval_3/self_refine_sample0.py,"from typing import List
+
+
+def below_zero(operations: List[int]) -> bool:
+    """"""
+    You're given a list of deposit and withdrawal operations on a bank account that starts with
+    zero balance. Your task is to detect if at any point the balance of account falls below zero, and
+    at that point function should return True. Otherwise it should return False.
+
+    Examples:
+        >>> below_zero([1, 2, 3])
+        False
+        >>> below_zero([1, 2, -4, 5])
+        True
+    """"""
+    balance = 0
+    for operation in operations:
+        balance += operation
+        if balance < 0:
+            return True
+    return False",raw_generations/HumanEval_3/self_refine_sample0_initial.py,True,,0,,6.25,0,outputs\reports\static_analysis\pylint\HumanEval_3__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_3__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_3__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_3__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_3__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_3__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/4,mean_absolute_deviation,zero_shot,0,"from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """"""
+    For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+
+    Example:
+        >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+        1.0
+    """"""
+    if not numbers:
+        return 0.0
+    
+    # Calculate mean
+    mean = sum(numbers) / len(numbers)
+    
+    # Calculate sum of absolute differences from mean
+    abs_diff_sum = sum(abs(x - mean) for x in numbers)
+    
+    # Return mean absolute deviation
+    return abs_diff_sum / len(numbers)",raw_generations/HumanEval_4/zero_shot_sample0.py,,,True,,0,,2.86,0,outputs\reports\static_analysis\pylint\HumanEval_4__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_4__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_4__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/4,mean_absolute_deviation,constraint_guided,0,"from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """"""
+    For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+
+    Example:
+        >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+        1.0
+    """"""
+    if not numbers:
+        return 0.0
+    
+    # Calculate mean
+    mean_value = sum(numbers) / len(numbers)
+    
+    # Calculate sum of absolute differences from mean
+    absolute_differences_sum = sum(abs(x - mean_value) for x in numbers)
+    
+    # Return mean absolute deviation
+    return absolute_differences_sum / len(numbers)",raw_generations/HumanEval_4/constraint_guided_sample0.py,,,True,,0,,2.86,0,outputs\reports\static_analysis\pylint\HumanEval_4__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_4__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_4__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/4,mean_absolute_deviation,structured_cot,0,"from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """"""
+    For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+
+    Example:
+        >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+        1.0
+    """"""
+    if not numbers:
+        return 0.0
+    
+    # Calculate mean
+    mean = sum(numbers) / len(numbers)
+    
+    # Calculate sum of absolute differences from mean
+    absolute_differences_sum = sum(abs(x - mean) for x in numbers)
+    
+    # Return mean absolute deviation
+    return absolute_differences_sum / len(numbers)",raw_generations/HumanEval_4/structured_cot_sample0.py,,,True,,0,,2.86,0,outputs\reports\static_analysis\pylint\HumanEval_4__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_4__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_4__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/4,mean_absolute_deviation,self_refine,0,"from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """"""
+    For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+
+    Example:
+        >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+        1.0
+    """"""
+    if not numbers:
+        return 0.0
+
+    # Calculate mean
+    mean_value = sum(numbers) / len(numbers)
+
+    # Calculate sum of absolute differences from mean
+    absolute_differences_sum = sum(abs(x - mean_value) for x in numbers)
+
+    # Return average of absolute differences
+    return absolute_differences_sum / len(numbers)",raw_generations/HumanEval_4/self_refine_sample0.py,"from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """"""
+    For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+
+    Example:
+        >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+        1.0
+    """"""
+    if not numbers:
+        return 0.0
+    
+    # Calculate mean
+    mean_value = sum(numbers) / len(numbers)
+    
+    # Calculate sum of absolute differences from mean
+    absolute_differences_sum = sum(abs(x - mean_value) for x in numbers)
+    
+    # Return average of absolute differences
+    return absolute_differences_sum / len(numbers)",raw_generations/HumanEval_4/self_refine_sample0_initial.py,True,,0,,7.14,0,outputs\reports\static_analysis\pylint\HumanEval_4__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_4__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_4__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_4__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_4__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_4__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/5,intersperse,zero_shot,0,"from typing import List
+
+
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """"""
+    Insert a number 'delimeter' between every two consecutive elements of input list `numbers'
+
+    Example:
+        >>> intersperse([1, 2, 3], 4)
+        [1, 4, 2, 4, 3]
+    """"""
+    if not numbers:
+        return []
+    
+    result = []
+    # Add first element
+    result.append(numbers[0])
+    
+    # For each subsequent element, add delimeter then the element
+    for num in numbers[1:]:
+        result.append(delimeter)
+        result.append(num)
+    
+    return result",raw_generations/HumanEval_5/zero_shot_sample0.py,,,True,,0,,5.0,0,outputs\reports\static_analysis\pylint\HumanEval_5__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_5__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_5__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/5,intersperse,constraint_guided,0,"def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    result = []
+    for i, num in enumerate(numbers):
+        result.append(num)
+        if i != len(numbers) - 1:
+            result.append(delimeter)
+    return result",raw_generations/HumanEval_5/constraint_guided_sample0.py,,,True,,0,,0.0,0,outputs\reports\static_analysis\pylint\HumanEval_5__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_5__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_5__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/5,intersperse,structured_cot,0,"from typing import List
+
+
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """"""
+    Insert a number 'delimeter' between every two consecutive elements of input list `numbers'
+
+    Example:
+        >>> intersperse([1, 2, 3], 4)
+        [1, 4, 2, 4, 3]
+    """"""
+    if not numbers:
+        return []
+    
+    result = []
+    # Add first element
+    result.append(numbers[0])
+    
+    # For each subsequent element, add delimeter then the element
+    for num in numbers[1:]:
+        result.append(delimeter)
+        result.append(num)
+    
+    return result",raw_generations/HumanEval_5/structured_cot_sample0.py,,,True,,0,,5.0,0,outputs\reports\static_analysis\pylint\HumanEval_5__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_5__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_5__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/5,intersperse,self_refine,0,"from typing import List
+
+
+def intersperse(numbers: List[int], delimiter: int) -> List[int]:
+    """"""
+    Insert a number 'delimiter' between every two consecutive elements of input list `numbers'
+    """"""
+    if not numbers:
+        return []
+
+    result = []
+    # Add first element without preceding delimiter
+    result.append(numbers[0])
+
+    # For each subsequent element, add delimiter then the element
+    for num in numbers[1:]:
+        result.append(delimiter)
+        result.append(num)
+
+    return result",raw_generations/HumanEval_5/self_refine_sample0.py,"from typing import List
+
+
+def intersperse(numbers: List[int], delimeter: int) -> List[int]:
+    """"""
+    Insert a number 'delimeter' between every two consecutive elements of input list `numbers'
+    """"""
+    if not numbers:
+        return []
+    
+    result = []
+    # Add first element without preceding delimiter
+    result.append(numbers[0])
+    
+    # For each subsequent element, add delimiter then the element
+    for num in numbers[1:]:
+        result.append(delimeter)
+        result.append(num)
+    
+    return result",raw_generations/HumanEval_5/self_refine_sample0_initial.py,True,,0,,8.0,0,outputs\reports\static_analysis\pylint\HumanEval_5__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_5__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_5__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_5__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_5__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_5__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/6,parse_nested_parens,zero_shot,0,"from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """"""
+    Input to this function is a string containing ""("" and "")""s (not exclusively),
+    possibly including multiple groups for nested parentheses.
+    For each of these groups, output the deepest level of nesting of parentheses.
+    E.g. (()()) has maximum two levels of nesting while ((())) has three and )( has zero.
+
+    Example:
+        >>> parse_nested_parens('{""example"": ""(()[]()) ((()))()((())()() )""}')
+        [2, 3, 1, 3]
+    """"""
+    result = []
+    current_depth = 0
+    max_depth = 0
+    in_group = False
+    
+    for char in paren_string:
+        if char == '(':
+            current_depth += 1
+            in_group = True
+            max_depth = max(max_depth, current_depth)
+        elif char == ')':
+            if current_depth > 0:
+                current_depth -= 1
+            # If we were in a group and now depth is 0, group ended
+            if in_group and current_depth == 0:
+                result.append(max_depth)
+                max_depth = 0
+                in_group = False
+        else:
+            # For non-parenthesis characters, if we were in a group and depth is 0, group ended
+            if in_group and current_depth == 0:
+                result.append(max_depth)
+                max_depth = 0
+                in_group = False
+    
+    # Handle case where string ends while still in a group
+    if in_group and current_depth == 0:
+        result.append(max_depth)
+    
+    return result",raw_generations/HumanEval_6/zero_shot_sample0.py,,,True,,0,,8.0,0,outputs\reports\static_analysis\pylint\HumanEval_6__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_6__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_6__zero_shot__sample0__final_bandit.stderr.txt,False,assertion_failed: ,,,
+HumanEval/6,parse_nested_parens,constraint_guided,0,"from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    results = []
+    current_depth = 0
+    max_depth = 0
+    
+    for char in paren_string:
+        if char == '(':
+            current_depth += 1
+            if current_depth > max_depth:
+                max_depth = current_depth
+        elif char == ')':
+            current_depth -= 1
+            if current_depth < 0:
+                # Invalid closing parenthesis - reset for next group
+                current_depth = 0
+                max_depth = 0
+        elif char == ' ':
+            # Space indicates end of a group
+            if max_depth > 0 or current_depth == 0:
+                results.append(max_depth)
+            current_depth = 0
+            max_depth = 0
+    
+    # Handle last group if string doesn't end with space
+    if max_depth > 0 or current_depth == 0:
+        results.append(max_depth)
+    
+    return results",raw_generations/HumanEval_6/constraint_guided_sample0.py,,,True,,0,,6.96,0,outputs\reports\static_analysis\pylint\HumanEval_6__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_6__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_6__constraint_guided__sample0__final_bandit.stderr.txt,False,assertion_failed: ,,,
+HumanEval/6,parse_nested_parens,structured_cot,0,"from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    result = []
+    current_depth = 0
+    max_depth = 0
+    in_group = False
+    
+    for char in paren_string:
+        if char == '(':
+            current_depth += 1
+            in_group = True
+            max_depth = max(max_depth, current_depth)
+        elif char == ')':
+            if current_depth > 0:
+                current_depth -= 1
+            # If we were in a group and now depth is 0, group ended
+            if in_group and current_depth == 0:
+                result.append(max_depth)
+                max_depth = 0
+                in_group = False
+        else:
+            # For non-parenthesis characters, if we were in a group and depth is 0, end group
+            if in_group and current_depth == 0:
+                result.append(max_depth)
+                max_depth = 0
+                in_group = False
+    
+    # Handle case where string ends while still in a group
+    if in_group:
+        result.append(max_depth)
+    
+    return result",raw_generations/HumanEval_6/structured_cot_sample0.py,,,True,,0,,7.6,0,outputs\reports\static_analysis\pylint\HumanEval_6__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_6__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_6__structured_cot__sample0__final_bandit.stderr.txt,False,assertion_failed: ,,,
+HumanEval/6,parse_nested_parens,self_refine,0,"from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """"""
+    Input to this function is a string containing ""("" and "")""s (not exclusively),
+    possibly including multiple groups for nested parentheses.
+    For each of these groups, output the deepest level of nesting of parentheses.
+    E.g. (()()) has maximum two levels of nesting while ((())) has three and )( has zero.
+    """"""
+    result = []
+    current_depth = 0
+    max_depth = 0
+    in_group = False
+
+    for char in paren_string:
+        if char == '(':
+            in_group = True
+            current_depth += 1
+            if current_depth > max_depth:
+                max_depth = current_depth
+        elif char == ')':
+            if current_depth > 0:
+                current_depth -= 1
+                # Group ends when we return to depth 0
+                if current_depth == 0 and in_group:
+                    result.append(max_depth)
+                    max_depth = 0
+                    in_group = False
+            else:
+                # Handle unmatched closing parenthesis
+                if in_group:
+                    result.append(max_depth)
+                    max_depth = 0
+                    in_group = False
+        else:
+            # Non-parenthesis character ends current group if we're in one
+            if in_group and current_depth == 0:
+                result.append(max_depth)
+                max_depth = 0
+                in_group = False
+
+    # Handle trailing group
+    if in_group:
+        result.append(max_depth)
+
+    return result",raw_generations/HumanEval_6/self_refine_sample0.py,"from typing import List
+
+
+def parse_nested_parens(paren_string: str) -> List[int]:
+    """"""
+    Input to this function is a string containing ""("" and "")""s (not exclusively),
+    possibly including multiple groups for nested parentheses.
+    For each of these groups, output the deepest level of nesting of parentheses.
+    E.g. (()()) has maximum two levels of nesting while ((())) has three and )( has zero.
+    """"""
+    result = []
+    current_depth = 0
+    max_depth = 0
+    in_group = False
+    
+    for char in paren_string:
+        if char == '(':
+            in_group = True
+            current_depth += 1
+            max_depth = max(max_depth, current_depth)
+        elif char == ')':
+            if current_depth > 0:
+                current_depth -= 1
+            # If we were in a group and now back to depth 0, group ended
+            if in_group and current_depth == 0:
+                result.append(max_depth)
+                max_depth = 0
+                in_group = False
+        # For any other character, if we're at depth 0, it separates groups
+        elif current_depth == 0 and in_group:
+            result.append(max_depth)
+            max_depth = 0
+            in_group = False
+    
+    # Handle case where string ends while still in a group
+    if in_group:
+        result.append(max_depth)
+    
+    return result",raw_generations/HumanEval_6/self_refine_sample0_initial.py,True,,0,,9.0,0,outputs\reports\static_analysis\pylint\HumanEval_6__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_6__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_6__self_refine__sample0__final_bandit.stderr.txt,False,assertion_failed: ,outputs\reports\static_analysis\pylint\HumanEval_6__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_6__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_6__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/7,filter_by_substring,zero_shot,0,"from typing import List
+
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    """"""
+    Filter an input list of strings only for ones that contain given substring.
+
+    Example:
+        >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')
+        ['abc', 'bacd', 'array']
+    """"""
+    # Use list comprehension to filter strings containing the substring
+    return [s for s in strings if substring in s]",raw_generations/HumanEval_7/zero_shot_sample0.py,,,True,,0,,3.33,0,outputs\reports\static_analysis\pylint\HumanEval_7__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_7__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_7__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/7,filter_by_substring,constraint_guided,0,"from typing import List
+
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    """"""
+    Filter an input list of strings only for ones that contain given substring.
+
+    Example:
+        >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')
+        ['abc', 'bacd', 'array']
+    """"""
+    # Use list comprehension to filter strings containing the substring
+    return [s for s in strings if substring in s]",raw_generations/HumanEval_7/constraint_guided_sample0.py,,,True,,0,,3.33,0,outputs\reports\static_analysis\pylint\HumanEval_7__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_7__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_7__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/7,filter_by_substring,structured_cot,0,"from typing import List
+
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    """"""
+    Filter an input list of strings only for ones that contain given substring.
+
+    Example:
+        >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')
+        ['abc', 'bacd', 'array']
+    """"""
+    result = []
+    for s in strings:
+        if substring in s:
+            result.append(s)
+    return result",raw_generations/HumanEval_7/structured_cot_sample0.py,,,True,,0,,7.14,0,outputs\reports\static_analysis\pylint\HumanEval_7__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_7__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_7__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/7,filter_by_substring,self_refine,0,"from typing import List
+
+
+def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    """"""
+    Filter an input list of strings only for ones that contain given substring.
+
+    Example:
+        >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')
+        ['abc', 'bacd', 'array']
+    """"""
+    if strings is None or substring is None:
+        return []
+    
+    return [s for s in strings if substring in s]",raw_generations/HumanEval_7/self_refine_sample0.py,"def filter_by_substring(strings: List[str], substring: str) -> List[str]:
+    return [s for s in strings if substring in s]",raw_generations/HumanEval_7/self_refine_sample0_initial.py,True,,0,,4.0,0,outputs\reports\static_analysis\pylint\HumanEval_7__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_7__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_7__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_7__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_7__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_7__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/8,sum_product,zero_shot,0,"from typing import List, Tuple
+
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """"""
+    For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.
+    Empty sum should be equal to 0 and empty product should be equal to 1.
+    """"""
+    sum_val = 0
+    product_val = 1
+    for num in numbers:
+        sum_val += num
+        product_val *= num
+    return (sum_val, product_val)",raw_generations/HumanEval_8/zero_shot_sample0.py,,,True,,0,,6.25,0,outputs\reports\static_analysis\pylint\HumanEval_8__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_8__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_8__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/8,sum_product,constraint_guided,0,"from typing import List, Tuple
+
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """"""
+    For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.
+    Empty sum should be equal to 0 and empty product should be equal to 1.
+    """"""
+    total_sum = 0
+    total_product = 1
+    
+    for num in numbers:
+        total_sum += num
+        total_product *= num
+    
+    return (total_sum, total_product)",raw_generations/HumanEval_8/constraint_guided_sample0.py,,,True,,0,,3.75,0,outputs\reports\static_analysis\pylint\HumanEval_8__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_8__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_8__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/8,sum_product,structured_cot,0,"from typing import List, Tuple
+
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """"""
+    For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.
+    Empty sum should be equal to 0 and empty product should be equal to 1.
+
+    Example:
+        >>> sum_product([1, 2, 3, 4])
+        (10, 24)
+    """"""
+    total = 0
+    product = 1
+    for num in numbers:
+        total += num
+        product *= num
+    return (total, product)",raw_generations/HumanEval_8/structured_cot_sample0.py,,,True,,0,,6.25,0,outputs\reports\static_analysis\pylint\HumanEval_8__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_8__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_8__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/8,sum_product,self_refine,0,"from typing import List, Tuple
+
+
+def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    """"""
+    For a given list of integers, return a tuple consisting of a sum and a product of all the integers in a list.
+    Empty sum should be equal to 0 and empty product should be equal to 1.
+    """"""
+    total_sum = 0
+    total_product = 1
+
+    for num in numbers:
+        total_sum += num
+        total_product *= num
+
+    return total_sum, total_product",raw_generations/HumanEval_8/self_refine_sample0.py,"def sum_product(numbers: List[int]) -> Tuple[int, int]:
+    total_sum = 0
+    total_product = 1
+    
+    for num in numbers:
+        total_sum += num
+        total_product *= num
+    
+    return (total_sum, total_product)",raw_generations/HumanEval_8/self_refine_sample0_initial.py,True,,0,,6.25,0,outputs\reports\static_analysis\pylint\HumanEval_8__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_8__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_8__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_8__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_8__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_8__self_refine__sample0__initial_bandit.stderr.txt
+HumanEval/9,rolling_max,zero_shot,0,"from typing import List
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """"""
+    From a given list of integers, generate a list of rolling maximum element found
+    until given moment in the sequence.
+
+    Example:
+        >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+        [1, 2, 3, 3, 3, 4, 4]
+    """"""
+    result = []
+    current_max = None
+    for num in numbers:
+        if current_max is None or num > current_max:
+            current_max = num
+        result.append(current_max)
+    return result",raw_generations/HumanEval_9/zero_shot_sample0.py,,,True,,0,,7.78,0,outputs\reports\static_analysis\pylint\HumanEval_9__zero_shot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_9__zero_shot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_9__zero_shot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/9,rolling_max,constraint_guided,0,"from typing import List
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """"""
+    From a given list of integers, generate a list of rolling maximum element found
+    until given moment in the sequence.
+
+    Example:
+        >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+        [1, 2, 3, 3, 3, 4, 4]
+    """"""
+    if not numbers:
+        return []
+    
+    result = []
+    current_max = numbers[0]
+    
+    for num in numbers:
+        current_max = max(current_max, num)
+        result.append(current_max)
+    
+    return result",raw_generations/HumanEval_9/constraint_guided_sample0.py,,,True,,0,,5.0,0,outputs\reports\static_analysis\pylint\HumanEval_9__constraint_guided__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_9__constraint_guided__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_9__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/9,rolling_max,structured_cot,0,"from typing import List
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """"""
+    From a given list of integers, generate a list of rolling maximum element found
+    until given moment in the sequence.
+
+    Example:
+        >>> rolling_max([1, 2, 3, 2, 3, 4, -2])
+        [1, 2, 3, 3, 3, 4, 4]
+    """"""
+    if not numbers:
+        return []
+    
+    result = []
+    current_max = numbers[0]
+    
+    for num in numbers:
+        if num > current_max:
+            current_max = num
+        result.append(current_max)
+    
+    return result",raw_generations/HumanEval_9/structured_cot_sample0.py,,,True,,0,,4.55,0,outputs\reports\static_analysis\pylint\HumanEval_9__structured_cot__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_9__structured_cot__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_9__structured_cot__sample0__final_bandit.stderr.txt,True,passed,,,
+HumanEval/9,rolling_max,self_refine,0,"from typing import List
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """"""
+    From a given list of integers, generate a list of rolling maximum element found
+    until given moment in the sequence.
+
+    Example:
+        >>> rolling_max([1, 2, 3, 2, 3, 4, 2])
+        [1, 2, 3, 3, 3, 4, 4]
+    """"""
+    if not numbers:
+        return []
+
+    result = []
+    current_max = numbers[0]
+
+    for num in numbers:
+        if num > current_max:
+            current_max = num
+        result.append(current_max)
+
+    return result",raw_generations/HumanEval_9/self_refine_sample0.py,"from typing import List
+
+
+def rolling_max(numbers: List[int]) -> List[int]:
+    """"""
+    From a given list of integers, generate a list of rolling maximum element found
+    until given moment in the sequence.
+
+    Example:
+        >>> rolling_max([1, 2, 3, 2, 3, 4, —])
+        [1, 2, 3, 3, 3, 4, 4]
+    """"""
+    if not numbers:
+        return []
+    
+    result = []
+    current_max = numbers[0]
+    
+    for num in numbers:
+        current_max = max(current_max, num)
+        result.append(current_max)
+    
+    return result",raw_generations/HumanEval_9/self_refine_sample0_initial.py,True,,0,,7.27,0,outputs\reports\static_analysis\pylint\HumanEval_9__self_refine__sample0__final_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_9__self_refine__sample0__final_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_9__self_refine__sample0__final_bandit.stderr.txt,True,passed,outputs\reports\static_analysis\pylint\HumanEval_9__self_refine__sample0__initial_pylint.txt,outputs\reports\static_analysis\bandit\HumanEval_9__self_refine__sample0__initial_bandit.json,outputs\reports\static_analysis\bandit\HumanEval_9__self_refine__sample0__initial_bandit.stderr.txt

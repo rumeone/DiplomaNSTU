@@ -1,3 +1,0 @@
-strategy,tasks,generations,generations_with_tests,pass_rate,avg_pylint,avg_bandit_issues
-cot,3,3,0,,,
-zero_shot,3,3,1,0.0,,

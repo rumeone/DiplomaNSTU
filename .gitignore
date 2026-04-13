@@ -1,1 +1,30 @@
+# Virtual environment
 .venv
+venv/
+env/
+
+# Environment variables (contains secrets!)
+.env
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Local development
+*.log
+*.tmp

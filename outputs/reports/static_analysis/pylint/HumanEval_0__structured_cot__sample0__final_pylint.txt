@@ -1,8 +1,10 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpja_b59jw\candidate.py:18:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpja_b59jw\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0dzxhkrs\candidate.py:17:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0dzxhkrs\candidate.py:22:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0dzxhkrs\candidate.py:23:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0dzxhkrs\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 
 ------------------------------------------------------------------
-Your code has been rated at 7.50/10 (previous run: 4.29/10, +3.21)
+Your code has been rated at 4.29/10 (previous run: 4.29/10, +0.00)
 
 

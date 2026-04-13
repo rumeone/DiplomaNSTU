@@ -1,24 +1,180 @@
+"""Functional evaluation for HumanEval tasks.
+
+This module provides built-in test execution without requiring the external
+human-eval package. Tests are executed directly in a controlled namespace.
+"""
+from __future__ import annotations
+
 import json
-import shutil
-import subprocess
 import tempfile
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 
 @dataclass
 class FunctionalEvaluationResult:
+    """Result of functional evaluation."""
     passed: bool | None
     result: str
     raw_output: str
 
 
-def evaluate_with_humaneval(task_id: str, completion: str, problem_file: str | None = None) -> FunctionalEvaluationResult:
+def evaluate_with_humaneval(
+    task_id: str,
+    completion: str,
+    problem_file: str | None = None,
+    test_code: str | None = None,
+) -> FunctionalEvaluationResult:
+    """Evaluate generated code against HumanEval tests.
+    
+    This function can work in two modes:
+    1. With test_code provided directly (preferred)
+    2. Using external evaluate_functional_correctness harness (legacy)
+    
+    Args:
+        task_id: HumanEval task identifier (e.g., "HumanEval/0")
+        completion: Generated code to evaluate
+        problem_file: Optional path to problem file for external harness
+        test_code: Test code from HumanEval dataset
+        
+    Returns:
+        FunctionalEvaluationResult with pass/fail status
     """
-    Обертка над evaluate_functional_correctness из official harness.
-    Предполагается, что human-eval установлен и выполнение происходит
-    только в безопасной среде.
+    # If test_code is provided, run tests directly
+    if test_code:
+        return _run_tests_directly(task_id, completion, test_code)
+    
+    # Try to get test code from loaded tasks
+    from humaneval_loader import load_humaneval_tasks
+    try:
+        tasks = load_humaneval_tasks(
+            file_path=str(Path("HumanEvalPlus-Mini.jsonl")),
+            max_tasks=200
+        )
+        for task in tasks:
+            if task.task_id == task_id and task.test:
+                return _run_tests_directly(task_id, completion, task.test)
+    except Exception:
+        pass
+    
+    # Fallback to external harness if available
+    return _evaluate_with_external_harness(task_id, completion, problem_file)
+
+
+def _run_tests_directly(
+    task_id: str,
+    completion: str,
+    test_code: str,
+) -> FunctionalEvaluationResult:
+    """Run HumanEval tests directly in a controlled namespace.
+    
+    Args:
+        task_id: Task identifier
+        completion: Generated code
+        test_code: Test code from HumanEval
+        
+    Returns:
+        Evaluation result
     """
+    namespace: dict[str, Any] = {}
+    
+    # Extract entry point from task_id
+    entry_point = _get_entry_point(task_id, completion)
+    
+    try:
+        # Execute the generated code
+        exec(completion, namespace)
+    except SyntaxError as exc:
+        return FunctionalEvaluationResult(
+            passed=False,
+            result=f"syntax_error: {exc}",
+            raw_output=str(exc)
+        )
+    except Exception as exc:
+        return FunctionalEvaluationResult(
+            passed=False,
+            result=f"exec_error: {exc}",
+            raw_output=str(exc)
+        )
+    
+    # Check if the function was defined
+    if entry_point not in namespace:
+        return FunctionalEvaluationResult(
+            passed=False,
+            result=f"entry_point_not_found: {entry_point}",
+            raw_output=f"Function '{entry_point}' was not defined"
+        )
+    
+    # Execute the test code
+    try:
+        exec(test_code, namespace)
+    except Exception as exc:
+        return FunctionalEvaluationResult(
+            passed=False,
+            result=f"test_setup_error: {exc}",
+            raw_output=str(exc)
+        )
+    
+    # Get the check function
+    check_fn = namespace.get("check")
+    if check_fn is None:
+        return FunctionalEvaluationResult(
+            passed=False,
+            result="check_function_not_found",
+            raw_output="Test code did not define 'check' function"
+        )
+    
+    # Run the tests
+    try:
+        check_fn(namespace[entry_point])
+        return FunctionalEvaluationResult(
+            passed=True,
+            result="passed",
+            raw_output="All tests passed"
+        )
+    except AssertionError as exc:
+        return FunctionalEvaluationResult(
+            passed=False,
+            result=f"assertion_failed: {exc}",
+            raw_output=str(exc)
+        )
+    except Exception as exc:
+        return FunctionalEvaluationResult(
+            passed=False,
+            result=f"test_failed: {exc}",
+            raw_output=str(exc)
+        )
+
+
+def _get_entry_point(task_id: str, completion: str) -> str:
+    """Extract entry point from task_id or completion code."""
+    # Try to get from task_id (e.g., "HumanEval/0" -> check completion)
+    # Or extract function name from completion
+    import ast
+    
+    try:
+        tree = ast.parse(completion)
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                return node.name
+    except SyntaxError:
+        pass
+    
+    # Fallback: extract from task_id pattern
+    # This is a guess, real entry points should come from dataset
+    return "solution"
+
+
+def _evaluate_with_external_harness(
+    task_id: str,
+    completion: str,
+    problem_file: str | None = None,
+) -> FunctionalEvaluationResult:
+    """Use external human-eval harness (requires pip install human-eval)."""
+    import shutil
+    import subprocess
+    
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
         samples_path = tmp_path / "samples.jsonl"
@@ -37,9 +193,8 @@ def evaluate_with_humaneval(task_id: str, completion: str, problem_file: str | N
                 passed=None,
                 result="evaluate_functional_correctness_not_in_path",
                 raw_output=(
-                    "Утилита evaluate_functional_correctness не найдена в PATH. "
-                    "Установите пакет human-eval (pip install human-eval) "
-                    "и проверьте, что папка Scripts вашего venv в PATH."
+                    "Utility evaluate_functional_correctness not found in PATH. "
+                    "Install human-eval package: pip install human-eval"
                 ),
             )
 

@@ -1,8 +1,0 @@
---- a/astropy/cosmology/io/__init__.py
-+++ b/astropy/cosmology/io/__init__.py
-@@ -8,4 +8,4 @@
- """
- 
- # Import to register with the I/O machinery
--from . import cosmology, ecsv, mapping, model, row, table, yaml
-+from . import cosmology, ecsv, html, mapping, model, row, table, yaml
