@@ -9,12 +9,22 @@ from pathlib import Path
 
 
 @dataclass
+class RadonResult:
+    """Результаты анализа Radon."""
+    cyclomatic_complexity: float | None  # Средняя цикломатическая сложность
+    max_complexity: int | None  # Максимальная сложность
+    maintainability_index: float | None  # Индекс поддерживаемости (0-100)
+    raw_output: str
+
+
+@dataclass
 class StaticAnalysisResult:
     pylint_score: float | None
     pylint_stdout: str
     bandit_issues: int
     bandit_stdout: str  # JSON output from bandit (if produced)
     bandit_stderr: str  # stderr from bandit (diagnostics)
+    radon: RadonResult | None  # Radon analysis results
     custom_flags: list[str]
 
 
@@ -92,6 +102,80 @@ def run_bandit(file_path: Path) -> tuple[int, str, str]:
     return issues_count, stdout, stderr
 
 
+def run_radon(file_path: Path) -> RadonResult:
+    """
+    Запускает Radon для анализа цикломатической сложности и индекса поддерживаемости.
+    
+    Возвращает:
+    - cyclomatic_complexity: средняя сложность функций
+    - max_complexity: максимальная сложность
+    - maintainability_index: индекс поддерживаемости (0-100, выше = лучше)
+    """
+    radon_exe = shutil.which("radon")
+    
+    # Цикломатическая сложность (cc)
+    cc_cmd = [radon_exe or sys.executable]
+    if not radon_exe:
+        cc_cmd.extend(["-m", "radon"])
+    cc_cmd.extend(["cc", "-j", str(file_path)])
+    
+    # Индекс поддерживаемости (mi)
+    mi_cmd = [radon_exe or sys.executable]
+    if not radon_exe:
+        mi_cmd.extend(["-m", "radon"])
+    mi_cmd.extend(["mi", "-j", str(file_path)])
+    
+    avg_cc = None
+    max_cc = None
+    mi_score = None
+    raw_output = ""
+    
+    try:
+        # Запуск cc (цикломатическая сложность)
+        cc_result = subprocess.run(cc_cmd, capture_output=True, text=True)
+        raw_output += f"=== Cyclomatic Complexity ===\n{cc_result.stdout}\n"
+        
+        if cc_result.stdout.strip():
+            try:
+                cc_data = json.loads(cc_result.stdout)
+                # cc_data: {"filename.py": [{"complexity": 2, ...}, ...]}
+                complexities = []
+                for file_data in cc_data.values():
+                    for item in file_data:
+                        if "complexity" in item:
+                            complexities.append(item["complexity"])
+                if complexities:
+                    avg_cc = sum(complexities) / len(complexities)
+                    max_cc = max(complexities)
+            except (json.JSONDecodeError, AttributeError):
+                pass
+        
+        # Запуск mi (индекс поддерживаемости)
+        mi_result = subprocess.run(mi_cmd, capture_output=True, text=True)
+        raw_output += f"=== Maintainability Index ===\n{mi_result.stdout}\n"
+        
+        if mi_result.stdout.strip():
+            try:
+                mi_data = json.loads(mi_result.stdout)
+                # mi_data: {"filename.py": {"mi": 85.5, ...}}
+                for file_data in mi_data.values():
+                    if isinstance(file_data, dict) and "mi" in file_data:
+                        mi_score = file_data["mi"]
+                        break
+            except (json.JSONDecodeError, AttributeError):
+                pass
+                
+    except Exception as e:
+        raw_output += f"\nError running radon: {e}\n"
+    
+    return RadonResult(
+        cyclomatic_complexity=avg_cc,
+        max_complexity=max_cc,
+        maintainability_index=mi_score,
+        raw_output=raw_output
+    )
+
+
 def analyze_code(code: str, custom_flags: list[str]) -> StaticAnalysisResult:
     with tempfile.TemporaryDirectory() as tmp_dir:
         file_path = Path(tmp_dir) / "candidate.py"
@@ -99,6 +183,7 @@ def analyze_code(code: str, custom_flags: list[str]) -> StaticAnalysisResult:
 
         pylint_score, pylint_stdout = run_pylint(file_path)
         bandit_issues, bandit_stdout, bandit_stderr = run_bandit(file_path)
+        radon_result = run_radon(file_path)
 
         return StaticAnalysisResult(
             pylint_score=pylint_score,
@@ -106,5 +191,6 @@ def analyze_code(code: str, custom_flags: list[str]) -> StaticAnalysisResult:
             bandit_issues=bandit_issues,
             bandit_stdout=bandit_stdout,
             bandit_stderr=bandit_stderr,
+            radon=radon_result,
             custom_flags=custom_flags
         )

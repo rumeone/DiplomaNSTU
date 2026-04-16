@@ -33,6 +33,7 @@ from code_utils import (
 from config import EXPERIMENT_CONFIG, ExperimentConfig
 from evaluator import evaluate_with_humaneval
 from humaneval_loader import HumanEvalTask, load_humaneval_tasks
+from code_reviewer import CodeReviewer, CodeReviewResult
 from llm_client import LLMClient
 from prompts import (
     build_constraint_guided_prompt,
@@ -80,6 +81,7 @@ def run_single_generation(
     strategy: str,
     sample_index: int,
     config: ExperimentConfig,
+    reviewer: CodeReviewer | None = None,
 ) -> dict:
     """Run a single code generation and evaluation.
     
@@ -89,6 +91,7 @@ def run_single_generation(
         strategy: Prompting strategy to use.
         sample_index: Index of this sample (for multiple samples per task).
         config: Experiment configuration.
+        reviewer: Optional LLM code reviewer.
         
     Returns:
         Dictionary with generation results and metrics.
@@ -186,6 +189,11 @@ def run_single_generation(
         initial_code,
     )
 
+    # LLM Review
+    llm_review = None
+    if valid and reviewer is not None:
+        llm_review = reviewer.review_code(final_code, task.prompt)
+    
     record = {
         "task_id": task.task_id,
         "entry_point": task.entry_point,
@@ -201,11 +209,23 @@ def run_single_generation(
         "custom_flags": " | ".join(flags) if flags else "",
         "pylint_score": static_result.pylint_score if static_result else None,
         "bandit_issues": static_result.bandit_issues if static_result else None,
+        # Radon metrics
+        "radon_cc_avg": static_result.radon.cyclomatic_complexity if static_result and static_result.radon else None,
+        "radon_cc_max": static_result.radon.max_complexity if static_result and static_result.radon else None,
+        "radon_mi": static_result.radon.maintainability_index if static_result and static_result.radon else None,
         "pylint_report_file": str(pylint_path) if pylint_path else None,
         "bandit_report_file": str(bandit_json_path) if bandit_json_path else None,
         "bandit_stderr_file": str(bandit_stderr_path) if bandit_stderr_path else None,
         "passed": functional_result.passed if functional_result else None,
         "functional_result": functional_result.result if functional_result else "not_executed",
+        # LLM Review scores
+        "llm_readability": llm_review.readability if llm_review else None,
+        "llm_maintainability": llm_review.maintainability if llm_review else None,
+        "llm_correctness": llm_review.correctness if llm_review else None,
+        "llm_efficiency": llm_review.efficiency if llm_review else None,
+        "llm_pythonic_style": llm_review.pythonic_style if llm_review else None,
+        "llm_overall_score": llm_review.overall_score if llm_review else None,
+        "llm_feedback": llm_review.brief_feedback if llm_review else None,
     }
 
     # For self_refine, also save initial code reports
@@ -265,6 +285,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Enable functional test execution",
     )
+    parser.add_argument(
+        "--enable-llm-review",
+        action="store_true",
+        help="Enable LLM-based code review (requires REVIEWER_API_KEY)",
+    )
     return parser.parse_args()
 
 
@@ -287,15 +312,26 @@ def main() -> None:
     
     ensure_dirs(config.output_dir)
 
+    # Initialize LLM reviewer if enabled
+    reviewer = None
+    if args.enable_llm_review:
+        try:
+            reviewer = CodeReviewer()
+            print("LLM Reviewer initialized successfully.")
+        except RuntimeError as e:
+            print(f"Warning: {e}")
+            print("LLM review will be disabled.")
+
     print(f"\n{'='*60}")
     print("LLM Code Generation Benchmark")
     print(f"{'='*60}")
-    print(f"  Tasks:      {config.max_tasks}")
-    print(f"  Strategies: {config.strategies}")
-    print(f"  Samples:    {config.samples_per_task}")
-    print(f"  Dataset:    {config.dataset_path}")
-    print(f"  Output:     {config.output_dir}")
-    print(f"  Execution:  {'enabled' if config.enable_external_execution else 'disabled'}")
+    print(f"  Tasks:       {config.max_tasks}")
+    print(f"  Strategies:  {config.strategies}")
+    print(f"  Samples:     {config.samples_per_task}")
+    print(f"  Dataset:     {config.dataset_path}")
+    print(f"  Output:      {config.output_dir}")
+    print(f"  Execution:   {'enabled' if config.enable_external_execution else 'disabled'}")
+    print(f"  LLM Review:  {'enabled' if reviewer else 'disabled'}")
     print(f"{'='*60}\n")
 
     client = LLMClient()
@@ -321,6 +357,7 @@ def main() -> None:
                         strategy=strategy,
                         sample_index=sample_index,
                         config=config,
+                        reviewer=reviewer,
                     )
                 except Exception as exc:
                     record = {

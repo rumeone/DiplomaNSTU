@@ -1,103 +1,106 @@
 from textwrap import dedent
 
 
-SYSTEM_RULES = dedent("""
-You are an expert Python software engineer.
-Return only valid Python code.
-Do not include markdown fences.
-Do not include explanations outside the code.
+# ---------------------------------------------------------------------------
+# System prompt
+# ---------------------------------------------------------------------------
 
-Global rules:
-1. Preserve the exact function name and signature from the task.
-2. Solve only the requested task.
-3. Use clear, readable, and maintainable Python code.
-4. Handle edge cases implied by the task.
-5. Do not use input(), print(), files, network, subprocesses, eval(), or exec().
-6. Use only the Python standard language features needed for the task.
-7. Do not add test code.
-8. Add short comments only where they clarify non-trivial logic.
+SYSTEM_RULES = dedent("""\
+    You are a precise Python engineer. Your only job is to implement
+    Python functions that are correct, readable, and idiomatic.
+
+    Output contract (never violate):
+    - Return a single Python code block with no markdown fences.
+    - Implement exactly the function(s) in the task — nothing more.
+    - Keep the exact signature from the task prompt.
+    - No placeholder comments, no TODO, no test code.
 """)
 
 
+# ---------------------------------------------------------------------------
+# Strategy 1: Zero-shot
+# Цель: прямое решение без overhead-инструкций.
+# Почему: чистый baseline — модель опирается только на задачу.
+# ---------------------------------------------------------------------------
+
 def build_zero_shot_prompt(task_prompt: str) -> str:
-    return dedent(f"""
-    Solve the following Python programming task.
+    return dedent(f"""\
+        Implement the Python function below.
+        Return only the complete function body.
 
-    Task:
-    {task_prompt}
-
-    Return only the final Python function implementation.
+        {task_prompt}
     """)
 
 
+# ---------------------------------------------------------------------------
+# Strategy 2: Constraint-guided
+# Цель: улучшить pylint-score через явное качество кода.
+# Почему: прямые качественные constraints (имена, дублирование, edge-cases)
+#         снижают синтаксический и стилистический мусор без CoT-overhead.
+# ---------------------------------------------------------------------------
+
 def build_constraint_guided_prompt(task_prompt: str) -> str:
-    return dedent(f"""
-    Solve the following Python programming task.
+    return dedent(f"""\
+        Implement the Python function below.
 
-    Task:
-    {task_prompt}
+        Requirements:
+        - Keep the exact function signature from the task.
+        - Prioritize correctness over cleverness.
+        - Use a simple, idiomatic implementation.
+        - Handle obvious edge cases only when they are implied by the task.
+        - Do not add extra features, validation, or alternate behaviors not requested.
+        - Return only the final Python code.
 
-    Additional code quality rules:
-    - Prefer straightforward and deterministic logic.
-    - Use descriptive variable names.
-    - Avoid duplicated logic.
-    - Avoid unnecessary nested conditions.
-    - Keep the implementation concise but readable.
-    - Make the function robust for edge cases implied by the specification.
-    - Do not rely on hidden assumptions about tests.
-    - Add brief comments only if the algorithm is not obvious.
-
-    Return only the final Python function implementation.
+        Task:
+        {task_prompt}
     """)
 
 
 def build_structured_cot_prompt(task_prompt: str) -> str:
-    """
-    Стратегия Structured CoT.
-    Важно: reasoning не должен попадать в финальный файл.
-    Поэтому просим модель сначала внутренне построить структурный план,
-    а в ответ вернуть только код.
-    """
-    return dedent(f"""
-    Solve the following Python programming task using a structured reasoning process.
+    return dedent(f"""\
+        Implement the Python function below.
 
-    Task:
-    {task_prompt}
+        Before writing code, briefly reason internally about:
+        - the simplest correct approach,
+        - the key edge cases explicitly implied by the task,
+        - how to keep the implementation readable.
 
-    Before writing the code, reason using a structured plan based on:
-    - sequence steps,
-    - branch conditions,
-    - loop structures,
-    - edge cases,
-    - return behavior.
+        Then write the solution.
 
-    Then write the final Python implementation.
+        IMPORTANT:
+        - Output ONLY Python code.
+        - Do NOT include explanations, headers, or markdown fences.
+        - Keep the exact function signature from the task.
+        - Prefer the shortest clear correct solution.
 
-    Important output rule:
-    Return only the final Python code, without the plan and without explanations.
+        Task:
+        {task_prompt}
     """)
 
 
-def build_self_refine_prompt(task_prompt: str, previous_code: str, feedback: str) -> str:
-    return dedent(f"""
-    You are given a Python programming task, a previous solution, and review feedback.
-    Improve the solution so that it is more correct, readable, robust, and safe.
+def build_self_refine_prompt(
+    task_prompt: str,
+    previous_code: str,
+    feedback: str,
+) -> str:
+    return dedent(f"""\
+        Revise the Python solution below to fix the reported issues.
 
-    Task:
-    {task_prompt}
+        Task:
+        {task_prompt}
 
-    Previous solution:
-    {previous_code}
+        Previous code:
+        {previous_code}
 
-    Feedback:
-    {feedback}
+        Feedback:
+        {feedback}
 
-    Revision rules:
-    - Preserve the required function signature.
-    - Fix any logical, style, and robustness issues.
-    - Keep the solution simple and readable.
-    - Do not add explanations outside the code.
-    - Return only the improved Python code.
+        Revision requirements:
+        - Fix all correctness issues first.
+        - Preserve the exact function signature.
+        - Keep changes minimal unless a rewrite is necessary.
+        - Do not add new functionality beyond the task.
+        - Return only the revised Python code.
 
-    Final answer:
+        Revised code:
     """)

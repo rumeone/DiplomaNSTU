@@ -1,5 +1,0 @@
-strategy,tasks,generations,generations_with_tests,pass_rate,avg_pylint,avg_bandit_issues
-constraint_guided,10,10,10,0.8,3.932,0.0
-self_refine,10,10,10,0.8,6.478,0.0
-structured_cot,10,10,10,0.8,5.082,0.0
-zero_shot,10,10,10,0.8,5.064,0.0
