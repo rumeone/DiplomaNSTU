@@ -16,12 +16,12 @@ def save_records_to_json(records: list[dict[str, Any]], path: Path) -> None:
     pd.DataFrame(records).to_json(path, orient="records", force_ascii=False, indent=2)
 
 
-def _pass_rate_only_executed(passed: pd.Series) -> float:
-    """Доля True среди строк, где тесты реально запускались (passed не null)."""
-    s = passed.dropna()
-    if s.empty:
+def _pass_rate_total(passed: pd.Series) -> float:
+    """Доля True среди всех задач. None/NaN считаются как False (провал)."""
+    if passed.empty:
         return float(np.nan)
-    return float((s == True).mean())
+    # None/NaN → False, True → True, False → False
+    return float((passed == True).sum() / len(passed))
 
 
 def compute_summary(records: list[dict[str, Any]]) -> pd.DataFrame:
@@ -62,7 +62,7 @@ def compute_summary(records: list[dict[str, Any]]) -> pd.DataFrame:
             tasks=("task_id", "nunique"),
             generations=("task_id", "count"),
             generations_with_tests=("passed", lambda s: int(s.notna().sum())),
-            pass_rate=("passed", _pass_rate_only_executed),
+            pass_rate=("passed", _pass_rate_total),
             avg_pylint=("pylint_score", "mean"),
             avg_bandit_issues=("bandit_issues", "mean"),
             # Radon metrics
