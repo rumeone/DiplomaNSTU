@@ -1,0 +1,12 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpw4s0s3_e\candidate.py:15:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpw4s0s3_e\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpw4s0s3_e\candidate.py:23:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpw4s0s3_e\candidate.py:24:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpw4s0s3_e\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpw4s0s3_e\candidate.py:20:8: R1731: Consider using 'current_max = max(current_max, num)' instead of unnecessary if block (consider-using-max-builtin)
+
+------------------------------------------------------------------
+Your code has been rated at 4.55/10 (previous run: 4.55/10, +0.00)
+
+

@@ -28,4 +28,3 @@ build/
 # Local development
 *.log
 *.tmp
-outputs/

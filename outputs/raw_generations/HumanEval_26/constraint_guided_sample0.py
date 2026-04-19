@@ -1,0 +1,16 @@
+from typing import List
+from collections import Counter
+
+
+def remove_duplicates(numbers: List[int]) -> List[int]:
+    """
+    From a list of integers, remove all the elements that occur more than once.
+    Keep the order of the elements the same as in the input.
+
+    Example:
+        >>> remove_duplicates([1, 2, 3, 2, 4])
+        [1, 3, 4]
+    """
+    frequency = Counter(numbers)
+    result = [num for num in numbers if frequency[num] == 1]
+    return result
