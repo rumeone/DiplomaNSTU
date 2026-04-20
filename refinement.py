@@ -1,5 +1,4 @@
 from analyzers import StaticAnalysisResult
-from code_utils import basic_code_quality_flags
 from prompts import build_self_refine_prompt
 
 
@@ -7,7 +6,6 @@ def build_refinement_feedback(
     syntax_error: str,
     static_result: StaticAnalysisResult | None,
     functional_result_text: str,
-    code: str = "",
 ) -> str:
     """Формирует детальный feedback для self-refine на основе результатов анализа."""
     parts: list[str] = []
@@ -17,13 +15,6 @@ def build_refinement_feedback(
 
     if functional_result_text and functional_result_text != "not_executed":
         parts.append(f"Functional evaluation result: {functional_result_text}")
-
-    # Эвристические проверки качества (eval, exec, subprocess и т.д.)
-    if code:
-        flags = basic_code_quality_flags(code)
-        if flags:
-            parts.append("Custom quality flags:")
-            parts.extend(f"- {flag}" for flag in flags)
 
     if static_result is not None:
         if static_result.pylint_score is not None:

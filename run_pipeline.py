@@ -136,7 +136,6 @@ def run_single_generation(
             syntax_error=syntax_error,
             static_result=static_result,
             functional_result_text=functional_result_text,
-            code=initial_code,
         )
 
         refine_prompt = make_refinement_prompt(task.prompt, initial_code, feedback)
