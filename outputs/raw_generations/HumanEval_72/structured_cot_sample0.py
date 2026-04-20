@@ -1,8 +1,8 @@
 from typing import List
 
 def will_it_fly(q: List[int], w: int) -> bool:
-    # Check if the list is balanced (palindromic)
-    # Ignore zeros for the palindrome check
+    # Check if the list is palindromic (balanced)
+    # Ignore zeros at the ends for balance check
     filtered = [x for x in q if x != 0]
     if filtered != filtered[::-1]:
         return False

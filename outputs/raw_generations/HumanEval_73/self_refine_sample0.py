@@ -7,6 +7,9 @@ def smallest_change(arr: List[int]) -> int:
     need to be changed to make the array palindromic. A palindromic array is an array that
     is read the same backwards and forwards. In one change, you can change one element to any other element.
     """
+    if not arr:
+        return 0
+
     changes = 0
     left = 0
     right = len(arr) - 1

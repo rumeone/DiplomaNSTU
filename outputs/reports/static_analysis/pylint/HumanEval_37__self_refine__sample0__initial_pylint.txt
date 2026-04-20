@@ -1,12 +1,12 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpc9a53tx8\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpc9a53tx8\candidate.py:22:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpc9a53tx8\candidate.py:32:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpc9a53tx8\candidate.py:33:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpc9a53tx8\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpc9a53tx8\candidate.py:26:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+C:\Users\3CDE~1\AppData\Local\Temp\tmprgm66iir\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmprgm66iir\candidate.py:23:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmprgm66iir\candidate.py:33:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmprgm66iir\candidate.py:34:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmprgm66iir\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmprgm66iir\candidate.py:27:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
 
 ------------------------------------------------------------------
-Your code has been rated at 5.71/10 (previous run: 6.25/10, -0.54)
+Your code has been rated at 5.71/10 (previous run: 5.00/10, +0.71)
 
 

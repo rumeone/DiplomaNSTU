@@ -4,20 +4,20 @@ def is_multiply_prime(a: int) -> bool:
     Constraints:
         The three prime numbers must be <= 100.
     """
-    if a <= 0:
+    if a <= 1:
         return False
 
-    # Generate all primes <= 100 using sieve
+    # Generate primes up to 100 using sieve
     limit = 100
     is_prime = [True] * (limit + 1)
     is_prime[0] = is_prime[1] = False
-    for i in range(2, int(limit ** 0.5) + 1):
+    for i in range(2, int(limit**0.5) + 1):
         if is_prime[i]:
             for j in range(i * i, limit + 1, i):
                 is_prime[j] = False
     primes = [i for i, prime in enumerate(is_prime) if prime]
 
-    # Try all combinations of three primes (allow repeats)
+    # Try all combinations of three primes
     n = len(primes)
     for i in range(n):
         p1 = primes[i]

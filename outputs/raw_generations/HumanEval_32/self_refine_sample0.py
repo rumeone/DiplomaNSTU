@@ -26,46 +26,39 @@ def find_zero(xs: List[int]) -> float:
         1.0
     """
     if len(xs) % 2 != 0:
-        raise ValueError("xs must have an even number of coefficients")
-    
-    if not xs:
-        raise ValueError("xs cannot be empty")
+        raise ValueError("List xs must have an even number of coefficients")
     
     if xs[-1] == 0:
         raise ValueError("Largest coefficient must be non-zero")
     
-    degree = len(xs) - 1
+    # Convert to float for consistent computation
+    xs_float = [float(coeff) for coeff in xs]
     
-    if degree == 1:
-        return -xs[0] / xs[1]
-    
+    # Find initial bounds where polynomial changes sign
     left = -1.0
     right = 1.0
     
-    f_left = poly(xs, left)
-    f_right = poly(xs, right)
-    
-    while f_left * f_right > 0:
+    # Expand search range until we find a sign change
+    while poly(xs_float, left) * poly(xs_float, right) > 0:
         left *= 2
         right *= 2
-        f_left = poly(xs, left)
-        f_right = poly(xs, right)
     
-    tolerance = 1e-10
-    max_iterations = 1000
+    # Perform bisection method
+    tolerance = 1e-12
+    max_iterations = 100
     
     for _ in range(max_iterations):
         mid = (left + right) / 2
-        f_mid = poly(xs, mid)
+        f_mid = poly(xs_float, mid)
         
         if abs(f_mid) < tolerance:
             return mid
         
-        if f_left * f_mid < 0:
+        f_left = poly(xs_float, left)
+        
+        if f_left * f_mid <= 0:
             right = mid
-            f_right = f_mid
         else:
             left = mid
-            f_left = f_mid
     
     return (left + right) / 2

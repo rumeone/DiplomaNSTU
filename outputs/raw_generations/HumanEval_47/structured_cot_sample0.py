@@ -16,9 +16,10 @@ def median(l: List[float]) -> float:
     
     sorted_l = sorted(l)
     n = len(sorted_l)
-    mid = n // 2
     
     if n % 2 == 1:
-        return sorted_l[mid]
+        return sorted_l[n // 2]
     else:
-        return (sorted_l[mid - 1] + sorted_l[mid]) / 2.0
+        mid1 = sorted_l[n // 2 - 1]
+        mid2 = sorted_l[n // 2]
+        return (mid1 + mid2) / 2.0

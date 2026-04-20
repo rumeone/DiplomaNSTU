@@ -4,5 +4,5 @@ def string_sequence(n: int) -> str:
     If n is negative, return an empty string.
     """
     if n < 0:
-        return ""
-    return " ".join(str(i) for i in range(n + 1))
+        return ''
+    return ' '.join(str(i) for i in range(n + 1))

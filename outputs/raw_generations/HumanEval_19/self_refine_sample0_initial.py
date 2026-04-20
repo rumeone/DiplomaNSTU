@@ -4,16 +4,16 @@ def sort_numbers(numbers: str) -> str:
     Valid choices are 'zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight' and 'nine'.
     Return the string with numbers sorted from smallest to largest
     """
-    word_to_num = {
+    word_to_digit = {
         'zero': 0, 'one': 1, 'two': 2, 'three': 3, 'four': 4,
         'five': 5, 'six': 6, 'seven': 7, 'eight': 8, 'nine': 9
     }
     
     # Split the input string, strip whitespace, and filter out empty strings
-    words = [w for w in numbers.split() if w]
+    tokens = [token.strip() for token in numbers.split() if token.strip()]
     
-    # Sort based on numeric value
-    sorted_words = sorted(words, key=lambda w: word_to_num[w])
+    # Sort tokens based on their numeric values
+    sorted_tokens = sorted(tokens, key=lambda word: word_to_digit[word])
     
-    # Join back with single spaces
-    return ' '.join(sorted_words)
+    # Join sorted tokens with a single space
+    return ' '.join(sorted_tokens)

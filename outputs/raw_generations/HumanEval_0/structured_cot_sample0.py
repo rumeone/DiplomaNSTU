@@ -1,6 +1,20 @@
+from typing import List
+
+
 def has_close_elements(numbers: List[float], threshold: float) -> bool:
-    numbers.sort()
-    for i in range(len(numbers) - 1):
-        if abs(numbers[i] - numbers[i + 1]) < threshold:
-            return True
+    """
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """
+    n = len(numbers)
+    for i in range(n):
+        for j in range(i + 1, n):
+            if abs(numbers[i] - numbers[j]) < threshold:
+                return True
     return False

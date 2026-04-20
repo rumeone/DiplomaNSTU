@@ -10,16 +10,15 @@ def sort_third(l: List[int]) -> List[int]:
     Examples:
         >>> sort_third([1, 2, 3])
         [1, 2, 3]
-        >>> sort_third([5, 6, 3, 4, 8, 9, 2])
-        [2, 6, 3, 4, 8, 9, 5]
+        >>> sort_third([5, 6, 3, 4, 8, 9, -2])
+        [-2, 6, 3, 4, 8, 9, 5]
     """
     result = l.copy()
-    divisible_values = sorted(l[i] for i in range(len(l)) if i % 3 == 0)
+    divisible_indices = [i for i in range(len(l)) if i % 3 == 0]
+    divisible_values = [l[i] for i in divisible_indices]
+    sorted_values = sorted(divisible_values)
     
-    div_index = 0
-    for i in range(len(l)):
-        if i % 3 == 0:
-            result[i] = divisible_values[div_index]
-            div_index += 1
+    for idx, val in zip(divisible_indices, sorted_values):
+        result[idx] = val
     
     return result

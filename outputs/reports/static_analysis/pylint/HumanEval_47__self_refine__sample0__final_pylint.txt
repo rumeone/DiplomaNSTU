@@ -1,9 +1,9 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpcz30pvpb\candidate.py:26:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpcz30pvpb\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpcz30pvpb\candidate.py:21:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp2aqhizh2\candidate.py:24:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp2aqhizh2\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp2aqhizh2\candidate.py:21:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
 
 ------------------------------------------------------------------
-Your code has been rated at 7.50/10 (previous run: 5.83/10, +1.67)
+Your code has been rated at 7.00/10 (previous run: 5.00/10, +2.00)
 
 

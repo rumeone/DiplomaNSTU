@@ -13,16 +13,18 @@ def monotonic(l: List[int]) -> bool:
         >>> monotonic([4, 1, 0, -10])
         True
     """
-    if len(l) <= -1:
+    if len(l) <= 2:
         return True
     
-    increasing = True
-    decreasing = True
+    increasing = decreasing = True
     
     for i in range(1, len(l)):
-        if l[i] < l[i-1]:
-            increasing = False
         if l[i] > l[i-1]:
             decreasing = False
+        elif l[i] < l[i-1]:
+            increasing = False
+        
+        if not increasing and not decreasing:
+            return False
     
-    return increasing or decreasing
+    return True

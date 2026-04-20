@@ -13,14 +13,17 @@ def find_closest_elements(numbers: List[float]) -> Tuple[float, float]:
         >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])
         (2.0, 2.0)
     """
-    min_diff = float('inf')
+    min_distance = float('inf')
     result = (0.0, 0.0)
     
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
-            diff = abs(numbers[i] - numbers[j])
-            if diff < min_diff or (diff == min_diff and max(i, j) > max(result[0], result[1])):
-                min_diff = diff
-                result = (min(numbers[i], numbers[j]), max(numbers[i], numbers[j]))
+            distance = abs(numbers[i] - numbers[j])
+            if distance < min_distance or (distance == min_distance and max(i, j) > max(result[0], result[1])):
+                min_distance = distance
+                if numbers[i] <= numbers[j]:
+                    result = (numbers[i], numbers[j])
+                else:
+                    result = (numbers[j], numbers[i])
     
     return result

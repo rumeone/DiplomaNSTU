@@ -9,6 +9,6 @@ def concatenate(strings: List[str]) -> str:
         >>> concatenate(['a', 'b', 'c'])
         'abc'
     """
-    if strings is None:
+    if not strings:
         return ''
     return ''.join(strings)

@@ -1,9 +1,8 @@
 def prime_fib(n: int) -> int:
-    """
-    prime_fib returns n-th number that is a Fibonacci number and also prime.
-    """
     if n <= 0:
-        raise ValueError("n must be positive")
+        return 0
+    if n == 1:
+        return 2
     
     def is_prime(num: int) -> bool:
         if num < 2:
@@ -18,12 +17,12 @@ def prime_fib(n: int) -> int:
                 return False
         return True
     
-    count = 0
-    a, b = 0, 1
+    count = 1
+    a, b = 1, 1
     
-    while True:
+    while count < n:
         a, b = b, a + b
-        if a > 1 and is_prime(a):
+        if is_prime(b):
             count += 1
-            if count == n:
-                return a
+    
+    return b

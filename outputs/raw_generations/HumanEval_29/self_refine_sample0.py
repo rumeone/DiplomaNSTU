@@ -11,7 +11,9 @@ def filter_by_prefix(strings: List[str], prefix: str) -> List[str]:
         >>> filter_by_prefix(['abc', 'bcd', 'cde', 'array'], 'a')
         ['abc', 'array']
     """
-    if not strings:
-        return []
+    if not isinstance(strings, list):
+        raise TypeError("strings must be a list")
+    if not isinstance(prefix, str):
+        raise TypeError("prefix must be a string")
     
-    return [s for s in strings if s.startswith(prefix)]
+    return [s for s in strings if isinstance(s, str) and s.startswith(prefix)]

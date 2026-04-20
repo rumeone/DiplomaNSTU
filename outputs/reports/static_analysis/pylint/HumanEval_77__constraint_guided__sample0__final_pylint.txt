@@ -1,8 +1,9 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmps9zvh9mo\candidate.py:11:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps9zvh9mo\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_xib8oi0\candidate.py:10:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_xib8oi0\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_xib8oi0\candidate.py:10:11: R1714: Consider merging these comparisons with 'in' by using 'a in (root**3, (root - 1)**3, (root + -1)**3)'. Use a set instead if elements are hashable. (consider-using-in)
 
 ------------------------------------------------------------------
-Your code has been rated at 7.14/10 (previous run: 4.00/10, +3.14)
+Your code has been rated at 4.00/10 (previous run: 5.00/10, -1.00)
 
 

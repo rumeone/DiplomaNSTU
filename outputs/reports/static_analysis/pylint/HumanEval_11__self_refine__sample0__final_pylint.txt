@@ -1,12 +1,12 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp94yn36uh\candidate.py:16:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp94yn36uh\candidate.py:21:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp94yn36uh\candidate.py:29:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp94yn36uh\candidate.py:32:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp94yn36uh\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp94yn36uh\candidate.py:1:0: W0611: Unused List imported from typing (unused-import)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp7a0ato22\candidate.py:15:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp7a0ato22\candidate.py:19:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp7a0ato22\candidate.py:28:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp7a0ato22\candidate.py:30:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp7a0ato22\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp7a0ato22\candidate.py:1:0: W0611: Unused List imported from typing (unused-import)
 
 ------------------------------------------------------------------
-Your code has been rated at 5.71/10 (previous run: 5.83/10, -0.12)
+Your code has been rated at 6.25/10 (previous run: 5.45/10, +0.80)
 
 

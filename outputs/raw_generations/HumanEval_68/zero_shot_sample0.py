@@ -1,6 +1,5 @@
 from typing import List
 
-
 def pluck(arr: List[int]) -> List[int]:
     """
     Given an array representing a branch of a tree that has integer nodes,
@@ -10,42 +9,16 @@ def pluck(arr: List[int]) -> List[int]:
 
     The plucked node should be returned in a list, [ smallest_value, its index ],
     If there are no even values or the given array is empty, return [].
-
-    Example 1:
-        Input: [4,2,3]
-        Output: [2, 1]
-        Explanation: 2 has the smallest even value, and 2 has the smallest index.
-
-    Example 2:
-        Input: [1,2,3]
-        Output: [2, 1]
-        Explanation: 2 has the smallest even value, and 2 has the smallest index. 
-
-    Example 3:
-        Input: []
-        Output: []
-
-    Example 4:
-        Input: [5, 0, 3, 0, 4, 2]
-        Output: [0, 1]
-        Explanation: 0 is the smallest value, but  there are two zeros,
-                     so we will choose the first zero, which has the smallest index.
     """
-    if not arr:
-        return []
-    
     smallest_even = None
     smallest_index = -1
     
     for i, num in enumerate(arr):
         if num % 2 == 0:
-            if smallest_even is None or num < smallest_even:
+            if smallest_even is None or num < smallest_even or (num == smallest_even and i < smallest_index):
                 smallest_even = num
-                smallest_index = i
-            elif num == smallest_even and i < smallest_index:
                 smallest_index = i
     
     if smallest_even is None:
         return []
-    
     return [smallest_even, smallest_index]

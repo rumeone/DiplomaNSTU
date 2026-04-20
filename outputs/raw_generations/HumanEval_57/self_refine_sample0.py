@@ -13,7 +13,7 @@ def monotonic(l: List[int]) -> bool:
         >>> monotonic([4, 1, 0, -10])
         True
     """
-    if len(l) <= 1:
+    if len(l) <= 2:
         return True
 
     increasing = None

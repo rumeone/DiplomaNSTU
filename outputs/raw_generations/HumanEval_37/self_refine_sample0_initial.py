@@ -16,8 +16,9 @@ def sort_even(l: List[int]) -> List[int]:
     if not l:
         return []
     
-    # Extract even-indexed elements and sort them
+    # Extract even-indexed elements
     even_elements = [l[i] for i in range(0, len(l), 2)]
+    # Sort them
     even_elements.sort()
     
     # Build the result list

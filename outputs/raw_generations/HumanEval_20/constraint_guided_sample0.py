@@ -13,18 +13,19 @@ def find_closest_elements(numbers: List[float]) -> Tuple[float, float]:
         >>> find_closest_elements([1.0, 2.0, 3.0, 4.0, 5.0, 2.0])
         (2.0, 2.0)
     """
-    # Initialize with the first two elements
-    min_distance = abs(numbers[0] - numbers[1])
-    best_pair = (min(numbers[0], numbers[1]), max(numbers[0], numbers[1]))
-    
-    # Check all pairs, preferring later ones when distances are equal
+    if len(numbers) < 2:
+        raise ValueError("List must contain at least two elements")
+
+    min_distance = float('inf')
+    result_pair = (0.0, 0.0)
+
+    # Iterate through all pairs, preferring later pairs when distances are equal
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
-            current_distance = abs(numbers[i] - numbers[j])
-            # Update if we found a strictly smaller distance
-            # or equal distance (to prefer later pairs)
-            if current_distance <= min_distance:
-                min_distance = current_distance
-                best_pair = (min(numbers[i], numbers[j]), max(numbers[i], numbers[j]))
-    
-    return best_pair
+            distance = abs(numbers[i] - numbers[j])
+            # Update if distance is smaller, or equal but pair appears later
+            if distance < min_distance or (distance == min_distance and (i, j) > result_pair):
+                min_distance = distance
+                result_pair = (min(numbers[i], numbers[j]), max(numbers[i], numbers[j]))
+
+    return result_pair

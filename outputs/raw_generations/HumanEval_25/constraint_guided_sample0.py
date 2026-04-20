@@ -25,7 +25,7 @@ def factorize(n: int) -> List[int]:
         while n % divisor == 0:
             factors.append(divisor)
             n //= divisor
-        divisor += 1 if divisor == 2 else 2
+        divisor += 1 if divisor == 2 else 2  # Check 2, then odd numbers
     
     if n > 1:
         factors.append(n)

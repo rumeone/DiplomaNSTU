@@ -10,6 +10,9 @@ def sum_product(numbers: List[int]) -> Tuple[int, int]:
         >>> sum_product([1, 2, 3, 4])
         (10, 24)
     """
+    if not numbers:
+        return (0, 1)
+    
     total_sum = 0
     total_product = 1
     

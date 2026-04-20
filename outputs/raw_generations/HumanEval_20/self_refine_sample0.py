@@ -14,28 +14,24 @@ def find_closest_elements(numbers: List[float]) -> Tuple[float, float]:
         (2.0, 2.0)
     """
     if len(numbers) < 2:
-        raise ValueError("Input list must contain at least two numbers")
+        raise ValueError("List must contain at least two numbers")
 
     min_distance = float('inf')
-    result = (0.0, 0.0)
+    best_pair = (numbers[0], numbers[1])
 
+    # Iterate through all pairs, tracking the last closest pair found
     for i in range(len(numbers)):
         for j in range(i + 1, len(numbers)):
             distance = abs(numbers[i] - numbers[j])
             if distance < min_distance:
                 min_distance = distance
-                if numbers[i] <= numbers[j]:
-                    result = (numbers[i], numbers[j])
-                else:
-                    result = (numbers[j], numbers[i])
+                best_pair = (min(numbers[i], numbers[j]), max(numbers[i], numbers[j]))
             elif distance == min_distance:
-                # For equal distance, choose the pair with larger indices
-                if numbers[i] <= numbers[j]:
-                    current_pair = (numbers[i], numbers[j])
-                else:
-                    current_pair = (numbers[j], numbers[i])
                 # Update only if this pair appears later in the list
-                if j > result[1]:
-                    result = current_pair
+                current_pair = (min(numbers[i], numbers[j]), max(numbers[i], numbers[j]))
+                # Check if either element appears later than in current best_pair
+                if (numbers.index(current_pair[0]) > numbers.index(best_pair[0]) or
+                    numbers.index(current_pair[1]) > numbers.index(best_pair[1])):
+                    best_pair = current_pair
 
-    return result
+    return best_pair

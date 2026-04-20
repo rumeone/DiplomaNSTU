@@ -3,16 +3,16 @@ from typing import List
 
 def numerical_letter_grade(grades: List[float]) -> List[str]:
     result = []
-    for g in grades:
+    for grade in grades:
         # Round to 1 decimal place with half-up rounding
-        # Add small epsilon to handle floating point issues
-        rounded = round(g + 1e-9, 1)
+        rounded = round(grade + 1e-9, 1)  # Add small epsilon for proper half-up
         
         # Check bounds
         if rounded < 0.0 or rounded > 4.0:
             result.append('')
             continue
             
+        # Convert to letter grade
         if rounded == 4.0:
             result.append('A+')
         elif rounded > 3.7:
@@ -37,7 +37,7 @@ def numerical_letter_grade(grades: List[float]) -> List[str]:
             result.append('D')
         elif rounded > 0.0:
             result.append('D-')
-        else:
+        else:  # rounded == 0.0
             result.append('E')
     
     return result

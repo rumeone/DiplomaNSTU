@@ -15,12 +15,10 @@ def median(l: List[float]) -> float:
         raise ValueError("Cannot compute median of empty list")
 
     sorted_list = sorted(l)
-    length = len(sorted_list)
-    middle_index = length // 2
+    n = len(sorted_list)
+    mid = n // 2
 
-    if length % 2 == 1:
-        return sorted_list[middle_index]
+    if n % 2 == 1:
+        return sorted_list[mid]
     else:
-        left_value = sorted_list[middle_index - 1]
-        right_value = sorted_list[middle_index]
-        return (left_value + right_value) / 2.0
+        return (sorted_list[mid - 1] + sorted_list[mid]) / 2.0

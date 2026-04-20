@@ -7,14 +7,18 @@ def strange_sort_list(lst: List[int]) -> List[int]:
     Strange sorting, is when you start with the minimum value,
     then the maximum value from the remaining integers, then the minimum and so on.
     """
+    if not lst:
+        return []
+
+    sorted_lst = sorted(lst)
     result = []
-    remaining = sorted(lst)
-    
-    while remaining:
-        # Take the smallest element
-        result.append(remaining.pop(0))
-        # Take the largest element if any remain
-        if remaining:
-            result.append(remaining.pop())
-    
+    left, right = 0, len(sorted_lst) - 1
+
+    while left <= right:
+        result.append(sorted_lst[left])
+        left += 1
+        if left <= right:
+            result.append(sorted_lst[right])
+            right -= 1
+
     return result

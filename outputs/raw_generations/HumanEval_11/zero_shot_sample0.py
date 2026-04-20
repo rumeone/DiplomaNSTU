@@ -10,16 +10,17 @@ def string_xor(a: str, b: str) -> str:
         >>> string_xor('10', '110')
         '100'
     """
+    # Pad the shorter string with leading zeros
     max_len = max(len(a), len(b))
-    a_padded = a.zfill(max_len)
-    b_padded = b.zfill(max_len)
+    a = a.zfill(max_len)
+    b = b.zfill(max_len)
     
-    result_chars = []
-    for char_a, char_b in zip(a_padded, b_padded):
-        if char_a == char_b:
-            result_chars.append('0')
+    result = []
+    for bit_a, bit_b in zip(a, b):
+        # XOR: 1 if bits are different, 0 if same
+        if bit_a != bit_b:
+            result.append('1')
         else:
-            result_chars.append('1')
+            result.append('0')
     
-    result = ''.join(result_chars).lstrip('0')
-    return result if result else '0'
+    return ''.join(result)

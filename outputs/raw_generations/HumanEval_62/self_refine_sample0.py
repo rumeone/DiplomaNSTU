@@ -15,5 +15,6 @@ def derivative(xs: List[int]) -> List[int]:
     """
     if not xs:
         return []
-    
-    return [coeff * power for power, coeff in enumerate(xs) if power > 0]
+
+    result = [coeff * power for power, coeff in enumerate(xs[1:], start=1)]
+    return result

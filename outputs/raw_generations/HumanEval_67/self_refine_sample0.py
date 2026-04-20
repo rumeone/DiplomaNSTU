@@ -1,16 +1,18 @@
 def fruit_distribution(s: str, n: int) -> int:
     """
-    Return the number of mango fruits in the basket.
-    s: string describing number of apples and oranges.
-    n: total number of fruits in the basket.
+    Return the number of mango fruits given a string describing apples and oranges,
+    and the total number of fruits.
     """
     import re
-    
-    # Find all numbers in the string
-    numbers = re.findall(r'\d+', s)
-    
-    # Convert to integers and sum
-    total_apples_oranges = sum(int(num) for num in numbers)
-    
-    # Calculate mango count
-    return n - total_apples_oranges
+    pattern = r'(\d+)\s+(apples?|oranges?)'
+    matches = re.findall(pattern, s)
+    apples = 0
+    oranges = 0
+    for num_str, fruit in matches:
+        num = int(num_str)
+        if fruit.startswith('apple'):
+            apples = num
+        elif fruit.startswith('orange'):
+            oranges = num
+    mangoes = n - apples - oranges
+    return mangoes

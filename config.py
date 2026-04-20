@@ -37,7 +37,7 @@ class ExperimentConfig:
         "self_refine",
     ])
 
-    output_dir: Path = Path("outputs")
+    output_dir: Path = Path("outputs_test_2")
     run_refinement: bool = True
     max_refinement_rounds: int = 1
 

@@ -1,16 +1,25 @@
 from typing import List
 
-
 def numerical_letter_grade(grades: List[float]) -> List[str]:
+    def round_half_up(n: float) -> float:
+        if n < 0:
+            return -round_half_up(-n)
+        int_part = int(n)
+        frac = n - int_part
+        if frac >= 0.5:
+            return int_part + 1
+        return int_part + frac
+
     result = []
-    for gpa in grades:
-        if gpa < 0.0 or gpa > 4.0:
+    for g in grades:
+        if g < 0.0 or g > 4.0:
             result.append('')
             continue
         
-        rounded = round(gpa + 1e-9, 1)
+        rounded = round_half_up(g * 10) / 10
+        rounded = round(rounded, 1)
         
-        if rounded == 4.0:
+        if abs(rounded - 4.0) < 1e-6:
             result.append('A+')
         elif rounded > 3.7:
             result.append('A')

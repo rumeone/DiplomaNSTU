@@ -8,6 +8,10 @@ def greatest_common_divisor(a: int, b: int) -> int:
         >>> greatest_common_divisor(25, 15)
         5
     """
-    while b:
+    a = abs(a)
+    b = abs(b)
+    
+    while b != 0:
         a, b = b, a % b
-    return abs(a)
+    
+    return a

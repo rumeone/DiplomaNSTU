@@ -1,10 +1,8 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpx4wjeec7\candidate.py:5:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpx4wjeec7\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpx4wjeec7\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpx4wjeec7\candidate.py:1:33: E0602: Undefined variable 'List' (undefined-variable)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvzvpb7d0\candidate.py:16:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvzvpb7d0\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 
 ------------------------------------------------------------------
-Your code has been rated at 0.00/10 (previous run: 3.33/10, -3.33)
+Your code has been rated at 6.67/10 (previous run: 3.33/10, +3.33)
 
 

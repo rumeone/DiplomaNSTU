@@ -12,4 +12,4 @@ def make_palindrome(string: str) -> str:
             prefix = string[:i]
             return string + prefix[::-1]
     
-    return string + string[:-1][::-1]
+    return string + string[::-1]

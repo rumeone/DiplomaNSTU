@@ -1,12 +1,9 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmps6nqiya6\candidate.py:8:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps6nqiya6\candidate.py:11:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps6nqiya6\candidate.py:14:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps6nqiya6\candidate.py:16:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps6nqiya6\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps6nqiya6\candidate.py:7:4: C0415: Import outside toplevel (re) (import-outside-toplevel)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpmv7pym0b\candidate.py:18:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpmv7pym0b\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpmv7pym0b\candidate.py:6:4: C0415: Import outside toplevel (re) (import-outside-toplevel)
 
 ------------------------------------------------------------------
-Your code has been rated at 0.00/10 (previous run: 6.00/10, -6.00)
+Your code has been rated at 7.86/10 (previous run: 8.18/10, -0.32)
 
 

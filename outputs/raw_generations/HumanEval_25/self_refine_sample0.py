@@ -21,16 +21,11 @@ def factorize(n: int) -> List[int]:
     factors = []
     divisor = 2
 
-    while n % divisor == 0:
-        factors.append(divisor)
-        n //= divisor
-
-    divisor = 3
     while divisor * divisor <= n:
         while n % divisor == 0:
             factors.append(divisor)
             n //= divisor
-        divisor += 2
+        divisor += 1 if divisor == 2 else 2
 
     if n > 1:
         factors.append(n)

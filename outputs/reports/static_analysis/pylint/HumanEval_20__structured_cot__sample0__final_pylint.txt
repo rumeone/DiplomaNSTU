@@ -1,13 +1,11 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpdklyr1kf\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpdklyr1kf\candidate.py:22:0: C0301: Line too long (121/100) (line-too-long)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpdklyr1kf\candidate.py:28:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpdklyr1kf\candidate.py:29:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpdklyr1kf\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpdklyr1kf\candidate.py:19:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpdklyr1kf\candidate.py:23:16: R1730: Consider using 'min_distance = min(min_distance, distance)' instead of unnecessary if block (consider-using-min-builtin)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpz9shjjo0\candidate.py:19:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpz9shjjo0\candidate.py:23:0: C0301: Line too long (105/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpz9shjjo0\candidate.py:28:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpz9shjjo0\candidate.py:29:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpz9shjjo0\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 
 ------------------------------------------------------------------
-Your code has been rated at 5.00/10 (previous run: 5.45/10, -0.45)
+Your code has been rated at 6.43/10 (previous run: 7.69/10, -1.26)
 
 

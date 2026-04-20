@@ -1,5 +1,6 @@
 from typing import List
 
+
 def monotonic(l: List[int]) -> bool:
     """
     Check if list elements are monotonically increasing or decreasing.

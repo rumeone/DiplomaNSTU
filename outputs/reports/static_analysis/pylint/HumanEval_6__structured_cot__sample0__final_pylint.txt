@@ -1,13 +1,12 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1_m75_xy\candidate.py:9:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1_m75_xy\candidate.py:27:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1_m75_xy\candidate.py:30:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1_m75_xy\candidate.py:31:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1_m75_xy\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1_m75_xy\candidate.py:4:0: C0116: Missing function or method docstring (missing-function-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1_m75_xy\candidate.py:14:12: R1731: Consider using 'max_depth = max(max_depth, current_depth)' instead of unnecessary if block (consider-using-max-builtin)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgf5riuaj\candidate.py:9:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgf5riuaj\candidate.py:26:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgf5riuaj\candidate.py:29:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgf5riuaj\candidate.py:30:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgf5riuaj\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgf5riuaj\candidate.py:4:0: C0116: Missing function or method docstring (missing-function-docstring)
 
 ------------------------------------------------------------------
-Your code has been rated at 7.31/10 (previous run: 7.69/10, -0.38)
+Your code has been rated at 7.60/10 (previous run: 9.20/10, -1.60)
 
 

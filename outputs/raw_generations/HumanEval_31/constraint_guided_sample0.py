@@ -1,15 +1,22 @@
 def is_prime(n: int) -> bool:
-    if n < 2:
+    """
+    Check if given number is considered to be prime.
+    
+    A prime number is a natural number greater than 1 that has no positive
+    divisors other than 1 and itself.
+    """
+    if n <= 1:
         return False
-    if n % 2 == 0:
-        return n == 2
-    if n % 3 == 0:
-        return n == 3
+    if n <= 3:
+        return True
+    if n % 2 == 0 or n % 3 == 0:
+        return False
+    
+    # Check for factors from 5 to sqrt(n)
+    # All primes greater than 3 can be written as 6k ± 1
     i = 5
-    step = 2
     while i * i <= n:
-        if n % i == 0:
+        if n % i == 0 or n % (i + 2) == 0:
             return False
-        i += step
-        step = 6 - step
+        i += 6
     return True

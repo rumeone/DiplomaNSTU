@@ -5,10 +5,7 @@ def largest_divisor(n: int) -> int:
     """
     if n <= 1:
         return -1
-
-    # Start from n//2 and go downwards for efficiency
     for d in range(n // 2, 0, -1):
         if n % d == 0:
             return d
-
     return -1

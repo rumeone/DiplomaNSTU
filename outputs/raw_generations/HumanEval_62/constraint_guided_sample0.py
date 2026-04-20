@@ -11,7 +11,7 @@ def derivative(xs: List[int]) -> List[int]:
         return []
     
     result = []
-    for power, coeff in enumerate(xs[1:], start=1):
-        result.append(coeff * power)
+    for i in range(1, len(xs)):
+        result.append(xs[i] * i)
     
     return result

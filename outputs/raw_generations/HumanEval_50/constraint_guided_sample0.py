@@ -1,13 +1,15 @@
 def decode_shift(s: str) -> str:
     """
-    Takes as input a lowercase string encoded as follows:
-        - Shift every letter by 5 in the alphabet.
-
-    This function should return the decoded string.
+    Decode a string where each lowercase letter was shifted forward by 5 positions.
+    To decode, shift each letter backward by 5 positions in the alphabet.
     """
-    decoded_chars = []
+    result = []
     for ch in s:
-        # Shift the character back by 5 positions in the alphabet
-        shifted_char = chr((ord(ch) - ord('a') - 5) % 26 + ord('a'))
-        decoded_chars.append(shifted_char)
-    return ''.join(decoded_chars)
+        if 'a' <= ch <= 'z':
+            # Shift backward by 5, wrapping around the alphabet
+            decoded_char = chr((ord(ch) - ord('a') - 5) % 26 + ord('a'))
+            result.append(decoded_char)
+        else:
+            # Non-lowercase letters are kept unchanged (though specification says lowercase input)
+            result.append(ch)
+    return ''.join(result)

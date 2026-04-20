@@ -18,6 +18,6 @@ def derivative(xs: List[int]) -> List[int]:
     
     result = []
     for i in range(1, len(xs)):
-        result.append(i * xs[i])
+        result.append(xs[i] * i)
     
     return result

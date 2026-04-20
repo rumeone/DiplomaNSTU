@@ -5,12 +5,13 @@ def make_palindrome(string: str) -> str:
     if not string:
         return ""
 
-    # Find the longest palindromic suffix
+    def is_palindrome(s):
+        return s == s[::-1]
+
     for i in range(len(string)):
         suffix = string[i:]
-        if suffix == suffix[::-1]:
+        if is_palindrome(suffix):
             prefix = string[:i]
             return string + prefix[::-1]
 
-    # This line should never be reached, but kept for safety
-    return string + string[::-1]
+    return string + string[:-1][::-1]

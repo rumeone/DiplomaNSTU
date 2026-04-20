@@ -11,10 +11,9 @@ def search(lst: List[int]) -> int:
     """
     if not lst:
         return -1
+    
     freq = Counter(lst)
-    max_valid = -1
-    for num, count in freq.items():
-        if num > 0 and count >= num:
-            if num > max_valid:
-                max_valid = num
-    return max_valid
+    valid_numbers = [num for num, count in freq.items() 
+                     if num > 0 and count >= num]
+    
+    return max(valid_numbers) if valid_numbers else -1

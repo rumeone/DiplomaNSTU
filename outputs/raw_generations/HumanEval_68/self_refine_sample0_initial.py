@@ -15,7 +15,7 @@ def pluck(arr: List[int]) -> List[int]:
         return []
 
     smallest_even = None
-    smallest_index = None
+    smallest_index = -1
 
     for i, value in enumerate(arr):
         if value % 2 == 0:

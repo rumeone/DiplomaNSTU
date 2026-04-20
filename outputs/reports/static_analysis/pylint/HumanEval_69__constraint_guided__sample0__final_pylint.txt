@@ -1,13 +1,12 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4g72o8lc\candidate.py:7:0: C0301: Line too long (105/100) (line-too-long)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4g72o8lc\candidate.py:14:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4g72o8lc\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4g72o8lc\candidate.py:21:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4g72o8lc\candidate.py:22:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4g72o8lc\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4g72o8lc\candidate.py:16:11: R1716: Simplify chained comparison between the operands (chained-comparison)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp8n3wxvwg\candidate.py:11:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp8n3wxvwg\candidate.py:13:56: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp8n3wxvwg\candidate.py:15:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp8n3wxvwg\candidate.py:17:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp8n3wxvwg\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp8n3wxvwg\candidate.py:14:21: R1716: Simplify chained comparison between the operands (chained-comparison)
 
 ------------------------------------------------------------------
-Your code has been rated at 3.64/10 (previous run: 4.00/10, -0.36)
+Your code has been rated at 0.00/10 (previous run: 1.82/10, -1.82)
 
 

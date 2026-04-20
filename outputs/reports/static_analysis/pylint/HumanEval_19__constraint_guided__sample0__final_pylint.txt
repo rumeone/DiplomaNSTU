@@ -1,12 +1,12 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp_t0jh2tb\candidate.py:7:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp_t0jh2tb\candidate.py:10:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp_t0jh2tb\candidate.py:13:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp_t0jh2tb\candidate.py:14:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp_t0jh2tb\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp_t0jh2tb\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvvzrq6sp\candidate.py:4:0: C0301: Line too long (104/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvvzrq6sp\candidate.py:19:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvvzrq6sp\candidate.py:22:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvvzrq6sp\candidate.py:25:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvvzrq6sp\candidate.py:27:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpvvzrq6sp\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 
 ------------------------------------------------------------------
-Your code has been rated at 0.00/10 (previous run: 2.86/10, -2.86)
+Your code has been rated at 0.00/10 (previous run: 6.25/10, -6.25)
 
 

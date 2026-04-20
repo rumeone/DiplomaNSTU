@@ -25,37 +25,45 @@ def find_zero(xs: List[int]) -> float:
         >>> round(find_zero([-6, 11, -6, 1]), 2) # (x - 1) * (x - 2) * (x - 3) = -6 + 11x - 6x^2 + x^3
         1.0
     """
-    # The polynomial has degree len(xs)-1, which is odd due to even number of coefficients
-    # Therefore it must have at least one real root
+    # Ensure the polynomial has even degree (odd number of coefficients)
+    if len(xs) % 2 != 0:
+        raise ValueError("List xs must have an even number of coefficients")
+
+    # Ensure the highest coefficient is non-zero
+    if xs[-1] == 0:
+        raise ValueError("Largest coefficient must be non-zero")
+
+    # Polynomial has odd degree (since len(xs) is even, degree = len(xs)-1 is odd)
+    # Odd degree polynomials are guaranteed to have at least one real root
     # Use bisection method to find a root
-    
+
     # Find initial bounds where polynomial changes sign
-    # Since leading coefficient is non-zero and degree is odd, 
-    # polynomial goes to -∞ and +∞ at opposite ends
-    left = -100.0
-    right = 100.0
-    
-    # Adjust bounds until we have a sign change
+    # Start with a symmetric interval around zero
+    left = -1.0
+    right = 1.0
+
+    # Expand interval until we find a sign change
     while poly(xs, left) * poly(xs, right) > 0:
         left *= 2
         right *= 2
-    
+
     # Perform bisection
     tolerance = 1e-10
-    max_iterations = 100
-    
+    max_iterations = 1000
+
     for _ in range(max_iterations):
         mid = (left + right) / 2
         f_mid = poly(xs, mid)
-        
+
         if abs(f_mid) < tolerance:
             return mid
-        
+
         f_left = poly(xs, left)
-        
+
         if f_left * f_mid <= 0:
             right = mid
         else:
             left = mid
-    
+
+    # Return the midpoint if max iterations reached
     return (left + right) / 2

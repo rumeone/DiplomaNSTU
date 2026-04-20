@@ -1,0 +1,76 @@
+task_id,entry_point,strategy,sample_index,code,code_file,initial_code,initial_code_file,syntax_valid,syntax_error,pylint_score,bandit_issues,radon_cc_avg,radon_cc_max,radon_mi,pylint_report_file,bandit_report_file,bandit_stderr_file,passed,functional_result,llm_readability,llm_maintainability,llm_correctness,llm_efficiency,llm_pythonic_style,llm_overall_score,llm_feedback
+HumanEval/0,has_close_elements,zero_shot,0,"from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """"""
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """"""
+    numbers.sort()
+    for i in range(len(numbers) - 1):
+        if abs(numbers[i] - numbers[i + 1]) < threshold:
+            return True
+    return False",raw_generations/HumanEval_0/zero_shot_sample0.py,,,True,,7.14,0.0,3.0,3.0,89.50254578256416,outputs_test_2\reports\static_analysis\pylint\HumanEval_0__zero_shot__sample0__final_pylint.txt,outputs_test_2\reports\static_analysis\bandit\HumanEval_0__zero_shot__sample0__final_bandit.json,outputs_test_2\reports\static_analysis\bandit\HumanEval_0__zero_shot__sample0__final_bandit.stderr.txt,True,passed,8.0,7.0,6.0,8.0,7.0,7.0,"The code is clear and efficient but modifies the input list (sorting in-place) which could cause side effects, and it only checks adjacent elements after sorting, which may miss some close pairs in the original unsorted list."
+HumanEval/0,has_close_elements,constraint_guided,0,"""""""
+Module for checking if any two numbers in a list are closer than a given threshold.
+""""""
+
+from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """"""
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Args:
+        numbers: List of floating point numbers.
+        threshold: Minimum distance threshold.
+
+    Returns:
+        True if any two numbers are closer than threshold, False otherwise.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """"""
+    if len(numbers) < 2:
+        return False
+
+    sorted_numbers = sorted(numbers)
+
+    for i in range(len(sorted_numbers) - 1):
+        current_distance = abs(sorted_numbers[i] - sorted_numbers[i + 1])
+        if current_distance < threshold:
+            return True
+
+    return False",raw_generations/HumanEval_0/constraint_guided_sample0.py,,,True,,9.0,0.0,4.0,4.0,76.25584017297615,outputs_test_2\reports\static_analysis\pylint\HumanEval_0__constraint_guided__sample0__final_pylint.txt,outputs_test_2\reports\static_analysis\bandit\HumanEval_0__constraint_guided__sample0__final_bandit.json,outputs_test_2\reports\static_analysis\bandit\HumanEval_0__constraint_guided__sample0__final_bandit.stderr.txt,True,passed,9.0,8.0,7.0,8.0,8.0,8.0,The code is clean and efficient but fails to handle floating-point precision issues and lacks explicit edge-case documentation.
+HumanEval/0,has_close_elements,structured_cot,0,"from typing import List
+
+
+def has_close_elements(numbers: List[float], threshold: float) -> bool:
+    """"""
+    Check if in a given list of numbers, there are any two numbers closer to each other than
+    the given threshold.
+
+    Examples:
+        >>> has_close_elements([1.0, 2.0, 3.0], 0.5)
+        False
+        >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
+        True
+    """"""
+    sorted_numbers = sorted(numbers)
+    for i in range(len(sorted_numbers) - 1):
+        if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:
+            return True
+    return False",raw_generations/HumanEval_0/structured_cot_sample0.py,,,True,,7.14,0.0,3.0,3.0,89.50254578256416,outputs_test_2\reports\static_analysis\pylint\HumanEval_0__structured_cot__sample0__final_pylint.txt,outputs_test_2\reports\static_analysis\bandit\HumanEval_0__structured_cot__sample0__final_bandit.json,outputs_test_2\reports\static_analysis\bandit\HumanEval_0__structured_cot__sample0__final_bandit.stderr.txt,True,passed,9.0,8.0,7.0,8.0,8.0,8.0,"The code is clean and efficient but fails to handle the case where the same element could be compared with itself if duplicates exist, potentially causing false positives."
+HumanEval/0,has_close_elements,self_refine,0,,,,,False,PipelineError: 'StaticAnalysisResult' object has no attribute 'custom_flags',,,,,,,,,,pipeline_error,,,,,,,

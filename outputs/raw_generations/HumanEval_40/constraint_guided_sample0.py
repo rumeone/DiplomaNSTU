@@ -1,8 +1,35 @@
+from typing import List
+
+
 def triples_sum_to_zero(l: List[int]) -> bool:
+    """
+    Check if there are three distinct elements
+    in the list that sum to zero.
+    """
     n = len(l)
+    if n < 3:
+        return False
+
+    # Sort to enable two-pointer technique
+    sorted_list = sorted(l)
+
     for i in range(n - 2):
-        for j in range(i + 1, n - 1):
-            for k in range(j + 1, n):
-                if l[i] + l[j] + l[k] == 0:
-                    return True
+        # Skip duplicate starting elements to avoid duplicate triple checks
+        if i > 0 and sorted_list[i] == sorted_list[i - 1]:
+            continue
+
+        left = i + 1
+        right = n - 1
+        target = -sorted_list[i]
+
+        while left < right:
+            current_sum = sorted_list[left] + sorted_list[right]
+
+            if current_sum == target:
+                return True
+            elif current_sum < target:
+                left += 1
+            else:
+                right -= 1
+
     return False

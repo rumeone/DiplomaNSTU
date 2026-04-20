@@ -1,4 +1,19 @@
 def sum_to_n(n: int) -> int:
-    if n <= 0:
-        return 0
-    return n * (n + 1) // 2
+    """
+    sum_to_n is a function that sums numbers from 1 to n.
+
+    Examples:
+        >>> sum_to_n(5)
+        15
+        >>> sum_to_n(10)
+        55
+        >>> sum_to_n(1)
+        1
+        >>> sum_to_n(0)
+        1
+    """
+    if not isinstance(n, int):
+        raise TypeError("Input must be an integer")
+    if n < 0:
+        raise ValueError("Input must be a non-negative integer")
+    return n * (n + 1) // 2 + (1 if n == 0 else 0)

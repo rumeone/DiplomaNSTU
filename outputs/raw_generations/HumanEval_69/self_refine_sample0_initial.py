@@ -12,14 +12,9 @@ def search(lst: List[int]) -> int:
     # Count frequencies of all positive integers
     freq = Counter(lst)
     
-    # Track the maximum valid integer found
-    max_valid = -1
+    # Filter numbers where frequency >= number value and number > 0
+    valid_numbers = [num for num, count in freq.items() 
+                     if num > 0 and count >= num]
     
-    # Check each integer and its frequency
-    for num, count in freq.items():
-        # Integer must be positive and frequency >= integer value
-        if num > 0 and count >= num:
-            if num > max_valid:
-                max_valid = num
-    
-    return max_valid
+    # Return the maximum valid number or -1 if none exist
+    return max(valid_numbers) if valid_numbers else -1

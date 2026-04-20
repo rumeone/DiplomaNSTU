@@ -21,20 +21,12 @@ def factorize(n: int) -> List[int]:
     factors = []
     divisor = 2
     
-    # Handle factors of 2 first to optimize subsequent steps
-    while n % divisor == 0:
-        factors.append(divisor)
-        n //= divisor
-    
-    # Check odd divisors starting from 3
-    divisor = 3
     while divisor * divisor <= n:
         while n % divisor == 0:
             factors.append(divisor)
             n //= divisor
-        divisor += 2
+        divisor += 1 if divisor == 2 else 2
     
-    # If n is still greater than 1, it's a prime factor
     if n > 1:
         factors.append(n)
     

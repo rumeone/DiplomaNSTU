@@ -1,15 +1,9 @@
 def is_palindrome(text: str) -> bool:
     """
     Checks if given string is a palindrome.
-
-    Examples:
-        >>> is_palindrome('racecar')
-        True
-        >>> is_palindrome('car')
-        False
     """
     if not isinstance(text, str):
-        raise TypeError("Input must be a string")
+        return False
     left = 0
     right = len(text) - 1
     while left < right:

@@ -5,20 +5,21 @@ def change_base(x: int, base: int) -> str:
     base numbers are less than 10.
     """
     if base < 2 or base > 9:
-        raise ValueError("Base must be between 2 and 9 inclusive.")
+        raise ValueError("Base must be between 2 and 9 inclusive")
+    
     if x == 0:
         return "0"
-
-    digits = []
+    
+    result = ""
     is_negative = x < 0
-    num = abs(x)
-
-    while num > 0:
-        remainder = num % base
-        digits.append(str(remainder))
-        num //= base
-
+    x = abs(x)
+    
+    while x > 0:
+        remainder = x % base
+        result = str(remainder) + result
+        x //= base
+    
     if is_negative:
-        digits.append('-')
-
-    return ''.join(reversed(digits))
+        result = "-" + result
+    
+    return result

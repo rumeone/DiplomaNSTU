@@ -4,8 +4,7 @@ def iscube(a: int) -> bool:
     """
     if a == 0:
         return True
-    if a < 0:
-        candidate = -round((-a) ** (1/3))
-    else:
-        candidate = round(a ** (1/3))
-    return candidate ** 3 == a
+    # Find the cube root candidate
+    root = int(round(abs(a) ** (1/3)))
+    # Check both root and root-1 because of floating point precision
+    return root**3 == a or (root - 1)**3 == a or (root + -1)**3 == a

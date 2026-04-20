@@ -11,6 +11,5 @@ def remove_duplicates(numbers: List[int]) -> List[int]:
         >>> remove_duplicates([1, 2, 3, 2, 4])
         [1, 3, 4]
     """
-    frequency = Counter(numbers)
-    result = [num for num in numbers if frequency[num] == 1]
-    return result
+    count = Counter(numbers)
+    return [num for num in numbers if count[num] == 1]

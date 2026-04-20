@@ -1,14 +1,14 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:9:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:15:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:20:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:48:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:50:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:51:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0r0khhho\candidate.py:4:0: R0912: Too many branches (15/12) (too-many-branches)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:9:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:15:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:19:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:47:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:49:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:50:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp42rupc88\candidate.py:4:0: R0912: Too many branches (15/12) (too-many-branches)
 
 ------------------------------------------------------------------
-Your code has been rated at 7.78/10 (previous run: 7.94/10, -0.16)
+Your code has been rated at 7.71/10 (previous run: 8.37/10, -0.66)
 
 

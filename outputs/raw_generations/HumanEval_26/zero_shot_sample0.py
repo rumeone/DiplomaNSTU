@@ -1,5 +1,5 @@
 from typing import List
-from collections import Counter
+
 
 def remove_duplicates(numbers: List[int]) -> List[int]:
     """
@@ -10,5 +10,7 @@ def remove_duplicates(numbers: List[int]) -> List[int]:
         >>> remove_duplicates([1, 2, 3, 2, 4])
         [1, 3, 4]
     """
-    count = Counter(numbers)
-    return [num for num in numbers if count[num] == 1]
+    seen = {}
+    for num in numbers:
+        seen[num] = seen.get(num, 0) + 1
+    return [num for num in numbers if seen[num] == 1]

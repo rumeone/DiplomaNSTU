@@ -1,13 +1,13 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp06hn_lxr\candidate.py:6:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp06hn_lxr\candidate.py:8:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp06hn_lxr\candidate.py:11:0: C0303: Trailing whitespace (trailing-whitespace)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp06hn_lxr\candidate.py:12:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp06hn_lxr\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp06hn_lxr\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp06hn_lxr\candidate.py:2:7: R1714: Consider merging these comparisons with 'in' by using 'n in (0, 1)'. Use a set instead if elements are hashable. (consider-using-in)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpht2bhaem\candidate.py:6:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpht2bhaem\candidate.py:8:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpht2bhaem\candidate.py:12:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpht2bhaem\candidate.py:13:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpht2bhaem\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpht2bhaem\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpht2bhaem\candidate.py:2:7: R1714: Consider merging these comparisons with 'in' by using 'n in (0, 1)'. Use a set instead if elements are hashable. (consider-using-in)
 
 ------------------------------------------------------------------
-Your code has been rated at 2.22/10 (previous run: 4.44/10, -2.22)
+Your code has been rated at 3.00/10 (previous run: 5.00/10, -2.00)
 
 

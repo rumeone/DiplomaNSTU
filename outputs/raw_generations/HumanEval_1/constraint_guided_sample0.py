@@ -15,7 +15,7 @@ def separate_paren_groups(paren_string: str) -> List[str]:
         >>> separate_paren_groups(')( [) (( ))] (({})( ))')
         ['()', '(())', '(()())']
     """
-    groups = []
+    result = []
     current_group = []
     balance = 0
 
@@ -27,7 +27,7 @@ def separate_paren_groups(paren_string: str) -> List[str]:
             current_group.append(char)
             balance -= 1
             if balance == 0:
-                groups.append(''.join(current_group))
+                result.append(''.join(current_group))
                 current_group = []
 
-    return groups
+    return result

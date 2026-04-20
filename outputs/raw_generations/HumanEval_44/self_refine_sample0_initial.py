@@ -7,16 +7,16 @@ def change_base(x: int, base: int) -> str:
     if x == 0:
         return "0"
     
-    digits = []
+    result = ""
     is_negative = x < 0
-    num = abs(x)
+    x = abs(x)
     
-    while num > 0:
-        remainder = num % base
-        digits.append(str(remainder))
-        num //= base
+    while x > 0:
+        remainder = x % base
+        result = str(remainder) + result
+        x //= base
     
     if is_negative:
-        digits.append('-')
+        result = "-" + result
     
-    return ''.join(reversed(digits))
+    return result

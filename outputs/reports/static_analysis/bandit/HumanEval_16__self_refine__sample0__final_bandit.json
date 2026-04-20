@@ -1,8 +1,8 @@
 {
   "errors": [],
-  "generated_at": "2026-04-19T06:30:52Z",
+  "generated_at": "2026-04-19T11:45:05Z",
   "metrics": {
-    "C:\\Users\\3CDE~1\\AppData\\Local\\Temp\\tmpx2ztyoob\\candidate.py": {
+    "C:\\Users\\3CDE~1\\AppData\\Local\\Temp\\tmpvb6e23i9\\candidate.py": {
       "CONFIDENCE.HIGH": 0,
       "CONFIDENCE.LOW": 0,
       "CONFIDENCE.MEDIUM": 0,
@@ -11,7 +11,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 7,
+      "loc": 8,
       "nosec": 0,
       "skipped_tests": 0
     },
@@ -24,7 +24,7 @@
       "SEVERITY.LOW": 0,
       "SEVERITY.MEDIUM": 0,
       "SEVERITY.UNDEFINED": 0,
-      "loc": 7,
+      "loc": 8,
       "nosec": 0,
       "skipped_tests": 0
     }

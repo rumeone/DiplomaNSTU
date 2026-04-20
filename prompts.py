@@ -6,11 +6,6 @@ You are an expert Python software engineer.
 Return only valid Python code.
 Do not include markdown fences.
 Do not include explanations outside the code.
-
-Global rules:
-1. Solve only the requested task.
-2. Use only the Python standard language features needed for the task.
-3. Do not add test code.
 """)
 
 
@@ -28,19 +23,19 @@ def build_zero_shot_prompt(task_prompt: str) -> str:
 def build_constraint_guided_prompt(task_prompt: str) -> str:
     return dedent(f"""
     Solve the following Python programming task.
+    Focus on producing clean, maintainable, and well-structured code.
 
     Task:
     {task_prompt}
 
-    Additional code quality rules:
-    - Prefer straightforward and deterministic logic.
-    - Use descriptive variable names.
-    - Avoid duplicated logic.
-    - Avoid unnecessary nested conditions.
-    - Keep the implementation concise but readable.
-    - Make the function robust for edge cases implied by the specification.
-    - Do not rely on hidden assumptions about tests.
-    - Add brief comments only if the algorithm is not obvious.
+    Quality guidelines:
+    - Follow PEP 8 style conventions.
+    - Start the file with a brief module-level docstring.
+    - Include a docstring for the function if one is not already present.
+    - If the signature uses types from typing (List, Tuple, Dict, Optional), add the corresponding import.
+    - Use descriptive variable names that reflect their purpose.
+    - Prefer flat control flow: use early returns and guard clauses instead of deep nesting.
+    - Avoid trailing whitespace and ensure the file ends with a newline.
 
     Return only the final Python function implementation.
     """)
@@ -49,34 +44,34 @@ def build_constraint_guided_prompt(task_prompt: str) -> str:
 def build_structured_cot_prompt(task_prompt: str) -> str:
     """
     Стратегия Structured CoT.
-    Важно: reasoning не должен попадать в финальный файл.
-    Поэтому просим модель сначала внутренне построить структурный план,
-    а в ответ вернуть только код.
+    Модель рассуждает внутренне, возвращает только чистый код.
     """
     return dedent(f"""
-    Solve the following Python programming task using a structured reasoning process.
+    Solve the following Python programming task.
 
     Task:
     {task_prompt}
 
-    Before writing the code, reason using a structured plan based on:
-    - sequence steps,
-    - branch conditions,
-    - loop structures,
-    - edge cases,
-    - return behavior.
+    Before writing code, reason internally (do not include reasoning in your output):
+    1. What is the simplest correct approach?
+    2. What edge cases does the specification imply?
+    3. How can the solution be kept short, readable, and PEP 8 compliant?
 
-    Then write the final Python implementation.
+    Then write the implementation, applying these principles:
+    - Prefer concise, idiomatic Python over verbose manual logic.
+    - Use meaningful variable names.
+    - Include a module-level docstring and a function docstring if not already provided.
+    - Ensure correct imports for any type hints used in the signature.
+    - Avoid trailing whitespace and ensure the file ends with a newline.
 
-    Important output rule:
-    Return only the final Python code, without the plan and without explanations.
+    Return only the final Python function implementation, without any reasoning text.
     """)
 
 
 def build_self_refine_prompt(task_prompt: str, previous_code: str, feedback: str) -> str:
     return dedent(f"""
-    You are given a Python programming task, a previous solution, and review feedback.
-    Improve the solution so that it is more correct, readable, robust, and safe.
+    You are given a Python function, its task description, and automated review feedback.
+    Improve the code quality based on the feedback while preserving the existing behavior.
 
     Task:
     {task_prompt}
@@ -87,12 +82,14 @@ def build_self_refine_prompt(task_prompt: str, previous_code: str, feedback: str
     Feedback:
     {feedback}
 
-    Revision rules:
-    - Preserve the required function signature.
-    - Fix any logical, style, and robustness issues.
-    - Keep the solution simple and readable.
-    - Do not add explanations outside the code.
-    - Return only the improved Python code.
+    Revision guidelines:
+    - Do not change the algorithmic logic unless the feedback explicitly points to a bug.
+    - Fix the specific style and structure issues described in the feedback.
+    - Add missing docstrings, imports, and formatting corrections as needed.
+    - Simplify overly complex expressions if the feedback flags high complexity.
+    - Prefer minimal, targeted edits over a full rewrite.
+    - Preserve the original function signature exactly.
+    - Avoid trailing whitespace and ensure the file ends with a newline.
 
-    Final answer:
+    Return only the improved Python code.
     """)

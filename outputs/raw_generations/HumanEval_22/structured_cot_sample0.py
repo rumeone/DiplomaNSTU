@@ -11,7 +11,12 @@ def filter_integers(values: List[str]) -> List[int]:
     """
     result = []
     for value in values:
-        stripped = value.strip()
-        if stripped.lstrip('-').isdigit():
-            result.append(int(stripped))
+        try:
+            # Strip whitespace and try to convert to int
+            stripped = value.strip()
+            # Check if it's a valid integer representation
+            if stripped.lstrip('-').isdigit() or (stripped.startswith('-') and stripped[1:].isdigit()):
+                result.append(int(stripped))
+        except (ValueError, AttributeError):
+            continue
     return result

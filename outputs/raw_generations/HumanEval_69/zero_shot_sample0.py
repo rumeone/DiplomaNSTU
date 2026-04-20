@@ -14,10 +14,15 @@ def search(lst: List[int]) -> int:
         search([5, 5, 4, 4, 4]) == -1
     """
     from collections import Counter
+    
     freq = Counter(lst)
-    result = -1
+    candidates = []
+    
     for num, count in freq.items():
         if num > 0 and count >= num:
-            if num > result:
-                result = num
-    return result
+            candidates.append(num)
+    
+    if not candidates:
+        return -1
+    
+    return max(candidates)

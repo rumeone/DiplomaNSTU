@@ -1,6 +1,5 @@
 from typing import List
 
-
 def incr_list(l: List[int]) -> List[int]:
     """
     Increment all elements of the list by 1.

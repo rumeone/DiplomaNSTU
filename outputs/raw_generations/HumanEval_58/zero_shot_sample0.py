@@ -12,5 +12,5 @@ def common(l1: List[int], l2: List[int]) -> List[int]:
     """
     set1 = set(l1)
     set2 = set(l2)
-    common_elements = set1.intersection(set2)
-    return sorted(common_elements)
+    common_set = set1.intersection(set2)
+    return sorted(list(common_set))

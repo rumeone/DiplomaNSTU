@@ -69,25 +69,3 @@ def extract_function_names(code: str) -> list[str]:
         for node in ast.walk(tree)
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     ]
-
-
-def basic_code_quality_flags(code: str) -> list[str]:
-    """
-    Простейшие эвристические проверки до запуска pylint/bandit.
-    """
-    flags: list[str] = []
-
-    forbidden_patterns = [
-        ("eval(", "Используется eval(), что нежелательно для безопасности."),
-        ("exec(", "Используется exec(), что нежелательно для безопасности."),
-        ("subprocess", "Используется subprocess, что не нужно для задач HumanEval."),
-        ("open(", "Используется open(), хотя файловый ввод-вывод не требуется."),
-        ("input(", "Используется input(), что нарушает формат задач HumanEval."),
-        ("print(", "Используется print(), что обычно не нужно в финальном решении."),
-    ]
-
-    for pattern, message in forbidden_patterns:
-        if pattern in code:
-            flags.append(message)
-
-    return flags

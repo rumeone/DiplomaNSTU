@@ -7,6 +7,7 @@ def fibfib(n: int) -> int:
     a, b, c = 0, 0, 1  # fibfib(0), fibfib(1), fibfib(2)
     
     for _ in range(3, n + 1):
-        a, b, c = b, c, a + b + c
+        next_val = a + b + c
+        a, b, c = b, c, next_val
     
     return c

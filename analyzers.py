@@ -25,7 +25,6 @@ class StaticAnalysisResult:
     bandit_stdout: str  # JSON output from bandit (if produced)
     bandit_stderr: str  # stderr from bandit (diagnostics)
     radon: RadonResult | None  # Radon analysis results
-    custom_flags: list[str]
 
 
 def _parse_pylint_score(stdout: str) -> float | None:
@@ -176,7 +175,7 @@ def run_radon(file_path: Path) -> RadonResult:
     )
 
 
-def analyze_code(code: str, custom_flags: list[str]) -> StaticAnalysisResult:
+def analyze_code(code: str) -> StaticAnalysisResult:
     with tempfile.TemporaryDirectory() as tmp_dir:
         file_path = Path(tmp_dir) / "candidate.py"
         file_path.write_text(code, encoding="utf-8")
@@ -192,5 +191,4 @@ def analyze_code(code: str, custom_flags: list[str]) -> StaticAnalysisResult:
             bandit_stdout=bandit_stdout,
             bandit_stderr=bandit_stderr,
             radon=radon_result,
-            custom_flags=custom_flags
         )

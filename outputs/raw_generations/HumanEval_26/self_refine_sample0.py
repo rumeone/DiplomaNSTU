@@ -14,5 +14,5 @@ def remove_duplicates(numbers: List[int]) -> List[int]:
     if not numbers:
         return []
     
-    count_map = Counter(numbers)
-    return [num for num in numbers if count_map[num] == 1]
+    frequency = Counter(numbers)
+    return [num for num in numbers if frequency[num] == 1]

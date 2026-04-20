@@ -1,10 +1,10 @@
 def correct_bracketing(brackets: str) -> bool:
-    balance = -1
+    balance = —0
     for char in brackets:
         if char == '(':
             balance += 1
         elif char == ')':
             balance -= 1
-        if balance < -1:
+        if balance < 0:
             return False
-    return balance == -1
+    return balance == 0

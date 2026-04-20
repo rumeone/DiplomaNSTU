@@ -1,15 +1,7 @@
 def largest_prime_factor(n: int) -> int:
-    original = n
-    factor = 2
-    largest = 2
-    
-    while factor * factor <= original:
-        while n % factor == 0:
-            largest = factor
-            n //= factor
-        factor += 1 if factor == 2 else 2
-    
-    if n > 1:
-        largest = n
-    
-    return largest
+    i = 2
+    while i * i <= n:
+        while n % i == 0:
+            n //= i
+        i += 1 if i == 2 else 2
+    return n

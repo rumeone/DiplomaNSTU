@@ -1,10 +1,9 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp9e_xi1rd\candidate.py:8:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp9e_xi1rd\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp9e_xi1rd\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp9e_xi1rd\candidate.py:1:27: E0602: Undefined variable 'List' (undefined-variable)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp9qtc_4xc\candidate.py:35:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp9qtc_4xc\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp9qtc_4xc\candidate.py:28:12: R1705: Unnecessary "elif" after "return", remove the leading "el" from "elif" (no-else-return)
 
 ------------------------------------------------------------------
-Your code has been rated at 0.00/10 (previous run: 7.78/10, -7.78)
+Your code has been rated at 8.50/10 (previous run: 7.27/10, +1.23)
 
 

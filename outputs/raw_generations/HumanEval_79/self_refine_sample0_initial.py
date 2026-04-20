@@ -6,13 +6,11 @@ def decimal_to_binary(decimal: int) -> str:
         return "db0db"
     
     binary_digits = []
-    n = decimal
+    num = decimal
     
-    while n > 0:
-        binary_digits.append(str(n % 2))
-        n //= 2
+    while num > 0:
+        binary_digits.append(str(num % 2))
+        num //= 2
     
-    binary_digits.reverse()
-    binary_str = ''.join(binary_digits)
-    
+    binary_str = ''.join(reversed(binary_digits))
     return f"db{binary_str}db"

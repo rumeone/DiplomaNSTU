@@ -6,7 +6,7 @@ def strlen(string: str) -> int:
         >>> strlen('abc')
         3
     """
-    count = 0
+    length = 0
     for _ in string:
-        count += 1
-    return count
+        length += 1
+    return length

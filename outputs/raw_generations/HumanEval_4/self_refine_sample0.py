@@ -16,7 +16,8 @@ def mean_absolute_deviation(numbers: List[float]) -> float:
     if not numbers:
         return 0.0
 
-    n = len(numbers)
-    mean = sum(numbers) / n
-    mad = sum(abs(x - mean) for x in numbers) / n
+    mean = sum(numbers) / len(numbers)
+    absolute_differences = [abs(x - mean) for x in numbers]
+    mad = sum(absolute_differences) / len(absolute_differences)
+
     return mad

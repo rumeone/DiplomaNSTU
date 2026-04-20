@@ -1,10 +1,11 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp8e_hdfro\candidate.py:10:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp8e_hdfro\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp8e_hdfro\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp8e_hdfro\candidate.py:2:7: R1714: Consider merging these comparisons with 'in' by using 'n in (0, 1)'. Use a set instead if elements are hashable. (consider-using-in)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpteiey3lf\candidate.py:6:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpteiey3lf\candidate.py:10:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpteiey3lf\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpteiey3lf\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpteiey3lf\candidate.py:2:7: R1714: Consider merging these comparisons with 'in' by using 'n in (0, 1)'. Use a set instead if elements are hashable. (consider-using-in)
 
 ------------------------------------------------------------------
-Your code has been rated at 5.56/10 (previous run: 4.44/10, +1.11)
+Your code has been rated at 4.44/10 (previous run: 5.56/10, -1.11)
 
 

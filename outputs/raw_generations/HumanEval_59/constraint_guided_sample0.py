@@ -3,7 +3,7 @@ def largest_prime_factor(n: int) -> int:
     Return the largest prime factor of n.
     Assume n > 1 and is not a prime.
     """
-    original = n
+    original_n = n
     largest_factor = 1
     
     # Check for factor 2

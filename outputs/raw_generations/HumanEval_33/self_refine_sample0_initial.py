@@ -14,13 +14,9 @@ def sort_third(l: List[int]) -> List[int]:
         [2, 6, 3, 4, 8, 9, 5]
     """
     result = l.copy()
-    divisible_by_three = [l[i] for i in range(len(l)) if i % 3 == 0]
-    divisible_by_three.sort()
-    
-    index = 0
-    for i in range(len(l)):
-        if i % 3 == 0:
-            result[i] = divisible_by_three[index]
-            index += 1
-    
+    divisible_by_three_indices = [i for i in range(len(l)) if i % 3 == 0]
+    values_at_divisible_indices = [l[i] for i in divisible_by_three_indices]
+    sorted_values = sorted(values_at_divisible_indices)
+    for idx, sorted_val in zip(divisible_by_three_indices, sorted_values):
+        result[idx] = sorted_val
     return result

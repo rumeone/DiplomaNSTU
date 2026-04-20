@@ -1,19 +1,15 @@
 from typing import List
 
+
 def will_it_fly(q: List[int], w: int) -> bool:
-    # Check if the list is palindromic
-    # We compare elements from start and end, ignoring zeros for balance
-    # But the examples show that zeros are negligible for balance, meaning they don't break symmetry
-    # Actually, the problem says q is connected (no zeros between non-zero elements)
-    # and zeros are negligible for balance. So we should check if the non-zero pattern is symmetric.
+    # Check if the list is balanced (palindromic)
+    # Ignore zeros at the ends for balance check
+    filtered = [x for x in q if x != 0]
+    if filtered != filtered[::-1]:
+        return False
     
-    # First, filter out zeros for palindrome check
-    non_zero = [x for x in q if x != 0]
+    # Check if sum is less than or equal to maximum weight
+    if sum(q) > w:
+        return False
     
-    # Check if non_zero is palindrome
-    balanced = non_zero == non_zero[::-1]
-    
-    # Check if sum of all elements (including zeros) is <= w
-    weight_ok = sum(q) <= w
-    
-    return balanced and weight_ok
+    return True

@@ -1,11 +1,15 @@
 def decimal_to_binary(decimal: int) -> str:
-    if decimal == -1:
-        return "db1111111111111111111111111111111db"
     if decimal == 0:
         return "db0db"
-    result = ""
+    
+    binary_digits = []
     n = decimal
+    
     while n > 0:
-        result = str(n % 2) + result
+        binary_digits.append(str(n % 2))
         n //= 2
-    return "db" + result + "db"
+    
+    binary_digits.reverse()
+    binary_str = ''.join(binary_digits)
+    
+    return f"db{binary_str}db"

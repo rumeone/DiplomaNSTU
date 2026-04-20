@@ -16,17 +16,18 @@ def sort_even(l: List[int]) -> List[int]:
     if not l:
         return []
     
-    # Extract even-indexed elements and sort them
-    even_indices_values = [l[i] for i in range(0, len(l), 2)]
-    sorted_even_values = sorted(even_indices_values)
+    # Extract even-indexed elements
+    even_elements = [l[i] for i in range(0, len(l), 2)]
+    # Sort them
+    even_elements.sort()
     
     # Build the result list
     result = []
-    sorted_index = 0
+    even_index = 0
     for i in range(len(l)):
         if i % 2 == 0:
-            result.append(sorted_even_values[sorted_index])
-            sorted_index += 1
+            result.append(even_elements[even_index])
+            even_index += 1
         else:
             result.append(l[i])
     

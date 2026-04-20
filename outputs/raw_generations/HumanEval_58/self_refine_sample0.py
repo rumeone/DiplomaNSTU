@@ -11,7 +11,7 @@ def common(l1: List[int], l2: List[int]) -> List[int]:
         >>> common([5, 3, 2, 8], [3, 2])
         [2, 3]
     """
-    if not isinstance(l1, list) or not isinstance(l2, list):
-        raise TypeError("Both inputs must be lists")
+    if not l1 or not l2:
+        return []
     
     return sorted(set(l1) & set(l2))

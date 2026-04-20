@@ -2,18 +2,20 @@ from typing import List
 
 
 def will_it_fly(q: List[int], w: int) -> bool:
-    if not q:
-        return False
-
-    if sum(q) > w:
-        return False
-
-    left = 0
-    right = len(q) - 1
+    # Check if list is palindromic ignoring zeros at ends
+    left, right = 0, len(q) - 1
     while left < right:
-        if q[left] != q[right]:
+        # Skip zeros from both ends for balance check
+        while left < right and q[left] == 0:
+            left += 1
+        while left < right and q[right] == 0:
+            right -= 1
+        
+        if left < right and q[left] != q[right]:
             return False
+        
         left += 1
         right -= 1
-
-    return True
+    
+    # Check weight constraint
+    return sum(q) <= w

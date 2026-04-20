@@ -15,12 +15,15 @@ def strange_sort_list(lst: List[int]) -> List[int]:
     if not lst:
         return []
     
+    sorted_lst = sorted(lst)
     result = []
-    remaining = sorted(lst)
+    left, right = 0, len(sorted_lst) - 1
     
-    while remaining:
-        result.append(remaining.pop(0))
-        if remaining:
-            result.append(remaining.pop())
+    while left <= right:
+        result.append(sorted_lst[left])
+        left += 1
+        if left <= right:
+            result.append(sorted_lst[right])
+            right -= 1
     
     return result

@@ -5,6 +5,7 @@ def is_simple_power(x: int, n: int) -> bool:
         return True
     if x < n:
         return False
+    
     power = 0
     result = 1
     while result <= x:

@@ -1,10 +1,10 @@
 def flip_case(string: str) -> str:
     result = []
-    for ch in string:
-        if ch.islower():
-            result.append(ch.upper())
-        elif ch.isupper():
-            result.append(ch.lower())
+    for char in string:
+        if char.islower():
+            result.append(char.upper())
+        elif char.isupper():
+            result.append(char.lower())
         else:
-            result.append(ch)
+            result.append(char)
     return ''.join(result)

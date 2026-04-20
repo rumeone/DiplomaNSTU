@@ -3,19 +3,13 @@ from typing import List
 
 def total_match(lst1: List[str], lst2: List[str]) -> List[str]:
     """
-    Write a function that accepts two lists of strings and returns the list that has 
-    less total number of chars in the all strings of the list compared to the other list.
-
-    If the two lists have the same number of chars, return the first list.
-
-    Examples:
-        total_match(['hi', 'admin'], ['hI', 'Hi']) -> ['hI', 'Hi']
-        total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) -> ['hi', 'admin']
+    Return the list with fewer total characters across all strings.
+    If equal, return the first list.
     """
-    def total_chars(lst: List[str]) -> int:
-        return sum(len(s) for s in lst)
+    if not isinstance(lst1, list) or not isinstance(lst2, list):
+        raise TypeError("Both arguments must be lists")
 
-    total1 = total_chars(lst1)
-    total2 = total_chars(lst2)
+    total1 = sum(len(s) for s in lst1 if isinstance(s, str))
+    total2 = sum(len(s) for s in lst2 if isinstance(s, str))
 
     return lst1 if total1 <= total2 else lst2

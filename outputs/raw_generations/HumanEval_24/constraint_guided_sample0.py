@@ -6,10 +6,8 @@ def largest_divisor(n: int) -> int:
     if n <= 1:
         return -1
     
-    # Start from n-1 and go downwards
     for d in range(n - 1, 0, -1):
         if n % d == 0:
             return d
     
-    # This line should never be reached for n > 1
     return -1

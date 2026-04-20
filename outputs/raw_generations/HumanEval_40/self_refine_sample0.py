@@ -12,32 +12,13 @@ def triples_sum_to_zero(l: List[int]) -> bool:
         >>> triples_sum_to_zero([1, 3, -2, 1])
         True
     """
-    n = len(l)
-    if n < 3:
+    if len(l) < 3:
         return False
-
-    sorted_list = sorted(l)
-
+    
+    n = len(l)
     for i in range(n - 2):
-        if i > 0 and sorted_list[i] == sorted_list[i - 1]:
-            continue
-
-        left = i + 1
-        right = n - 1
-        target = -sorted_list[i]
-
-        while left < right:
-            current_sum = sorted_list[left] + sorted_list[right]
-
-            if current_sum == target:
-                return True
-            elif current_sum < target:
-                left += 1
-                while left < right and sorted_list[left] == sorted_list[left - 1]:
-                    left += 1
-            else:
-                right -= 1
-                while left < right and sorted_list[right] == sorted_list[right + 1]:
-                    right -= 1
-
+        for j in range(i + 1, n - 1):
+            for k in range(j + 1, n):
+                if l[i] + l[j] + l[k] == 0:
+                    return True
     return False

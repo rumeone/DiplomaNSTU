@@ -9,4 +9,5 @@ def filter_by_substring(strings: List[str], substring: str) -> List[str]:
         >>> filter_by_substring(['abc', 'bacd', 'cde', 'array'], 'a')
         ['abc', 'bacd', 'array']
     """
+    # Use list comprehension to filter strings containing the substring
     return [s for s in strings if substring in s]

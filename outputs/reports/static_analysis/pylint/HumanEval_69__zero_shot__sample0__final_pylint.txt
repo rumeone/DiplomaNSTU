@@ -1,12 +1,15 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0qr3deny\candidate.py:6:0: C0301: Line too long (105/100) (line-too-long)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0qr3deny\candidate.py:23:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0qr3deny\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0qr3deny\candidate.py:16:4: C0415: Import outside toplevel (collections.Counter) (import-outside-toplevel)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0qr3deny\candidate.py:20:11: R1716: Simplify chained comparison between the operands (chained-comparison)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp0qr3deny\candidate.py:21:12: R1731: Consider using 'result = max(result, num)' instead of unnecessary if block (consider-using-max-builtin)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:6:0: C0301: Line too long (105/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:17:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:20:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:24:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:27:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:28:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:16:4: C0415: Import outside toplevel (collections.Counter) (import-outside-toplevel)
+C:\Users\3CDE~1\AppData\Local\Temp\tmph7zpwpal\candidate.py:22:11: R1716: Simplify chained comparison between the operands (chained-comparison)
 
 ------------------------------------------------------------------
-Your code has been rated at 4.00/10 (previous run: 7.14/10, -3.14)
+Your code has been rated at 1.82/10 (previous run: 8.12/10, -6.31)
 
 

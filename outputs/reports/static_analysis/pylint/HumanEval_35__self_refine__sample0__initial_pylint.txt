@@ -1,7 +1,7 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4dsw_i5m\candidate.py:17:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4dsw_i5m\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp4dsw_i5m\candidate.py:15:8: R1731: Consider using 'max_value = max(max_value, num)' instead of unnecessary if block (consider-using-max-builtin)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnx5z06vj\candidate.py:17:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnx5z06vj\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnx5z06vj\candidate.py:15:8: R1731: Consider using 'max_value = max(max_value, num)' instead of unnecessary if block (consider-using-max-builtin)
 
 ------------------------------------------------------------------
 Your code has been rated at 5.71/10 (previous run: 5.71/10, +0.00)

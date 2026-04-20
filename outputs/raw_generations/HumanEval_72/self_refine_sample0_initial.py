@@ -2,18 +2,18 @@ from typing import List
 
 
 def will_it_fly(q: List[int], w: int) -> bool:
-    if not q:
-        return False
-
-    if sum(q) > w:
-        return False
-
-    left = 0
-    right = len(q) - 1
+    # Check if the list is palindromic
+    is_palindrome = True
+    left, right = 0, len(q) - 1
     while left < right:
         if q[left] != q[right]:
-            return False
+            is_palindrome = False
+            break
         left += 1
         right -= 1
 
-    return True
+    # Check if sum is within weight limit
+    total_weight = sum(q)
+    weight_ok = total_weight <= w
+
+    return is_palindrome and weight_ok

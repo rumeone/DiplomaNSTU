@@ -15,36 +15,35 @@ def numerical_letter_grade(grades: List[float]) -> List[str]:
             
         # Round to 1 decimal place with half-up rounding
         # Add small epsilon to handle floating point precision issues
-        rounded = round(gpa + 1e-9, 1)
+        rounded_gpa = round(gpa + 1e-9, 1)
         
-        # Determine letter grade based on thresholds
-        if rounded >= 4.0 - 1e-6:
-            letter = 'A+'
-        elif rounded >= 3.7 - 1e-6:
-            letter = 'A'
-        elif rounded >= 3.3 - 1e-6:
-            letter = 'A-'
-        elif rounded >= 3.0 - 1e-6:
-            letter = 'B+'
-        elif rounded >= 2.7 - 1e-6:
-            letter = 'B'
-        elif rounded >= 2.3 - 1e-6:
-            letter = 'B-'
-        elif rounded >= 2.0 - 1e-6:
-            letter = 'C+'
-        elif rounded >= 1.7 - 1e-6:
-            letter = 'C'
-        elif rounded >= 1.3 - 1e-6:
-            letter = 'C-'
-        elif rounded >= 1.0 - 1e-6:
-            letter = 'D+'
-        elif rounded >= 0.7 - 1e-6:
-            letter = 'D'
-        elif rounded >= 0.0 - 1e-6:
-            letter = 'D-'
+        # Determine letter grade based on rounded GPA
+        if rounded_gpa == 4.0:
+            result.append('A+')
+        elif rounded_gpa >= 3.7:
+            result.append('A')
+        elif rounded_gpa >= 3.3:
+            result.append('A-')
+        elif rounded_gpa >= 3.0:
+            result.append('B+')
+        elif rounded_gpa >= 2.7:
+            result.append('B')
+        elif rounded_gpa >= 2.3:
+            result.append('B-')
+        elif rounded_gpa >= 2.0:
+            result.append('C+')
+        elif rounded_gpa >= 1.7:
+            result.append('C')
+        elif rounded_gpa >= 1.3:
+            result.append('C-')
+        elif rounded_gpa >= 1.0:
+            result.append('D+')
+        elif rounded_gpa >= 0.7:
+            result.append('D')
+        elif rounded_gpa >= 0.0:
+            result.append('D-')
         else:
-            letter = 'E'
-            
-        result.append(letter)
+            # This case should not occur due to bounds check, but included for completeness
+            result.append('E')
     
     return result

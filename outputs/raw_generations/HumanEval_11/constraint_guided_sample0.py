@@ -1,7 +1,14 @@
+from typing import List
+
+
 def string_xor(a: str, b: str) -> str:
     """
     Input are two strings a and b consisting only of 1s and 0s.
     Perform binary XOR on these inputs and return result also as a string.
+
+    Example:
+        >>> string_xor('10', '110')
+        '100'
     """
     # Determine the maximum length for padding
     max_len = max(len(a), len(b))
@@ -19,6 +26,6 @@ def string_xor(a: str, b: str) -> str:
         else:
             result_chars.append('0')
     
-    # Join characters and remove leading zeros (but keep at least one character)
+    # Join result and remove leading zeros, but keep at least one digit
     result = ''.join(result_chars).lstrip('0')
     return result if result else '0'

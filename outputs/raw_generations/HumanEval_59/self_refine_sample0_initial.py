@@ -1,8 +1,26 @@
 def largest_prime_factor(n: int) -> int:
-    factor = 2
+    """
+    Return the largest prime factor of n.
+    Assume n > 1 and is not a prime.
+    """
+    original_n = n
+    largest_factor = 1
+
+    # Factor out all 2s
+    while n % 2 == 0:
+        largest_factor = 2
+        n //= 2
+
+    # Check odd factors up to sqrt(n)
+    factor = 3
     while factor * factor <= n:
-        if n % factor == 0:
+        while n % factor == 0:
+            largest_factor = factor
             n //= factor
-        else:
-            factor += 1 if factor == 2 else 2  # skip even numbers after 2
-    return n
+        factor += 2
+
+    # If n is still greater than 1, it is a prime factor
+    if n > 1:
+        largest_factor = n
+
+    return largest_factor

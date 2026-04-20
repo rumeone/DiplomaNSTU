@@ -3,6 +3,9 @@ def is_simple_power(x: int, n: int) -> bool:
         return x == 1
     if x == 1:
         return True
+    if x < n:
+        return False
+    
     power = 0
     current = 1
     while current <= x:

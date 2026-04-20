@@ -1,6 +1,5 @@
 from typing import List
 
-
 def derivative(xs: List[int]) -> List[int]:
     """
     xs represents the coefficients of a polynomial:

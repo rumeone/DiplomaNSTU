@@ -14,7 +14,4 @@ def sum_to_n(n: int) -> int:
     """
     if n <= 0:
         return 1
-    total = 0
-    for i in range(1, n + 1):
-        total += i
-    return total
+    return n * (n + 1) // 2

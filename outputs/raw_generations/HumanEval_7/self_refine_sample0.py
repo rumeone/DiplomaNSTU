@@ -11,6 +11,8 @@ def filter_by_substring(strings: List[str], substring: str) -> List[str]:
     """
     if not strings:
         return []
+    
     if substring is None:
-        raise ValueError("Substring cannot be None")
+        return []
+    
     return [s for s in strings if substring in s]

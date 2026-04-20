@@ -5,10 +5,10 @@ def circular_shift(x: int, shift: int) -> str:
     If shift > number of digits, return digits reversed.
     """
     digits = str(x)
-    n = len(digits)
+    num_digits = len(digits)
 
-    if shift > n:
+    if shift > num_digits:
         return digits[::-1]
 
-    split_point = n - shift
+    split_point = num_digits - shift
     return digits[split_point:] + digits[:split_point]

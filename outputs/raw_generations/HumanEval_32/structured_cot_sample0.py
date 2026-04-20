@@ -25,27 +25,31 @@ def find_zero(xs: List[int]) -> float:
         >>> round(find_zero([-6, 11, -6, 1]), 2) # (x - 1) * (x - 2) * (x - 3) = -6 + 11x - 6x^2 + x^3
         1.0
     """
-    n = len(xs) - 1
-    while xs[n] == 0:
-        n -= 1
+    def f(x_val):
+        return poly(xs, x_val)
     
-    if n % 2 == 0:
-        left = -100.0
-        right = 100.0
-        while right - left > 1e-10:
-            mid = (left + right) / 2
-            if poly(xs, left) * poly(xs, mid) <= 0:
-                right = mid
-            else:
-                left = mid
+    left = -100.0
+    right = 100.0
+    f_left = f(left)
+    f_right = f(right)
+    
+    if f_left == 0:
         return left
-    else:
-        left = -100.0
-        right = 100.0
-        while right - left > 1e-10:
-            mid = (left + right) / 2
-            if poly(xs, left) * poly(xs, mid) <= 0:
-                right = mid
-            else:
-                left = mid
-        return left
+    if f_right == 0:
+        return right
+    
+    while right - left > 1e-10:
+        mid = (left + right) / 2
+        f_mid = f(mid)
+        
+        if f_mid == 0:
+            return mid
+        
+        if f_left * f_mid < 0:
+            right = mid
+            f_right = f_mid
+        else:
+            left = mid
+            f_left = f_mid
+    
+    return (left + right) / 2

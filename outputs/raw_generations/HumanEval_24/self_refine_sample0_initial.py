@@ -11,5 +11,4 @@ def largest_divisor(n: int) -> int:
         if n % d == 0:
             return d
     
-    # This line should never be reached for n > 1
     return -1

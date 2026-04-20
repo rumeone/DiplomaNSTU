@@ -25,31 +25,44 @@ def find_zero(xs: List[int]) -> float:
         >>> round(find_zero([-6, 11, -6, 1]), 2) # (x - 1) * (x - 2) * (x - 3) = -6 + 11x - 6x^2 + x^3
         1.0
     """
-    n = len(xs) - 1
-    while xs[n] == 0:
-        n -= 1
+    n = len(xs)
+    if n % 2 != 0:
+        raise ValueError("List xs must have an even number of coefficients")
     
-    if n == 1:
-        return -xs[0] / xs[1]
+    # Find the largest non-zero coefficient
+    max_coeff_idx = n - 1
+    while xs[max_coeff_idx] == 0:
+        max_coeff_idx -= 1
     
-    def f(x_val):
-        return poly(xs, x_val)
+    # The polynomial degree is max_coeff_idx
+    # For even degree polynomials, we can use bisection method
+    # We'll search between -100 and 100 as reasonable bounds
+    left = -100.0
+    right = 100.0
     
-    def derivative(x_val):
-        return sum([i * coeff * math.pow(x_val, i - 1) for i, coeff in enumerate(xs) if i > 0])
+    # Ensure poly(left) and poly(right) have opposite signs
+    # If not, expand bounds
+    f_left = poly(xs, left)
+    f_right = poly(xs, right)
     
-    x0 = 0.0
-    for _ in range(100):
-        fx = f(x0)
-        if abs(fx) < 1e-10:
-            return x0
-        dfx = derivative(x0)
-        if dfx == 0:
-            x0 += 0.1
-            continue
-        x1 = x0 - fx / dfx
-        if abs(x1 - x0) < 1e-10:
-            return x1
-        x0 = x1
+    # Adjust bounds if signs are same
+    while f_left * f_right > 0:
+        left *= 2
+        right *= 2
+        f_left = poly(xs, left)
+        f_right = poly(xs, right)
     
-    return x0
+    # Bisection method
+    for _ in range(100):  # 100 iterations for precision
+        mid = (left + right) / 2
+        f_mid = poly(xs, mid)
+        if abs(f_mid) < 1e-12:
+            return mid
+        if f_left * f_mid <= 0:
+            right = mid
+            f_right = f_mid
+        else:
+            left = mid
+            f_left = f_mid
+    
+    return (left + right) / 2

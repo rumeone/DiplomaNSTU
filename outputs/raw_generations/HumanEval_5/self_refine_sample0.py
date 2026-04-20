@@ -12,9 +12,9 @@ def intersperse(numbers: List[int], delimiter: int) -> List[int]:
     if not numbers:
         return []
 
-    result = [numbers[0]]
-    for num in numbers[1:]:
-        result.append(delimiter)
+    result = []
+    for i, num in enumerate(numbers):
         result.append(num)
-
+        if i < len(numbers) - 1:
+            result.append(delimiter)
     return result

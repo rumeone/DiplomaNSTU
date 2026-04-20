@@ -1,22 +1,17 @@
 from typing import List
 from collections import Counter
 
-
 def search(lst: List[int]) -> int:
     """
-    You are given a non-empty list of positive integers. Return the greatest integer that is greater than 
-    zero, and has a frequency greater than or equal to the value of the integer itself. 
-    The frequency of an integer is the number of times it appears in the list.
-    If no such a value exist, return -1.
+    Return the greatest integer > 0 with frequency >= integer value.
+    If none exists, return -1.
     """
-    frequency = Counter(lst)
-    valid_numbers = []
+    # Count frequencies of all positive integers
+    freq = Counter(lst)
     
-    for num, count in frequency.items():
-        if num > 0 and count >= num:
-            valid_numbers.append(num)
+    # Filter candidates where value > 0 and frequency >= value
+    candidates = [value for value, count in freq.items() 
+                  if value > 0 and count >= value]
     
-    if not valid_numbers:
-        return -1
-    
-    return max(valid_numbers)
+    # Return the maximum candidate or -1 if none exist
+    return max(candidates) if candidates else -1

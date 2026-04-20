@@ -25,7 +25,6 @@ from tqdm import tqdm
 from aggregation import compute_summary, save_records_to_csv, save_records_to_json
 from analyzers import analyze_code
 from code_utils import (
-    basic_code_quality_flags,
     is_valid_python,
     strip_code_fences,
     write_generation_artifacts,
@@ -102,8 +101,7 @@ def run_single_generation(
         initial_code = strip_code_fences(client.generate_code(initial_prompt))
 
         valid, syntax_error = is_valid_python(initial_code)
-        flags = basic_code_quality_flags(initial_code)
-        static_result = analyze_code(initial_code, flags) if valid else None
+        static_result = analyze_code(initial_code) if valid else None
 
         initial_pylint_path = None
         initial_bandit_json_path = None
@@ -149,9 +147,8 @@ def run_single_generation(
         initial_code = None
 
     valid, syntax_error = is_valid_python(final_code)
-    flags = basic_code_quality_flags(final_code)
 
-    static_result = analyze_code(final_code, flags) if valid else None
+    static_result = analyze_code(final_code) if valid else None
 
     task_part = safe_filename(task.task_id)
     static_root = config.output_dir / "reports" / "static_analysis"
@@ -205,8 +202,6 @@ def run_single_generation(
         "initial_code_file": initial_code_file,
         "syntax_valid": valid,
         "syntax_error": syntax_error,
-        "custom_flags_count": len(flags),
-        "custom_flags": " | ".join(flags) if flags else "",
         "pylint_score": static_result.pylint_score if static_result else None,
         "bandit_issues": static_result.bandit_issues if static_result else None,
         # Radon metrics
@@ -371,8 +366,6 @@ def main() -> None:
                         "initial_code_file": None,
                         "syntax_valid": False,
                         "syntax_error": f"PipelineError: {exc}",
-                        "custom_flags_count": None,
-                        "custom_flags": "",
                         "pylint_score": None,
                         "bandit_issues": None,
                         "passed": None,

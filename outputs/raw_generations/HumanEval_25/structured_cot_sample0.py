@@ -9,7 +9,7 @@ def factorize(n: int) -> List[int]:
 
     Examples:
         >>> factorize(8)
-        [2, 2, -2]
+        [2, 2, 2]
         >>> factorize(25)
         [5, 5]
         >>> factorize(70)

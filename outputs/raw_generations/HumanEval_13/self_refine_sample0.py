@@ -8,10 +8,8 @@ def greatest_common_divisor(a: int, b: int) -> int:
         >>> greatest_common_divisor(25, 15)
         5
     """
-    if not isinstance(a, int) or not isinstance(b, int):
-        raise TypeError("Both arguments must be integers")
     a = abs(a)
     b = abs(b)
-    while b:
+    while b != 0:
         a, b = b, a % b
     return a

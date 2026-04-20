@@ -12,10 +12,13 @@ def total_match(lst1: List[str], lst2: List[str]) -> List[str]:
         total_match(['hi', 'admin'], ['hI', 'Hi']) -> ['hI', 'Hi']
         total_match(['hi', 'admin'], ['hi', 'hi', 'admin', 'project']) -> ['hi', 'admin']
     """
-    total_chars1 = sum(len(s) for s in lst1)
-    total_chars2 = sum(len(s) for s in lst2)
+    def total_chars(lst: List[str]) -> int:
+        return sum(len(s) for s in lst)
 
-    if total_chars1 <= total_chars2:
+    chars1 = total_chars(lst1)
+    chars2 = total_chars(lst2)
+
+    if chars1 <= chars2:
         return lst1
     else:
         return lst2

@@ -18,10 +18,10 @@ def sort_even(l: List[int]) -> List[int]:
 
     # Extract and sort even-indexed elements
     even_elements = sorted(l[i] for i in range(0, len(l), 2))
-
+    
     # Build result list
     result = l.copy()
     for i, sorted_val in zip(range(0, len(l), 2), even_elements):
         result[i] = sorted_val
-
+    
     return result

@@ -18,27 +18,33 @@ def parse_music(music_string: str) -> List[int]:
     """
     beats = []
     i = 0
-    n = len(music_string)
+    length = len(music_string)
     
-    while i < n:
-        # Skip spaces
+    while i < length:
+        # Skip any spaces
         if music_string[i] == ' ':
             i += 1
             continue
         
-        # Check for quarter note
-        if music_string[i] == '.':
-            beats.append(1)
-            i += 2  # Skip '.|'
-            continue
-        
-        # Handle 'o' or 'o|'
+        # Check for whole note 'o'
         if music_string[i] == 'o':
-            if i + 1 < n and music_string[i + 1] == '|':
+            # Check if next character is '|' for half note
+            if i + 1 < length and music_string[i + 1] == '|':
                 beats.append(2)
-                i += 2
+                i += 2  # Skip 'o|'
             else:
                 beats.append(4)
+                i += 1  # Skip 'o'
+        # Check for quarter note '.|'
+        elif music_string[i] == '.':
+            if i + 1 < length and music_string[i + 1] == '|':
+                beats.append(1)
+                i += 2  # Skip '.|'
+            else:
+                # Invalid pattern, but spec implies valid input
                 i += 1
+        else:
+            # Invalid character, skip (should not happen with valid input)
+            i += 1
     
     return beats

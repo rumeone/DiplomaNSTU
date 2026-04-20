@@ -13,7 +13,8 @@ def sort_even(l: List[int]) -> List[int]:
         >>> sort_even([5, 6, 3, 4])
         [3, 6, 5, 4]
     """
-    even_values = sorted(l[i] for i in range(0, len(l), 2))
+    even_values = [l[i] for i in range(0, len(l), 2)]
+    even_values.sort()
     result = l[:]
     for i in range(0, len(l), 2):
         result[i] = even_values[i // 2]

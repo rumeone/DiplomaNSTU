@@ -1,11 +1,13 @@
 ************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpozu791on\candidate.py:7:0: C0301: Line too long (105/100) (line-too-long)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpozu791on\candidate.py:20:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpozu791on\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpozu791on\candidate.py:17:11: R1716: Simplify chained comparison between the operands (chained-comparison)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpozu791on\candidate.py:18:12: R1731: Consider using 'max_valid = max(max_valid, num)' instead of unnecessary if block (consider-using-max-builtin)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuzu2avmc\candidate.py:7:0: C0301: Line too long (105/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuzu2avmc\candidate.py:14:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuzu2avmc\candidate.py:16:55: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuzu2avmc\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuzu2avmc\candidate.py:19:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuzu2avmc\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuzu2avmc\candidate.py:17:24: R1716: Simplify chained comparison between the operands (chained-comparison)
 
 ------------------------------------------------------------------
-Your code has been rated at 5.83/10 (previous run: 2.00/10, +3.83)
+Your code has been rated at 1.25/10 (previous run: 0.00/10, +1.25)
 
 

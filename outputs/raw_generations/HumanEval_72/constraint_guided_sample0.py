@@ -3,17 +3,8 @@ from typing import List
 
 def will_it_fly(q: List[int], w: int) -> bool:
     # Check if the list is palindromic
-    is_palindrome = True
-    left, right = 0, len(q) - 1
-    while left < right:
-        if q[left] != q[right]:
-            is_palindrome = False
-            break
-        left += 1
-        right -= 1
-
-    # Check if sum is less than or equal to maximum weight
-    total_weight = sum(q)
-    weight_ok = total_weight <= w
-
-    return is_palindrome and weight_ok
+    is_palindromic = q == q[::-1]
+    # Check if the sum of elements is less than or equal to w
+    sum_leq_weight = sum(q) <= w
+    # The object flies only if both conditions are satisfied
+    return is_palindromic and sum_leq_weight

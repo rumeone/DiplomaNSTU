@@ -11,7 +11,7 @@ def max_element(l: List[int]) -> int:
         3
     """
     max_val = l[0]
-    for num in l[1:]:
+    for num in l:
         if num > max_val:
             max_val = num
     return max_val

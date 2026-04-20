@@ -10,8 +10,4 @@ def max_element(l: List[int]) -> int:
         >>> max_element([1, 2, 3])
         3
     """
-    max_val = l[0]
-    for num in l[1:]:
-        if num > max_val:
-            max_val = num
-    return max_val
+    return max(l)

@@ -17,7 +17,11 @@ def longest(strings: List[str]) -> str:
         return ""
     
     longest_str = strings[0]
+    max_length = len(longest_str)
+    
     for s in strings[1:]:
-        if len(s) > len(longest_str):
+        if len(s) > max_length:
             longest_str = s
+            max_length = len(s)
+    
     return longest_str

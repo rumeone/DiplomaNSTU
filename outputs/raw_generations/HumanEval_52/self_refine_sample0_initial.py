@@ -11,7 +11,8 @@ def below_threshold(l: List[int], t: int) -> bool:
         >>> below_threshold([1, 20, 4, 10], 5)
         False
     """
-    for number in l:
-        if number >= t:
+    # Check each element; return False immediately if any element >= threshold
+    for num in l:
+        if num >= t:
             return False
     return True

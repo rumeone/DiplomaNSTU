@@ -26,36 +26,30 @@ def find_zero(xs: List[int]) -> float:
         1.0
     """
     # Polynomial degree is len(xs)-1
+    # For even degree polynomials, there's at least one real root
     degree = len(xs) - 1
     
-    # For linear polynomial (degree 1), solve directly
-    if degree == 1:
-        return -xs[0] / xs[1]
-    
-    # For higher degree polynomials, use bisection method
-    # Find two points with opposite signs
+    # Find initial bounds for bisection
+    # Use a heuristic to find where polynomial changes sign
     left = -1.0
     right = 1.0
     
-    # Expand search range until signs differ
+    # Expand search range until we find a sign change
     while poly(xs, left) * poly(xs, right) > 0:
         left *= 2
         right *= 2
     
-    # Bisection method
-    tolerance = 1e-10
-    max_iterations = 1000
-    
-    for _ in range(max_iterations):
+    # Perform bisection method
+    for _ in range(100):  # Sufficient iterations for good precision
         mid = (left + right) / 2
         f_mid = poly(xs, mid)
         
-        if abs(f_mid) < tolerance:
+        if abs(f_mid) < 1e-12:
             return mid
         
         f_left = poly(xs, left)
         
-        if f_left * f_mid < 0:
+        if f_left * f_mid <= 0:
             right = mid
         else:
             left = mid
