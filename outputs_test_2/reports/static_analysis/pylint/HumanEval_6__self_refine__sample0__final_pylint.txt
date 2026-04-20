@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp6hsa32j3\candidate.py:50:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp6hsa32j3\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp6hsa32j3\candidate.py:30:12: R1731: Consider using 'max_depth = max(max_depth, current_depth)' instead of unnecessary if block (consider-using-max-builtin)
+
+------------------------------------------------------------------
+Your code has been rated at 8.97/10 (previous run: 9.64/10, -0.68)
+
+

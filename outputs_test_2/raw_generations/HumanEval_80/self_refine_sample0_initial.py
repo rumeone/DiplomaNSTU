@@ -1,0 +1,40 @@
+"""
+Module providing a function to determine if a string is "happy".
+
+A string is considered happy if it meets the following criteria:
+1. Its length is at least 3.
+2. Every three consecutive characters in the string are distinct.
+"""
+
+
+def is_happy(s: str) -> bool:
+    """
+    Check if the string is happy.
+
+    A string is happy if its length is at least 3 and every
+    3 consecutive letters are distinct.
+
+    Examples:
+        >>> is_happy("a")
+        False
+        >>> is_happy("aa")
+        False
+        >>> is_happy("abcd")
+        True
+        >>> is_happy("aabb")
+        False
+
+    Args:
+        s: The input string to check.
+
+    Returns:
+        True if the string is happy, False otherwise.
+    """
+    if len(s) < 3:
+        return False
+
+    for i in range(len(s) - 2):
+        if s[i] == s[i + 1] or s[i] == s[i + 2] or s[i + 1] == s[i + 2]:
+            return False
+
+    return True

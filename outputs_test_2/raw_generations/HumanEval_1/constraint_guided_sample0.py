@@ -1,23 +1,23 @@
-"""Separate balanced parentheses groups from a string."""
+"""
+Module for separating nested parentheses groups from a string.
+"""
 
 from typing import List
 
 
 def separate_paren_groups(paren_string: str) -> List[str]:
     """
-    Extract balanced parentheses groups from a string.
+    Separate groups of nested parentheses from a string.
 
-    The function processes the input string, ignoring all characters except
-    parentheses. It identifies and returns a list of separate balanced
-    parentheses groups.
+    The function extracts all balanced groups of parentheses from the input string,
+    ignoring any characters other than '(' and ')'. Each balanced group is returned
+    as a separate string in a list.
 
     Args:
-        paren_string: A string possibly containing multiple groups of nested
-                      parentheses along with other characters.
+        paren_string: A string possibly containing multiple groups of parentheses.
 
     Returns:
-        A list of strings, each representing a separate balanced parentheses
-        group.
+        A list of strings, each representing a balanced parentheses group.
 
     Examples:
         >>> separate_paren_groups('(()())')
@@ -27,7 +27,7 @@ def separate_paren_groups(paren_string: str) -> List[str]:
         >>> separate_paren_groups(')( [) (( ))] (({})( ))')
         ['()', '(())', '(()())']
     """
-    groups = []
+    result = []
     current_group = []
     balance = 0
 
@@ -38,9 +38,8 @@ def separate_paren_groups(paren_string: str) -> List[str]:
         elif char == ')':
             balance -= 1
             current_group.append(char)
-
             if balance == 0 and current_group:
-                groups.append(''.join(current_group))
+                result.append(''.join(current_group))
                 current_group = []
 
-    return groups
+    return result

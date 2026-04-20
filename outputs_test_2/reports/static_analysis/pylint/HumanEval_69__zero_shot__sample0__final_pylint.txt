@@ -1,0 +1,11 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpdvli010w\candidate.py:5:0: C0301: Line too long (105/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpdvli010w\candidate.py:23:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpdvli010w\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpdvli010w\candidate.py:15:4: C0415: Import outside toplevel (collections.Counter) (import-outside-toplevel)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpdvli010w\candidate.py:19:11: R1716: Simplify chained comparison between the operands (chained-comparison)
+
+------------------------------------------------------------------
+Your code has been rated at 5.45/10 (previous run: 8.57/10, -3.12)
+
+

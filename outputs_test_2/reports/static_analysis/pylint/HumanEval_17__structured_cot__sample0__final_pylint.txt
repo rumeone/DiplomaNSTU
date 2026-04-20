@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpxdtjo4jv\candidate.py:7:0: C0301: Line too long (107/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpxdtjo4jv\candidate.py:20:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpxdtjo4jv\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 2.50/10 (previous run: 8.33/10, -5.83)
+
+

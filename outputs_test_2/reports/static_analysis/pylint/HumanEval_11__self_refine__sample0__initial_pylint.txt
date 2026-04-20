@@ -1,0 +1,8 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuwm_vqo6\candidate.py:41:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpuwm_vqo6\candidate.py:8:0: W0611: Unused List imported from typing (unused-import)
+
+------------------------------------------------------------------
+Your code has been rated at 8.57/10 (previous run: 5.83/10, +2.74)
+
+

@@ -1,0 +1,8 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpmc6qz3oj\candidate.py:74:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpmc6qz3oj\candidate.py:8:0: R0912: Too many branches (15/12) (too-many-branches)
+
+------------------------------------------------------------------
+Your code has been rated at 9.41/10 (previous run: 7.95/10, +1.46)
+
+

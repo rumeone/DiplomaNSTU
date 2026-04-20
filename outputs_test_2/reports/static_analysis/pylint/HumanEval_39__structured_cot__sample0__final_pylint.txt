@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpiy38fyd_\candidate.py:35:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpiy38fyd_\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpiy38fyd_\candidate.py:17:4: C0415: Import outside toplevel (math.isqrt) (import-outside-toplevel)
+
+------------------------------------------------------------------
+Your code has been rated at 8.33/10 (previous run: 9.67/10, -1.33)
+
+

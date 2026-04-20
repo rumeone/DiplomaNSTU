@@ -1,6 +1,4 @@
-"""
-Module for checking if any two numbers in a list are closer than a given threshold.
-"""
+"""Check if any two numbers in a list are closer than a given threshold."""
 
 from typing import List
 
@@ -11,7 +9,7 @@ def has_close_elements(numbers: List[float], threshold: float) -> bool:
     the given threshold.
 
     Args:
-        numbers: List of floating point numbers.
+        numbers: List of floating-point numbers.
         threshold: Minimum distance threshold.
 
     Returns:
@@ -23,14 +21,13 @@ def has_close_elements(numbers: List[float], threshold: float) -> bool:
         >>> has_close_elements([1.0, 2.8, 3.0, 4.0, 5.0, 2.0], 0.3)
         True
     """
-    if len(numbers) < 2:
+    if not numbers:
         return False
 
     sorted_numbers = sorted(numbers)
 
     for i in range(len(sorted_numbers) - 1):
-        current_distance = abs(sorted_numbers[i] - sorted_numbers[i + 1])
-        if current_distance < threshold:
+        if abs(sorted_numbers[i] - sorted_numbers[i + 1]) < threshold:
             return True
 
     return False

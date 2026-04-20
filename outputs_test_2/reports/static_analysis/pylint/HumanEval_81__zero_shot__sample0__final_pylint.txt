@@ -1,0 +1,14 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:14:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:16:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:43:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:45:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:46:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:3:0: C0116: Missing function or method docstring (missing-function-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpit8oqblf\candidate.py:3:0: R0912: Too many branches (15/12) (too-many-branches)
+
+------------------------------------------------------------------
+Your code has been rated at 7.95/10 (previous run: 7.14/10, +0.81)
+
+

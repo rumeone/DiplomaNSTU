@@ -1,0 +1,11 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp4o61p7m7\candidate.py:7:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp4o61p7m7\candidate.py:11:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp4o61p7m7\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp4o61p7m7\candidate.py:4:0: C0116: Missing function or method docstring (missing-function-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp4o61p7m7\candidate.py:8:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+
+------------------------------------------------------------------
+Your code has been rated at 2.86/10 (previous run: 7.50/10, -4.64)
+
+

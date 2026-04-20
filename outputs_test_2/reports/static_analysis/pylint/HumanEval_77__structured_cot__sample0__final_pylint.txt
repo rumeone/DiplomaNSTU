@@ -1,0 +1,11 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0r7jn8io\candidate.py:20:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0r7jn8io\candidate.py:24:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0r7jn8io\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0r7jn8io\candidate.py:22:12: R1714: Consider merging these comparisons with 'in' by using 'abs_a in (cube_root**3, (cube_root + sign)**3)'. Use a set instead if elements are hashable. (consider-using-in)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp0r7jn8io\candidate.py:23:8: R1714: Consider merging these comparisons with 'in' by using 'a in (cube_root**3 * sign, (cube_root + sign)**3 * sign)'. Use a set instead if elements are hashable. (consider-using-in)
+
+------------------------------------------------------------------
+Your code has been rated at 2.86/10 (previous run: 8.00/10, -5.14)
+
+

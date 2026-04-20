@@ -1,0 +1,11 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnga4lwgz\candidate.py:25:0: C0301: Line too long (102/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnga4lwgz\candidate.py:51:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnga4lwgz\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnga4lwgz\candidate.py:10:11: R1728: Consider using a generator instead 'sum(coeff * math.pow(x, i) for (i, coeff) in enumerate(xs))' (consider-using-generator)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpnga4lwgz\candidate.py:36:15: R1728: Consider using a generator instead 'sum(i * coeff * math.pow(x, i - 1) for (i, coeff) in enumerate(xs) if i > 0)' (consider-using-generator)
+
+------------------------------------------------------------------
+Your code has been rated at 8.08/10 (previous run: 8.18/10, -0.10)
+
+

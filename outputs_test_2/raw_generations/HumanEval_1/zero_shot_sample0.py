@@ -1,6 +1,5 @@
 from typing import List
 
-
 def separate_paren_groups(paren_string: str) -> List[str]:
     """
     Input to this function is a string possibly containing multiple groups of nested parentheses.
@@ -8,7 +7,7 @@ def separate_paren_groups(paren_string: str) -> List[str]:
     Ignore anything other than "(" and ")" in the input string.
 
     Examples:
-        >>> separate_paren_groups('(()())')
+        >>> seperate_paren_groups('(()())')
         ['(()())']
         >>> separate_paren_groups('()(())')
         ['()', '(())']
@@ -26,6 +25,7 @@ def separate_paren_groups(paren_string: str) -> List[str]:
         elif char == ')':
             balance -= 1
             current_group.append(char)
+            
             if balance == 0:
                 result.append(''.join(current_group))
                 current_group = []

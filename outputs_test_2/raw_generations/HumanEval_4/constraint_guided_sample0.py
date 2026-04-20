@@ -1,0 +1,28 @@
+"""Calculate Mean Absolute Deviation (MAD) for a dataset."""
+
+from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """
+    Calculate Mean Absolute Deviation around the mean of the dataset.
+
+    MAD is the average absolute difference between each element and the mean:
+    MAD = average | x - x_mean |
+
+    Args:
+        numbers: List of float values.
+
+    Returns:
+        The Mean Absolute Deviation as a float.
+
+    Example:
+        >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+        1.0
+    """
+    if not numbers:
+        return 0.0
+
+    mean_value = sum(numbers) / len(numbers)
+    absolute_differences = [abs(num - mean_value) for num in numbers]
+    return sum(absolute_differences) / len(absolute_differences)
