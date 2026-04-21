@@ -5,6 +5,7 @@ from typing import List, Literal
 
 @dataclass
 class ModelConfig:
+    """Конфигурация модели-генератора кода."""
     model_name: str = "deepseek/deepseek-v3.2"
     temperature: float = 0.2
     max_output_tokens: int = 5000
@@ -25,12 +26,18 @@ class ParallelismConfig:
 
 @dataclass
 class ReviewerConfig:
-    """Configuration for LLM code reviewer."""
-    # Model to use for code review (can be different from generation model)
+    """Конфигурация модели-рецензента (LLM-as-a-Judge)."""
+    # Модель-рецензент (может отличаться от генерирующей модели)
     model: str = "deepseek/deepseek-v3.2"
-    # API key for reviewer (defaults to REVIEWER_API_KEY env var)
+    # Температура для ревью (низкая — для стабильности оценок)
+    temperature: float = 0.1
+    # Максимум токенов на ответ ревьюера
+    max_output_tokens: int = 500
+    # Включить LLM-ревью (можно переопределить флагом --enable-llm-review)
+    enabled: bool = False
+    # API-ключ (по умолчанию берётся из REVIEWER_API_KEY)
     api_key: str | None = None
-    # Base URL for reviewer API
+    # Базовый URL для API рецензента
     base_url: str | None = None
 
 

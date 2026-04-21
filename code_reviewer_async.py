@@ -27,6 +27,7 @@ from code_reviewer import (
     CodeReviewResult,
     parse_review_response,
 )
+from config import REVIEWER_CONFIG
 
 
 def _get_reviewer_api_key() -> str:
@@ -74,22 +75,28 @@ class AsyncCodeReviewer:
     
     def __init__(
         self,
-        model: str = "deepseek/deepseek-v3.2",
+        model: str | None = None,
+        temperature: float | None = None,
+        max_output_tokens: int | None = None,
         max_concurrent: int = 10,
         max_retries: int = 3,
         timeout_seconds: float = 60.0,
     ) -> None:
         """Initialize the async code reviewer.
-        
+
         Args:
-            model: Model to use for review.
+            model: Модель-рецензент. Если None — берётся из REVIEWER_CONFIG.model.
+            temperature: Температура. Если None — из REVIEWER_CONFIG.
+            max_output_tokens: Лимит токенов. Если None — из REVIEWER_CONFIG.
             max_concurrent: Maximum concurrent review requests.
             max_retries: Maximum retries for failed requests.
             timeout_seconds: Timeout for each review request.
         """
         self.api_key = _get_reviewer_api_key()
         self.base_url = _get_reviewer_base_url().rstrip("/")
-        self.model = model
+        self.model = model or REVIEWER_CONFIG.model
+        self.temperature = temperature if temperature is not None else REVIEWER_CONFIG.temperature
+        self.max_output_tokens = max_output_tokens if max_output_tokens is not None else REVIEWER_CONFIG.max_output_tokens
         self.max_concurrent = max_concurrent
         self.max_retries = max_retries
         self.timeout_seconds = timeout_seconds
@@ -172,8 +179,8 @@ class AsyncCodeReviewer:
                 {"role": "system", "content": REVIEWER_SYSTEM_PROMPT},
                 {"role": "user", "content": prompt},
             ],
-            "temperature": 0.1,  # Low temperature for consistent evaluation
-            "max_tokens": 500,
+            "temperature": self.temperature,
+            "max_tokens": self.max_output_tokens,
         }
         
         async with self._session.post(url, json=payload) as response:

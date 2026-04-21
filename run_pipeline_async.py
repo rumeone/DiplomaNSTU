@@ -30,7 +30,7 @@ from code_utils import (
     strip_code_fences,
     write_generation_artifacts,
 )
-from config import EXPERIMENT_CONFIG, ExperimentConfig, PARALLELISM_CONFIG, ParallelismConfig, REVIEWER_CONFIG, ReviewerConfig
+from config import EXPERIMENT_CONFIG, ExperimentConfig, MODEL_CONFIG, ModelConfig, PARALLELISM_CONFIG, ParallelismConfig, REVIEWER_CONFIG, ReviewerConfig
 from evaluator import evaluate_with_humaneval
 from humaneval_loader import HumanEvalTask, load_humaneval_tasks
 from code_reviewer import CodeReviewer, CodeReviewResult
@@ -365,6 +365,18 @@ async def run_refinement_phase(
     return final_results
 
 
+def _read_generated_code(output_dir: Path, task_id: str, strategy: str, sample_index: int) -> str | None:
+    """Читает ранее сгенерированный код с диска для resume-прогонов."""
+    task_part = safe_filename(task_id)
+    code_path = output_dir / "raw_generations" / task_part / f"{strategy}_sample{sample_index}.py"
+    if code_path.exists():
+        try:
+            return code_path.read_text(encoding="utf-8")
+        except Exception:
+            return None
+    return None
+
+
 async def run_review_phase(
     reviewer: AsyncCodeReviewer,
     tasks: list[HumanEvalTask],
@@ -376,6 +388,9 @@ async def run_review_phase(
 ) -> dict[str, CodeReviewResult | None]:
     """Run LLM code review in parallel for all generated code.
     
+    Ревьюит ВСЁС код — как свежесгенерированный, так и ранее сохранённый на диске
+    (важно для resume-прогонов, когда генерация уже сделана, а ревью — ещё нет).
+
     Returns:
         Dictionary mapping (task_id, strategy, sample_index) -> CodeReviewResult
     """
@@ -387,23 +402,19 @@ async def run_review_phase(
             for sample_index in range(samples_per_task):
                 key = f"{safe_filename(task.task_id)}__{strategy}__{sample_index}"
                 
-                # Skip already completed
-                if key in completed_tasks:
-                    continue
-                
-                # Get the final code
+                # Сначала берём код из generation_results (свежая генерация),
+                # если там нет — читаем с диска (resume-случай)
+                final_code: str | None = None
                 if strategy == "self_refine":
                     initial_key = f"{key}__initial"
                     if key in generation_results:
                         final_code, _ = generation_results[key]
                     elif initial_key in generation_results:
                         final_code, _ = generation_results[initial_key]
-                    else:
-                        continue
-                else:
-                    if key not in generation_results:
-                        continue
+                if not final_code and key in generation_results:
                     final_code, _ = generation_results[key]
+                if not final_code and key in completed_tasks:
+                    final_code = _read_generated_code(config.output_dir, task.task_id, strategy, sample_index)
                 
                 if not final_code:
                     continue
@@ -490,7 +501,14 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--enable-llm-review",
         action="store_true",
-        help="Enable LLM-based code review",
+        default=REVIEWER_CONFIG.enabled,
+        help="Enable LLM-based code review (default: REVIEWER_CONFIG.enabled from config.py)",
+    )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default=MODEL_CONFIG.model_name,
+        help="Модель-генератор (по умолчанию — из MODEL_CONFIG.model_name)",
     )
     parser.add_argument(
         "--no-resume",
@@ -507,7 +525,7 @@ def parse_args() -> argparse.Namespace:
         "--reviewer-model",
         type=str,
         default=REVIEWER_CONFIG.model,
-        help="Model to use for LLM code review (can be different from generation model)",
+        help="Модель для LLM-ревью (по умолчанию — из REVIEWER_CONFIG.model)",
     )
     return parser.parse_args()
 
@@ -537,7 +555,8 @@ async def async_main() -> None:
     ensure_dirs(config.output_dir)
     
     # Check if LLM review is enabled (will initialize async reviewer later)
-    llm_review_enabled = args.enable_llm_review
+    # Флаг --enable-llm-review или REVIEWER_CONFIG.enabled в config.py
+    llm_review_enabled = args.enable_llm_review or REVIEWER_CONFIG.enabled
     if llm_review_enabled:
         try:
             # Just check if API key is available
@@ -563,6 +582,7 @@ async def async_main() -> None:
     print(f"  Dataset:     {config.dataset_path}")
     print(f"  Output:      {config.output_dir}")
     print(f"  Execution:   {'enabled' if config.enable_external_execution else 'disabled'}")
+    print(f"  Generation Model: {args.model}")
     print(f"  LLM Review:  {'enabled' if llm_review_enabled else 'disabled'}")
     if llm_review_enabled:
         print(f"  Reviewer Model: {args.reviewer_model}")
@@ -609,6 +629,7 @@ async def async_main() -> None:
     
     # Run async pipeline
     async with AsyncLLMClient(
+        model=args.model,
         max_concurrent=args.concurrent,
         max_retries=parallelism_config.max_retries,
         timeout_seconds=parallelism_config.request_timeout_seconds,

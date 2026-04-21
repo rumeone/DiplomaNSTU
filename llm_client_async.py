@@ -74,6 +74,9 @@ class AsyncLLMClient:
 
     def __init__(
         self,
+        model: str | None = None,
+        temperature: float | None = None,
+        max_output_tokens: int | None = None,
         max_concurrent: int = 10,
         max_retries: int = 3,
         timeout_seconds: float = 120.0,
@@ -81,12 +84,18 @@ class AsyncLLMClient:
         """Initialize the async LLM client.
         
         Args:
+            model: Модель-генератор. Если None — берётся из MODEL_CONFIG.model_name.
+            temperature: Температура. Если None — берётся из MODEL_CONFIG.
+            max_output_tokens: Лимит токенов. Если None — из MODEL_CONFIG.
             max_concurrent: Maximum number of concurrent API requests.
             max_retries: Maximum number of retries for failed requests.
             timeout_seconds: Timeout for each API request.
         """
         self.api_key = _get_api_key()
         self.base_url = _get_base_url().rstrip("/")
+        self.model = model or MODEL_CONFIG.model_name
+        self.temperature = temperature if temperature is not None else MODEL_CONFIG.temperature
+        self.max_output_tokens = max_output_tokens if max_output_tokens is not None else MODEL_CONFIG.max_output_tokens
         self.max_concurrent = max_concurrent
         self.max_retries = max_retries
         self.timeout_seconds = timeout_seconds
@@ -149,13 +158,13 @@ class AsyncLLMClient:
         """Make a single API request."""
         url = f"{self.base_url}/chat/completions"
         payload = {
-            "model": MODEL_CONFIG.model_name,
+            "model": self.model,
             "messages": [
                 {"role": "system", "content": SYSTEM_RULES},
                 {"role": "user", "content": user_prompt},
             ],
-            "temperature": MODEL_CONFIG.temperature,
-            "max_tokens": MODEL_CONFIG.max_output_tokens,
+            "temperature": self.temperature,
+            "max_tokens": self.max_output_tokens,
         }
 
         async with self._session.post(url, json=payload) as response:
