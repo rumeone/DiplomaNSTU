@@ -1,0 +1,12 @@
+def fruit_distribution(s: str, n: int) -> int:
+    """
+    In this task, you will be given a string that represents a number of apples and oranges 
+    that are distributed in a basket of fruit this basket contains 
+    apples, oranges, and mango fruits. Given the string, that represents the total number of 
+    the oranges and apples, and an integer that represent the total number of the fruits 
+    in the basket, return the number of the mango fruits in the basket.
+    """
+    words = s.split()
+    apples = int(words[0])
+    oranges = int(words[3])
+    return n - apples - oranges

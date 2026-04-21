@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp1jn3ywm_\candidate.py:22:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp1jn3ywm_\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp1jn3ywm_\candidate.py:19:8: R1731: Consider using 'current_max = max(current_max, num)' instead of unnecessary if block (consider-using-max-builtin)
+
+------------------------------------------------------------------
+Your code has been rated at 7.27/10 (previous run: 8.18/10, -0.91)
+
+

@@ -1,0 +1,10 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp61_j698w\candidate.py:4:0: C0301: Line too long (104/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp61_j698w\candidate.py:23:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp61_j698w\candidate.py:26:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp61_j698w\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 2.00/10 (previous run: 9.17/10, -7.17)
+
+

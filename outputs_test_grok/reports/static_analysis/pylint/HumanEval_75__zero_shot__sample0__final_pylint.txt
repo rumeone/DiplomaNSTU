@@ -1,0 +1,14 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:4:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:20:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:36:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:1:0: C0116: Missing function or method docstring (missing-function-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:8:11: R1714: Consider merging these comparisons with 'in' by using 'n in (2, 3)'. Use a set instead if elements are hashable. (consider-using-in)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp_guf4a5p\candidate.py:21:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+
+------------------------------------------------------------------
+Your code has been rated at 7.58/10 (previous run: 8.89/10, -1.31)
+
+

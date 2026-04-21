@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpj90xynw9\candidate.py:48:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpj90xynw9\candidate.py:29:12: R1731: Consider using 'max_depth = max(max_depth, current_depth)' instead of unnecessary if block (consider-using-max-builtin)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpj90xynw9\candidate.py:34:16: R1731: Consider using 'current_depth = max(current_depth, 0)' instead of unnecessary if block (consider-using-max-builtin)
+
+------------------------------------------------------------------
+Your code has been rated at 8.93/10 (previous run: 7.71/10, +1.21)
+
+
