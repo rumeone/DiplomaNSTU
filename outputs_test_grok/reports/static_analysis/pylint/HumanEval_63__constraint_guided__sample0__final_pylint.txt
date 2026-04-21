@@ -1,8 +1,0 @@
-************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp7ac88z5e\candidate.py:44:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp7ac88z5e\candidate.py:28:7: R1714: Consider merging these comparisons with 'in' by using 'n in (0, 1)'. Use a set instead if elements are hashable. (consider-using-in)
-
-------------------------------------------------------------------
-Your code has been rated at 8.75/10 (previous run: 5.56/10, +3.19)
-
-

@@ -1,8 +1,0 @@
-************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpv1gl_yw8\candidate.py:28:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpv1gl_yw8\candidate.py:7:0: C0103: Function name "digitSum" doesn't conform to snake_case naming style (invalid-name)
-
-------------------------------------------------------------------
-Your code has been rated at 7.50/10 (previous run: 3.33/10, +4.17)
-
-

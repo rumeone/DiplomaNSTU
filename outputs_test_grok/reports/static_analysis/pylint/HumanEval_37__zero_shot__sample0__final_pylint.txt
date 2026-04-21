@@ -1,8 +1,0 @@
-************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmpw0fj9hd6\candidate.py:20:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmpw0fj9hd6\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-
-------------------------------------------------------------------
-Your code has been rated at 7.14/10 (previous run: 8.75/10, -1.61)
-
-

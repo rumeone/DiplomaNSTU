@@ -1,9 +1,0 @@
-************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmps_bpge7f\candidate.py:13:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps_bpge7f\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmps_bpge7f\candidate.py:1:0: W0611: Unused List imported from typing (unused-import)
-
-------------------------------------------------------------------
-Your code has been rated at 0.00/10 (previous run: 9.09/10, -9.09)
-
-

@@ -1,4 +1,0 @@
-def count_distinct_characters(string: str) -> int:
-    if not string:
-        return 0
-    return len(set(string.lower()))

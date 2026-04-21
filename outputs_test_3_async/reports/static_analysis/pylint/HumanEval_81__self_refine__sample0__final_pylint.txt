@@ -1,0 +1,11 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp5m9yoaij\candidate.py:76:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp5m9yoaij\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp5m9yoaij\candidate.py:33:4: C0103: Variable name "TOLERANCE" doesn't conform to snake_case naming style (invalid-name)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp5m9yoaij\candidate.py:39:4: R0911: Too many return statements (14/6) (too-many-return-statements)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp5m9yoaij\candidate.py:39:4: R0912: Too many branches (13/12) (too-many-branches)
+
+------------------------------------------------------------------
+Your code has been rated at 8.72/10 (previous run: 5.79/10, +2.93)
+
+
