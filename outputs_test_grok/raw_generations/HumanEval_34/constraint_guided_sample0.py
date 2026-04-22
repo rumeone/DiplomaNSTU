@@ -1,0 +1,17 @@
+"""Utility functions for working with lists."""
+
+from typing import List
+
+
+def unique(numbers: List[int]) -> List[int]:
+    """
+    Return sorted unique elements in a list.
+
+    Example:
+        >>> unique([5, 3, 5, 2, 3, 3, 9, 0, 123])
+        [0, 2, 3, 5, 9, 123]
+    """
+    if not numbers:
+        return []
+
+    return sorted(set(numbers))
