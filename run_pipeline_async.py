@@ -273,7 +273,7 @@ async def run_generation_phase(
         
         if result.error:
             print(f"  ⚠️ Error for {key}: {result.error}")
-            generation_results[key] = ("", None)
+            pass  # skip failed generation, code will be read from disk if needed
         else:
             generation_results[key] = (result.code, None)
     
@@ -695,7 +695,7 @@ async def async_main() -> None:
                 # Check if already completed (from resume)
                 if key in completed_tasks:
                     # TODO: Load existing record from JSON
-                    continue
+                
                 
                 if strategy == "self_refine":
                     initial_key = f"{key}__initial"
@@ -706,11 +706,12 @@ async def async_main() -> None:
                         final_code, _ = generation_results[initial_key]
                         initial_code = final_code
                     else:
-                        continue
+                                    final_code = _read_generated_code(config.output_dir, task.task_id, strategy, sample_index)
                 else:
                     if key not in generation_results:
-                        continue
-                    final_code, _ = generation_results[key]
+                                        final_code = _read_generated_code(config.output_dir, task.task_id, strategy, sample_index)
+                    else:
+                                    final_code, _ = generation_results[key]
                     initial_code = None
                 
                 if not final_code:
