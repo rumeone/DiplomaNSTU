@@ -1,9 +1,0 @@
-************* Module candidate
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1x6uk_pk\candidate.py:26:0: C0304: Final newline missing (missing-final-newline)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1x6uk_pk\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
-C:\Users\3CDE~1\AppData\Local\Temp\tmp1x6uk_pk\candidate.py:6:4: W0612: Unused variable 'original_n' (unused-variable)
-
-------------------------------------------------------------------
-Your code has been rated at 8.00/10 (previous run: 5.71/10, +2.29)
-
-

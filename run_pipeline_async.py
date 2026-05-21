@@ -378,16 +378,16 @@ def _read_generated_code(output_dir: Path, task_id: str, strategy: str, sample_i
 
 
 async def run_review_phase(
-    reviewer: AsyncCodeReviewer,
-    tasks: list[HumanEvalTask],
-    generation_results: dict[str, tuple[str, str | None]],
-    strategies: list[str],
-    samples_per_task: int,
-    completed_tasks: set[str],
-    config: ExperimentConfig,
+        reviewer: AsyncCodeReviewer,
+        tasks: list[HumanEvalTask],
+        generation_results: dict[str, tuple[str, str | None]],
+        strategies: list[str],
+        samples_per_task: int,
+        completed_tasks: set[str],
+        config: ExperimentConfig,
 ) -> dict[str, CodeReviewResult | None]:
     """Run LLM code review in parallel for all generated code.
-    
+
     Ревьюит ВСЁС код — как свежесгенерированный, так и ранее сохранённый на диске
     (важно для resume-прогонов, когда генерация уже сделана, а ревью — ещё нет).
 
@@ -396,12 +396,12 @@ async def run_review_phase(
     """
     review_requests: list[ReviewRequest] = []
     request_keys: list[str] = []
-    
+
     for task in tasks:
         for strategy in strategies:
             for sample_index in range(samples_per_task):
                 key = f"{safe_filename(task.task_id)}__{strategy}__{sample_index}"
-                
+
                 # Сначала берём код из generation_results (свежая генерация),
                 # если там нет — читаем с диска (resume-случай)
                 final_code: str | None = None
@@ -415,38 +415,59 @@ async def run_review_phase(
                     final_code, _ = generation_results[key]
                 if not final_code and key in completed_tasks:
                     final_code = _read_generated_code(config.output_dir, task.task_id, strategy, sample_index)
-                
+
                 if not final_code:
                     continue
-                
-                # Check if code is valid before review
-                valid, _ = is_valid_python(final_code)
-                if not valid:
+
+                # IMPORTANT:
+                # сначала очищаем markdown fences и мусор,
+                # потом валидируем код
+                clean_code = strip_code_fences(final_code).strip()
+
+                # Skip empty code
+                if not clean_code:
+                    print(f"  ⚠️ Empty code for {key}")
                     continue
-                
-                review_requests.append(ReviewRequest(
-                    task_id=task.task_id,
-                    strategy=strategy,
-                    sample_index=sample_index,
-                    code=strip_code_fences(final_code),
-                    task_description=task.prompt,
-                ))
+
+                # Validate cleaned code
+                valid, syntax_error = is_valid_python(clean_code)
+
+                if not valid:
+                    print(f"  ⚠️ Invalid python for review {key}: {syntax_error}")
+                    continue
+
+                review_requests.append(
+                    ReviewRequest(
+                        task_id=task.task_id,
+                        strategy=strategy,
+                        sample_index=sample_index,
+                        code=clean_code,
+                        task_description=task.prompt,
+                    )
+                )
+
                 request_keys.append(key)
-    
+
     if not review_requests:
         return {}
-    
+
     print(f"\n🔍 Starting parallel review of {len(review_requests)} code samples...")
     print(f"   Concurrent review requests: {reviewer.max_concurrent}")
-    
+
     results = await reviewer.review_batch(review_requests)
-    
+
     # Build result dictionary
     review_results: dict[str, CodeReviewResult | None] = {}
     for i, result in enumerate(results):
         key = request_keys[i]
         review_results[key] = result.review
-    
+        if result.error:
+            print(f"  ⚠️ Review error for {key}: {result.error}")
+        elif result.review is None:
+            print(f"  ⚠️ Review returned None for {key}")
+
+    print(
+        f"   Review results: {len([r for r in review_results.values() if r is not None])}/{len(review_results)} successful")
     return review_results
 
 
