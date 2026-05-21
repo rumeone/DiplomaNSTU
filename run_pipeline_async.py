@@ -273,7 +273,7 @@ async def run_generation_phase(
         
         if result.error:
             print(f"  ⚠️ Error for {key}: {result.error}")
-            generation_results[key] = ("", None)
+            pass  # skip failed generation, code will be read from disk if needed
         else:
             generation_results[key] = (result.code, None)
     
@@ -713,11 +713,10 @@ async def async_main() -> None:
             for sample_index in range(config.samples_per_task):
                 key = f"{safe_filename(task.task_id)}__{strategy}__{sample_index}"
                 
-                # Check if already completed (from resume)
-                if key in completed_tasks:
-                    # TODO: Load existing record from JSON
-                    continue
-                
+                # Получаем final_code и initial_code для текущей задачи
+                final_code: str | None = None
+                initial_code: str | None = None
+
                 if strategy == "self_refine":
                     initial_key = f"{key}__initial"
                     if key in generation_results:
@@ -727,13 +726,15 @@ async def async_main() -> None:
                         final_code, _ = generation_results[initial_key]
                         initial_code = final_code
                     else:
-                        continue
+                        # Resume: читаем с диска
+                        final_code = _read_generated_code(config.output_dir, task.task_id, strategy, sample_index)
                 else:
-                    if key not in generation_results:
-                        continue
-                    final_code, _ = generation_results[key]
-                    initial_code = None
-                
+                    if key in generation_results:
+                        final_code, _ = generation_results[key]
+                    else:
+                        # Resume: читаем с диска
+                        final_code = _read_generated_code(config.output_dir, task.task_id, strategy, sample_index)
+
                 if not final_code:
                     final_code = ""
                 
