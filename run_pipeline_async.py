@@ -41,7 +41,12 @@ from prompts import (
     build_structured_cot_prompt,
     build_zero_shot_prompt,
 )
-from refinement import build_refinement_feedback, make_refinement_prompt
+from refinement import (
+    assess_code,
+    build_refinement_feedback_from_assessment,
+    make_refinement_prompt,
+    should_accept_refinement,
+)
 
 
 def ensure_dirs(base_dir: Path) -> None:
@@ -145,6 +150,35 @@ def build_record_from_result(
             static_root / "bandit" / f"{task_part}__{strategy}__sample{sample_index}__final_bandit.stderr.txt",
             static_result.bandit_stderr,
         )
+
+    initial_static_result = None
+    initial_functional_result = None
+    initial_pylint_path = None
+    initial_bandit_json_path = None
+    initial_bandit_stderr_path = None
+    if initial_code is not None:
+        initial_valid, _initial_syntax_error = is_valid_python(initial_code)
+        initial_static_result = analyze_code(initial_code) if initial_valid else None
+        if initial_static_result:
+            initial_pylint_path = save_text(
+                static_root / "pylint" / f"{task_part}__{strategy}__sample{sample_index}__initial_pylint.txt",
+                initial_static_result.pylint_stdout,
+            )
+            initial_bandit_json_path = save_text(
+                static_root / "bandit" / f"{task_part}__{strategy}__sample{sample_index}__initial_bandit.json",
+                initial_static_result.bandit_stdout,
+            )
+            initial_bandit_stderr_path = save_text(
+                static_root / "bandit" / f"{task_part}__{strategy}__sample{sample_index}__initial_bandit.stderr.txt",
+                initial_static_result.bandit_stderr,
+            )
+        if initial_valid and config.enable_external_execution:
+            initial_functional_result = evaluate_with_humaneval(
+                task_id=task.task_id,
+                completion=initial_code,
+                test_code=task.test,
+                entry_point=task.entry_point,
+            )
     
     functional_result = None
     if valid and config.enable_external_execution:
@@ -152,6 +186,7 @@ def build_record_from_result(
             task_id=task.task_id,
             completion=final_code,
             test_code=task.test,
+            entry_point=task.entry_point,
         )
     
     code_file, initial_code_file = write_generation_artifacts(
@@ -191,6 +226,17 @@ def build_record_from_result(
         "llm_pythonic_style": llm_review.pythonic_style if llm_review else None,
         "llm_overall_score": llm_review.overall_score if llm_review else None,
         "llm_feedback": llm_review.brief_feedback if llm_review else None,
+        "initial_pylint_score": initial_static_result.pylint_score if initial_static_result else None,
+        "initial_passed": initial_functional_result.passed if initial_functional_result else None,
+        "initial_functional_result": (
+            initial_functional_result.result if initial_functional_result else "not_executed"
+        ) if initial_code is not None else None,
+        "initial_pylint_report_file": str(initial_pylint_path) if initial_pylint_path else None,
+        "initial_bandit_report_file": str(initial_bandit_json_path) if initial_bandit_json_path else None,
+        "initial_bandit_stderr_file": str(initial_bandit_stderr_path) if initial_bandit_stderr_path else None,
+        "refinement_changed": (
+            final_code != initial_code if initial_code is not None else None
+        ),
     }
     
     return record
@@ -280,7 +326,7 @@ async def run_generation_phase(
     return generation_results
 
 
-async def run_refinement_phase(
+async def _run_refinement_phase_legacy(
     client: AsyncLLMClient,
     tasks: list[HumanEvalTask],
     generation_results: dict[str, tuple[str, str | None]],
@@ -306,24 +352,14 @@ async def run_refinement_phase(
             if not initial_code:
                 continue
             
-            # Build feedback for refinement
-            valid, syntax_error = is_valid_python(initial_code)
-            static_result = analyze_code(initial_code) if valid else None
-            
-            functional_result_text = "not_executed"
-            if valid and config.enable_external_execution:
-                func_result = evaluate_with_humaneval(
-                    task_id=task.task_id,
-                    completion=initial_code,
-                    test_code=task.test,
-                )
-                functional_result_text = func_result.result
-            
-            feedback = build_refinement_feedback(
-                syntax_error=syntax_error,
-                static_result=static_result,
-                functional_result_text=functional_result_text,
+            assessment = assess_code(
+                code=initial_code,
+                task_id=task.task_id,
+                test_code=task.test,
+                entry_point=task.entry_point,
+                enable_execution=config.enable_external_execution,
             )
+            feedback = build_refinement_feedback_from_assessment(assessment)
             
             refine_prompt = make_refinement_prompt(task.prompt, initial_code, feedback)
             refinement_requests.append(GenerationRequest(
@@ -362,6 +398,123 @@ async def run_refinement_phase(
         else:
             final_results[key] = (result.code, initial_code)
     
+    return final_results
+
+
+async def run_refinement_phase(
+    client: AsyncLLMClient,
+    tasks: list[HumanEvalTask],
+    generation_results: dict[str, tuple[str, str | None]],
+    config: ExperimentConfig,
+    progress_bar: Any = None,
+) -> dict[str, tuple[str, str | None]]:
+    """Run a gated self-refine repair loop over initial generations."""
+    current_by_key: dict[str, dict[str, Any]] = {}
+
+    for task in tasks:
+        for sample_index in range(config.samples_per_task):
+            key = f"{safe_filename(task.task_id)}__self_refine__{sample_index}"
+            initial_key = f"{key}__initial"
+            if initial_key not in generation_results:
+                continue
+
+            initial_code, _ = generation_results[initial_key]
+            if not initial_code:
+                continue
+
+            assessment = assess_code(
+                code=initial_code,
+                task_id=task.task_id,
+                test_code=task.test,
+                entry_point=task.entry_point,
+                enable_execution=config.enable_external_execution,
+            )
+            current_by_key[key] = {
+                "task": task,
+                "sample_index": sample_index,
+                "initial_code": assessment.code,
+                "assessment": assessment,
+                "active": True,
+            }
+
+    if not current_by_key:
+        return {}
+
+    max_rounds = max(0, config.max_refinement_rounds)
+    print(
+        f"\nрџ”„ Starting refinement phase for {len(current_by_key)} samples "
+        f"({max_rounds} gated rounds)..."
+    )
+
+    for round_index in range(max_rounds):
+        refinement_requests: list[GenerationRequest] = []
+        request_keys: list[str] = []
+
+        for key, state in current_by_key.items():
+            if not state["active"]:
+                continue
+
+            task = state["task"]
+            assessment = state["assessment"]
+            feedback = build_refinement_feedback_from_assessment(assessment)
+            refine_prompt = make_refinement_prompt(
+                task.prompt,
+                assessment.code,
+                feedback,
+            )
+            refinement_requests.append(GenerationRequest(
+                task_id=task.task_id,
+                strategy="self_refine",
+                sample_index=state["sample_index"],
+                prompt=refine_prompt,
+                is_refinement=True,
+                previous_code=assessment.code,
+                feedback=feedback,
+            ))
+            request_keys.append(key)
+
+        if not refinement_requests:
+            break
+
+        print(f"   Round {round_index + 1}/{max_rounds}: {len(refinement_requests)} samples")
+
+        async def progress_callback(done: int, total: int, request: GenerationRequest) -> None:
+            if progress_bar:
+                progress_bar.update(1)
+
+        results = await client.generate_batch(refinement_requests, progress_callback)
+
+        for i, (request, result) in enumerate(zip(refinement_requests, results)):
+            key = request_keys[i]
+            state = current_by_key[key]
+            current_assessment = state["assessment"]
+
+            if result.error:
+                print(f"  вљ пёЏ Refinement error for {key}: {result.error}")
+                state["active"] = False
+                continue
+
+            candidate_assessment = assess_code(
+                code=result.code,
+                task_id=request.task_id,
+                test_code=state["task"].test,
+                entry_point=state["task"].entry_point,
+                enable_execution=config.enable_external_execution,
+            )
+            if should_accept_refinement(
+                current_assessment,
+                candidate_assessment,
+                enable_execution=config.enable_external_execution,
+            ):
+                state["assessment"] = candidate_assessment
+                state["active"] = candidate_assessment.passed is not True
+            else:
+                state["active"] = False
+
+    final_results: dict[str, tuple[str, str | None]] = {}
+    for key, state in current_by_key.items():
+        final_results[key] = (state["assessment"].code, state["initial_code"])
+
     return final_results
 
 
@@ -517,7 +670,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--enable-execution",
         action="store_true",
+        default=EXPERIMENT_CONFIG.enable_external_execution,
         help="Enable functional test execution",
+    )
+    parser.add_argument(
+        "--disable-execution",
+        action="store_false",
+        dest="enable_execution",
+        help="Disable functional test execution",
+    )
+    parser.add_argument(
+        "--refinement-rounds",
+        type=int,
+        default=EXPERIMENT_CONFIG.max_refinement_rounds,
+        help="Maximum accepted-or-rejected self-refine repair rounds",
     )
     parser.add_argument(
         "--enable-llm-review",
@@ -569,6 +735,7 @@ async def async_main() -> None:
         output_dir=args.output_dir,
         dataset_path=args.dataset,
         enable_external_execution=args.enable_execution,
+        max_refinement_rounds=args.refinement_rounds,
         parallelism=parallelism_config,
         resume_enabled=not args.no_resume,
     )
@@ -629,9 +796,11 @@ async def async_main() -> None:
     
     # Calculate total work
     total_generations = len(tasks) * len(config.strategies) * config.samples_per_task
-    # self_refine needs 2 generations per sample
+    # self_refine can use one initial generation plus several repair rounds.
     if "self_refine" in config.strategies:
-        self_refine_count = len(tasks) * config.samples_per_task
+        self_refine_count = (
+            len(tasks) * config.samples_per_task * config.max_refinement_rounds
+        )
         total_generations += self_refine_count
     
     skipped = len(completed_tasks)

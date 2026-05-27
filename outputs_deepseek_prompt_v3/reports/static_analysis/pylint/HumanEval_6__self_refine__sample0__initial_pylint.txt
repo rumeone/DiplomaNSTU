@@ -1,0 +1,7 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpd8ov2j7w\candidate.py:57:0: C0304: Final newline missing (missing-final-newline)
+
+------------------------------------------------------------------
+Your code has been rated at 9.66/10 (previous run: 9.66/10, +0.00)
+
+

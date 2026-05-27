@@ -1,0 +1,12 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp989mqq8y\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp989mqq8y\candidate.py:22:0: C0301: Line too long (111/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp989mqq8y\candidate.py:25:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp989mqq8y\candidate.py:26:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp989mqq8y\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp989mqq8y\candidate.py:19:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+
+------------------------------------------------------------------
+Your code has been rated at 4.55/10 (previous run: 9.23/10, -4.69)
+
+

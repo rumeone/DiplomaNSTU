@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpak1p274y\candidate.py:10:0: C0301: Line too long (103/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpak1p274y\candidate.py:11:0: C0301: Line too long (108/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpak1p274y\candidate.py:23:0: C0304: Final newline missing (missing-final-newline)
+
+------------------------------------------------------------------
+Your code has been rated at 0.00/10 (previous run: 0.00/10, +0.00)
+
+

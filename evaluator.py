@@ -6,7 +6,9 @@ human-eval package. Tests are executed directly in a controlled namespace.
 from __future__ import annotations
 
 import json
+import linecache
 import tempfile
+import traceback
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -25,6 +27,7 @@ def evaluate_with_humaneval(
     completion: str,
     problem_file: str | None = None,
     test_code: str | None = None,
+    entry_point: str | None = None,
 ) -> FunctionalEvaluationResult:
     """Evaluate generated code against HumanEval tests.
     
@@ -37,13 +40,14 @@ def evaluate_with_humaneval(
         completion: Generated code to evaluate
         problem_file: Optional path to problem file for external harness
         test_code: Test code from HumanEval dataset
+        entry_point: Function name to pass into the HumanEval check function
         
     Returns:
         FunctionalEvaluationResult with pass/fail status
     """
     # If test_code is provided, run tests directly
     if test_code:
-        return _run_tests_directly(task_id, completion, test_code)
+        return _run_tests_directly(task_id, completion, test_code, entry_point)
     
     # Try to get test code from loaded tasks
     from humaneval_loader import load_humaneval_tasks
@@ -54,7 +58,12 @@ def evaluate_with_humaneval(
         )
         for task in tasks:
             if task.task_id == task_id and task.test:
-                return _run_tests_directly(task_id, completion, task.test)
+                return _run_tests_directly(
+                    task_id,
+                    completion,
+                    task.test,
+                    entry_point or task.entry_point,
+                )
     except Exception:
         pass
     
@@ -66,6 +75,7 @@ def _run_tests_directly(
     task_id: str,
     completion: str,
     test_code: str,
+    entry_point: str | None = None,
 ) -> FunctionalEvaluationResult:
     """Run HumanEval tests directly in a controlled namespace.
     
@@ -73,18 +83,34 @@ def _run_tests_directly(
         task_id: Task identifier
         completion: Generated code
         test_code: Test code from HumanEval
+        entry_point: Function name to pass into the check function
         
     Returns:
         Evaluation result
     """
     namespace: dict[str, Any] = {}
     
-    # Extract entry point from task_id
-    entry_point = _get_entry_point(task_id, completion)
+    # Prefer the dataset entry point. Falling back to code inspection is only a
+    # legacy path for callers that do not provide dataset metadata.
+    entry_point = entry_point or _get_entry_point(task_id, completion)
+    completion_filename = f"<generated {task_id}>"
+    tests_filename = f"<tests {task_id}>"
+    linecache.cache[completion_filename] = (
+        len(completion),
+        None,
+        completion.splitlines(keepends=True),
+        completion_filename,
+    )
+    linecache.cache[tests_filename] = (
+        len(test_code),
+        None,
+        test_code.splitlines(keepends=True),
+        tests_filename,
+    )
     
     try:
         # Execute the generated code
-        exec(completion, namespace)
+        exec(compile(completion, completion_filename, "exec"), namespace)
     except SyntaxError as exc:
         return FunctionalEvaluationResult(
             passed=False,
@@ -108,7 +134,7 @@ def _run_tests_directly(
     
     # Execute the test code
     try:
-        exec(test_code, namespace)
+        exec(compile(test_code, tests_filename, "exec"), namespace)
     except Exception as exc:
         return FunctionalEvaluationResult(
             passed=False,
@@ -134,17 +160,37 @@ def _run_tests_directly(
             raw_output="All tests passed"
         )
     except AssertionError as exc:
+        raw_output = _format_failure_details(exc, tests_filename)
         return FunctionalEvaluationResult(
             passed=False,
             result=f"assertion_failed: {exc}",
-            raw_output=str(exc)
+            raw_output=raw_output
         )
     except Exception as exc:
+        raw_output = _format_failure_details(exc, tests_filename)
         return FunctionalEvaluationResult(
             passed=False,
             result=f"test_failed: {exc}",
-            raw_output=str(exc)
+            raw_output=raw_output
         )
+
+
+def _format_failure_details(exc: BaseException, tests_filename: str) -> str:
+    """Return traceback plus the failing HumanEval assertion line when available."""
+    formatted = "".join(traceback.format_exception(type(exc), exc, exc.__traceback__))
+    failing_line = ""
+    tb = exc.__traceback__
+    while tb is not None:
+        frame = tb.tb_frame
+        if frame.f_code.co_filename == tests_filename:
+            source = linecache.getline(tests_filename, tb.tb_lineno).strip()
+            if source:
+                failing_line = f"Failing test line {tb.tb_lineno}: {source}"
+        tb = tb.tb_next
+
+    if failing_line:
+        return f"{failing_line}\n{formatted}"
+    return formatted
 
 
 def _get_entry_point(task_id: str, completion: str) -> str:
@@ -213,8 +259,8 @@ def _evaluate_with_external_harness(
                 raw_output=output
             )
 
-        line = results_file.read_text(encoding="utf-8").strip().splitlines()
-        row = json.loads(line)
+        lines = results_file.read_text(encoding="utf-8").strip().splitlines()
+        row = json.loads(lines[0])
 
         return FunctionalEvaluationResult(
             passed=row.get("passed"),

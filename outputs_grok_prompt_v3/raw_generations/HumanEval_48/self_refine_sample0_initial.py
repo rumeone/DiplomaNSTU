@@ -1,0 +1,13 @@
+"""Module for checking palindromes."""
+
+def is_palindrome(text: str) -> bool:
+    """
+    Checks if given string is a palindrome.
+
+    Examples:
+        >>> is_palindrome('racecar')
+        True
+        >>> is_palindrome('car')
+        False
+    """
+    return text == text[::-1]

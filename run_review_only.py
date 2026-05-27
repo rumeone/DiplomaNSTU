@@ -89,7 +89,7 @@ async def run_review_phase(
         print("No results need review (all already have reviews or no valid code)")
         return {}
     
-    print(f"\n🔍 Starting parallel review of {len(review_requests)} code samples...")
+    print(f"\n[START] Starting parallel review of {len(review_requests)} code samples...")
     print(f"   Concurrent review requests: {reviewer.max_concurrent}")
     
     results_list = await reviewer.review_batch(review_requests)

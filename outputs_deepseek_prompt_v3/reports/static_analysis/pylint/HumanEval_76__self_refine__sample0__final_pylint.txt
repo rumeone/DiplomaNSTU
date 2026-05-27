@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgvbre_k_\candidate.py:24:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgvbre_k_\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpgvbre_k_\candidate.py:13:15: R1714: Consider merging these comparisons with 'in' by using 'x in (1, -1)'. Use a set instead if elements are hashable. (consider-using-in)
+
+------------------------------------------------------------------
+Your code has been rated at 8.42/10 (previous run: 8.46/10, -0.04)
+
+

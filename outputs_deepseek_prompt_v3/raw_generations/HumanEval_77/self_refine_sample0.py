@@ -1,0 +1,38 @@
+def iscube(a: int) -> bool:
+    """
+    Check if number a is a cube of some integer number.
+
+    Args:
+        a: The integer to check.
+
+    Returns:
+        True if a is a perfect cube, False otherwise.
+
+    Examples:
+        >>> iscube(2)
+        False
+        >>> iscube(64)
+        True
+        >>> iscube(-180)
+        False
+        >>> iscube(-1)
+        True
+    """
+    if a < 0:
+        return iscube(-a)
+
+    low = 0
+    high = max(1, a)
+
+    while low <= high:
+        mid = (low + high) // 2
+        cube = mid * mid * mid
+
+        if cube == a:
+            return True
+        if cube < a:
+            low = mid + 1
+        else:
+            high = mid - 1
+
+    return False

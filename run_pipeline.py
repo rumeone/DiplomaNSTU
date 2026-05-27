@@ -39,7 +39,12 @@ from prompts import (
     build_structured_cot_prompt,
     build_zero_shot_prompt,
 )
-from refinement import build_refinement_feedback, make_refinement_prompt
+from refinement import (
+    assess_code,
+    build_refinement_feedback_from_assessment,
+    make_refinement_prompt,
+    should_accept_refinement,
+)
 
 
 def ensure_dirs(base_dir: Path) -> None:
@@ -47,6 +52,8 @@ def ensure_dirs(base_dir: Path) -> None:
     (base_dir / "raw_generations").mkdir(parents=True, exist_ok=True)
     (base_dir / "analyzed").mkdir(parents=True, exist_ok=True)
     (base_dir / "reports").mkdir(parents=True, exist_ok=True)
+    (base_dir / "reports" / "static_analysis" / "pylint").mkdir(parents=True, exist_ok=True)
+    (base_dir / "reports" / "static_analysis" / "bandit").mkdir(parents=True, exist_ok=True)
     (base_dir / "logs").mkdir(parents=True, exist_ok=True)
 
 
@@ -96,55 +103,76 @@ def run_single_generation(
         Dictionary with generation results and metrics.
     """
     if strategy == "self_refine":
-        # Self-refine: generate initial code, analyze, then refine
+        # Self-refine: generate initial code, analyze, then repair with a gate.
         initial_prompt = build_constraint_guided_prompt(task.prompt)
         initial_code = strip_code_fences(client.generate_code(initial_prompt))
 
-        valid, syntax_error = is_valid_python(initial_code)
-        static_result = analyze_code(initial_code) if valid else None
+        current_assessment = assess_code(
+            code=initial_code,
+            task_id=task.task_id,
+            test_code=task.test,
+            entry_point=task.entry_point,
+            enable_execution=config.enable_external_execution,
+        )
+        initial_assessment = current_assessment
 
         initial_pylint_path = None
         initial_bandit_json_path = None
         initial_bandit_stderr_path = None
-        if static_result:
+        if current_assessment.static_result:
             task_part = safe_filename(task.task_id)
             static_root = config.output_dir / "reports" / "static_analysis"
             initial_pylint_path = save_text(
                 static_root / "pylint" / f"{task_part}__{strategy}__sample{sample_index}__initial_pylint.txt",
-                static_result.pylint_stdout,
+                current_assessment.static_result.pylint_stdout,
             )
             initial_bandit_json_path = save_text(
                 static_root / "bandit" / f"{task_part}__{strategy}__sample{sample_index}__initial_bandit.json",
-                static_result.bandit_stdout,
+                current_assessment.static_result.bandit_stdout,
             )
             initial_bandit_stderr_path = save_text(
                 static_root / "bandit" / f"{task_part}__{strategy}__sample{sample_index}__initial_bandit.stderr.txt",
-                static_result.bandit_stderr,
+                current_assessment.static_result.bandit_stderr,
             )
 
-        functional_result = None
-        functional_result_text = "not_executed"
-        if valid and config.enable_external_execution:
-            functional_result = evaluate_with_humaneval(
+        final_code = current_assessment.code
+        accepted_refinement_rounds = 0
+        attempted_refinement_rounds = 0
+        for _round_index in range(max(0, config.max_refinement_rounds)):
+            attempted_refinement_rounds += 1
+            feedback = build_refinement_feedback_from_assessment(current_assessment)
+            refine_prompt = make_refinement_prompt(
+                task.prompt,
+                current_assessment.code,
+                feedback,
+            )
+            candidate_code = strip_code_fences(client.generate_code(refine_prompt))
+            candidate_assessment = assess_code(
+                code=candidate_code,
                 task_id=task.task_id,
-                completion=initial_code,
                 test_code=task.test,
+                entry_point=task.entry_point,
+                enable_execution=config.enable_external_execution,
             )
-            functional_result_text = functional_result.result
-
-        feedback = build_refinement_feedback(
-            syntax_error=syntax_error,
-            static_result=static_result,
-            functional_result_text=functional_result_text,
-        )
-
-        refine_prompt = make_refinement_prompt(task.prompt, initial_code, feedback)
-        final_code = strip_code_fences(client.generate_code(refine_prompt))
+            if should_accept_refinement(
+                current_assessment,
+                candidate_assessment,
+                enable_execution=config.enable_external_execution,
+            ):
+                current_assessment = candidate_assessment
+                final_code = candidate_assessment.code
+                accepted_refinement_rounds += 1
+                if config.enable_external_execution and current_assessment.passed is True:
+                    break
+            elif config.enable_external_execution and current_assessment.passed is True:
+                break
     else:
         prompt_builder = get_prompt_builder(strategy)
         prompt = prompt_builder(task.prompt)
         final_code = strip_code_fences(client.generate_code(prompt))
         initial_code = None
+        accepted_refinement_rounds = None
+        attempted_refinement_rounds = None
 
     valid, syntax_error = is_valid_python(final_code)
 
@@ -175,6 +203,7 @@ def run_single_generation(
             task_id=task.task_id,
             completion=final_code,
             test_code=task.test,
+            entry_point=task.entry_point,
         )
 
     code_file, initial_code_file = write_generation_artifacts(
@@ -228,6 +257,15 @@ def run_single_generation(
         record["initial_pylint_report_file"] = str(initial_pylint_path) if initial_pylint_path else None
         record["initial_bandit_report_file"] = str(initial_bandit_json_path) if initial_bandit_json_path else None
         record["initial_bandit_stderr_file"] = str(initial_bandit_stderr_path) if initial_bandit_stderr_path else None
+        record["initial_pylint_score"] = (
+            initial_assessment.static_result.pylint_score
+            if initial_assessment.static_result else None
+        )
+        record["initial_passed"] = initial_assessment.passed
+        record["initial_functional_result"] = initial_assessment.functional_result_text
+        record["refinement_rounds_attempted"] = attempted_refinement_rounds
+        record["refinement_rounds_accepted"] = accepted_refinement_rounds
+        record["refinement_changed"] = final_code != initial_code
 
     return record
 
@@ -278,7 +316,20 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--enable-execution",
         action="store_true",
+        default=EXPERIMENT_CONFIG.enable_external_execution,
         help="Enable functional test execution",
+    )
+    parser.add_argument(
+        "--disable-execution",
+        action="store_false",
+        dest="enable_execution",
+        help="Disable functional test execution",
+    )
+    parser.add_argument(
+        "--refinement-rounds",
+        type=int,
+        default=EXPERIMENT_CONFIG.max_refinement_rounds,
+        help="Maximum accepted-or-rejected self-refine repair rounds",
     )
     parser.add_argument(
         "--enable-llm-review",
@@ -303,6 +354,7 @@ def main() -> None:
         output_dir=args.output_dir,
         dataset_path=args.dataset,
         enable_external_execution=args.enable_execution,
+        max_refinement_rounds=args.refinement_rounds,
     )
     
     ensure_dirs(config.output_dir)

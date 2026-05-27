@@ -1,0 +1,23 @@
+"""Calculate mean absolute deviation for a dataset."""
+
+from typing import List
+
+
+def mean_absolute_deviation(numbers: List[float]) -> float:
+    """
+    For a given list of input numbers, calculate Mean Absolute Deviation
+    around the mean of this dataset.
+    Mean Absolute Deviation is the average absolute difference between each
+    element and a centerpoint (mean in this case):
+    MAD = average | x - x_mean |
+
+    Example:
+        >>> mean_absolute_deviation([1.0, 2.0, 3.0, 4.0])
+        1.0
+    """
+    if not numbers:
+        return 0.0
+
+    dataset_mean = sum(numbers) / len(numbers)
+    total_absolute_deviation = sum(abs(number - dataset_mean) for number in numbers)
+    return total_absolute_deviation / len(numbers)

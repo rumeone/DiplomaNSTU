@@ -1,0 +1,12 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpe_ltkimz\candidate.py:18:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpe_ltkimz\candidate.py:25:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpe_ltkimz\candidate.py:27:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpe_ltkimz\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpe_ltkimz\candidate.py:19:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpe_ltkimz\candidate.py:22:76: E1136: Value 'closest_pair' is unsubscriptable (unsubscriptable-object)
+
+------------------------------------------------------------------
+Your code has been rated at 1.67/10 (previous run: 9.23/10, -7.56)
+
+

@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp9xvdg6jz\candidate.py:36:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp9xvdg6jz\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp9xvdg6jz\candidate.py:30:4: C0200: Consider using enumerate instead of iterating with range and len (consider-using-enumerate)
+
+------------------------------------------------------------------
+Your code has been rated at 7.50/10 (previous run: 8.33/10, -0.83)
+
+

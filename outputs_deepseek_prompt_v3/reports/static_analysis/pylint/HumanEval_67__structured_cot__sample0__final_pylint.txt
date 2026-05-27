@@ -1,0 +1,9 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpv3et048r\candidate.py:12:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpv3et048r\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpv3et048r\candidate.py:10:4: C0415: Import outside toplevel (re) (import-outside-toplevel)
+
+------------------------------------------------------------------
+Your code has been rated at 2.50/10 (previous run: 9.17/10, -6.67)
+
+

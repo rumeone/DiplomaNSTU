@@ -1,0 +1,8 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpganc_cil\candidate.py:69:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpganc_cil\candidate.py:6:0: R0912: Too many branches (16/12) (too-many-branches)
+
+------------------------------------------------------------------
+Your code has been rated at 9.47/10 (previous run: 8.61/10, +0.86)
+
+

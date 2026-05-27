@@ -1,0 +1,22 @@
+from typing import List
+
+
+def total_match(lst1: List[str], lst2: List[str]) -> List[str]:
+    """
+    Return the list with fewer total characters across all its strings.
+
+    If both lists have the same total character count, return the first list.
+
+    Args:
+        lst1: First list of strings.
+        lst2: Second list of strings.
+
+    Returns:
+        The list with the smaller total character count, or lst1 if equal.
+    """
+    total_chars1 = sum(len(s) for s in lst1)
+    total_chars2 = sum(len(s) for s in lst2)
+
+    if total_chars2 < total_chars1:
+        return lst2
+    return lst1

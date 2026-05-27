@@ -1,0 +1,12 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmpqg4qz_n5\candidate.py:26:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpqg4qz_n5\candidate.py:54:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpqg4qz_n5\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpqg4qz_n5\candidate.py:27:8: R1705: Unnecessary "elif" after "return", remove the leading "el" from "elif" (no-else-return)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpqg4qz_n5\candidate.py:22:4: R0911: Too many return statements (14/6) (too-many-return-statements)
+C:\Users\3CDE~1\AppData\Local\Temp\tmpqg4qz_n5\candidate.py:22:4: R0912: Too many branches (14/12) (too-many-branches)
+
+------------------------------------------------------------------
+Your code has been rated at 8.18/10 (previous run: 8.95/10, -0.77)
+
+

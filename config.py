@@ -68,20 +68,20 @@ class ExperimentConfig:
         "self_refine",
     ])
 
-    output_dir: Path = Path("outputs_test_grok")
+    output_dir: Path = Path("outputs_deepseek_model_3")
     run_refinement: bool = True
-    max_refinement_rounds: int = 1
+    max_refinement_rounds: int = 3
 
     # Включить запуск тестов через human-eval harness.
     # Для SWE-bench всегда False: там нужен отдельный harness (swe-bench-eval).
-    enable_external_execution: bool = False
+    enable_external_execution: bool = True
 
     # ── Параллелизм ────────────────────────────────────────────────────────
     parallelism: ParallelismConfig = field(default_factory=ParallelismConfig)
-    
+
     # ── Рецензент ─────────────────────────────────────────────────────────
     reviewer: ReviewerConfig = field(default_factory=ReviewerConfig)
-    
+
     # Resume: продолжить с последней обработанной задачи (игнорировать уже готовые)
     resume_enabled: bool = True
 

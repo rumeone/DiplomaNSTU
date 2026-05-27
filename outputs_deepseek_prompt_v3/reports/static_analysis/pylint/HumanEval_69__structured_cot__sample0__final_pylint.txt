@@ -1,0 +1,12 @@
+************* Module candidate
+C:\Users\3CDE~1\AppData\Local\Temp\tmp08d0qd94\candidate.py:6:0: C0301: Line too long (105/100) (line-too-long)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp08d0qd94\candidate.py:19:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp08d0qd94\candidate.py:21:0: C0303: Trailing whitespace (trailing-whitespace)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp08d0qd94\candidate.py:22:0: C0304: Final newline missing (missing-final-newline)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp08d0qd94\candidate.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+C:\Users\3CDE~1\AppData\Local\Temp\tmp08d0qd94\candidate.py:20:56: R1716: Simplify chained comparison between the operands (chained-comparison)
+
+------------------------------------------------------------------
+Your code has been rated at 1.43/10 (previous run: 7.50/10, -6.07)
+
+
